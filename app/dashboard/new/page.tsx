@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner, UploadSimple, FileText, Sparkle, CaretLeft, Timer } from "@phosphor-icons/react";
 import { UploadArea } from "@/components/dashboard/UploadArea";
-import { generateExamAction } from "@/app/actions/generate-exam";
+// import { generateExamAction } from "@/app/actions/generate-exam"; // Replaced by API route
 import { GenerationOverlay } from "@/components/dashboard/GenerationOverlay";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -15,6 +15,8 @@ import Link from "next/link";
 export default function NewExamPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [currentStep, setCurrentStep] = useState(0);
+    const [statusMessage, setStatusMessage] = useState("");
     const [sourceType, setSourceType] = useState<"files" | "text">("files");
     const [difficulty, setDifficulty] = useState("Easy");
     const [questionCount, setQuestionCount] = useState<number | string>(5);
@@ -24,21 +26,66 @@ export default function NewExamPage() {
     const [timerEnabled, setTimerEnabled] = useState(false);
     const [timerDuration, setTimerDuration] = useState<string>("30");
 
-    async function handleSubmit(formData: FormData) {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+
         setIsLoading(true);
+        setStatusMessage("Initializing...");
+        setCurrentStep(0);
 
         if (timerEnabled && timerDuration) {
             formData.append("timeLimit", timerDuration);
         }
 
-        await new Promise(resolve => setTimeout(resolve, 500));
-
         try {
-            const result = await generateExamAction(formData);
-            if (result.success && result.examId) {
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                router.push(`/dashboard/exams/${result.examId}`);
+            const response = await fetch("/api/exam/generate", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok || !response.body) {
+                throw new Error("Failed to start generation");
             }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let done = false;
+
+            while (!done) {
+                const { value, done: readerDone } = await reader.read();
+                done = readerDone;
+                if (value) {
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split("\n").filter((line) => line.trim() !== "");
+
+                    for (const line of lines) {
+                        try {
+                            const data = JSON.parse(line);
+
+                            if (data.error) {
+                                throw new Error(data.error);
+                            }
+
+                            if (data.step !== undefined) {
+                                setCurrentStep(data.step);
+                            }
+
+                            if (data.message) {
+                                setStatusMessage(data.message);
+                            }
+
+                            if (data.success && data.examId) {
+                                router.push(`/dashboard/exams/${data.examId}`);
+                                return;
+                            }
+                        } catch (e) {
+                            // Ignore incomplete JSON chunks or parse errors in stream
+                        }
+                    }
+                }
+            }
+
         } catch (error) {
             console.error(error);
             setIsLoading(false);
@@ -58,7 +105,7 @@ export default function NewExamPage() {
 
     return (
         <div className="h-full flex flex-col relative z-10 w-full">
-            <GenerationOverlay isOpen={isLoading} />
+            <GenerationOverlay isOpen={isLoading} currentStep={currentStep} statusMessage={statusMessage} />
 
             {/* Full height background */}
             <div className="fixed top-0 right-0 bottom-0 left-[140px] bg-zinc-200/80 -z-10" />
@@ -73,7 +120,7 @@ export default function NewExamPage() {
                 </div>
             </div>
 
-            <form action={handleSubmit} className="flex-1 flex flex-col gap-6 min-h-0 pb-6">
+            <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-6 min-h-0 pb-6">
 
                 <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0">
                     {/* Left Column: Source Material */}

@@ -14,26 +14,32 @@ import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const session = await auth();
-  
+
   if (!session?.user?.id) {
-      return redirect("/login");
+    return redirect("/login");
   }
 
   const allExams = await db.select().from(exams)
-      .where(eq(exams.userId, session.user.id))
-      .orderBy(desc(exams.createdAt));
-      
+    .where(eq(exams.userId, session.user.id))
+    .orderBy(desc(exams.createdAt));
+
   const allResults = await db.select().from(examResults)
-      .where(eq(examResults.userId, session.user.id));
-      
+    .where(eq(examResults.userId, session.user.id));
+
+  console.log("Dashboard Stats:", {
+    exams: allExams.length,
+    results: allResults.length,
+    userId: session.user.id
+  });
+
   const allQuestions = await db.select().from(questions);
-  
+
   const recentExams = allExams.slice(0, 3);
   const totalExams = allExams.length;
   const completedExams = allResults.length;
-  
+
   // Calculate overall average score
-  const averageScore = completedExams > 0 
+  const averageScore = completedExams > 0
     ? Math.round(allResults.reduce((acc, curr) => acc + (curr.score / curr.totalQuestions * 100), 0) / completedExams)
     : 0;
 
@@ -43,23 +49,23 @@ export default async function DashboardPage() {
   allResults.forEach(result => {
     // Ensure answers is an object, not null/undefined/string
     const answers = (typeof result.answers === 'string' ? JSON.parse(result.answers) : result.answers) as Record<string, string>;
-    
+
     if (answers) {
-        Object.entries(answers).forEach(([qIdStr, selectedOption]) => {
+      Object.entries(answers).forEach(([qIdStr, selectedOption]) => {
         const qId = parseInt(qIdStr);
         const question = allQuestions.find(q => q.id === qId);
-        
+
         if (question && question.subtopic) {
-            if (!subtopicStats[question.subtopic]) {
+          if (!subtopicStats[question.subtopic]) {
             subtopicStats[question.subtopic] = { correct: 0, total: 0 };
-            }
-            
-            subtopicStats[question.subtopic].total += 1;
-            if (selectedOption === question.correctAnswer) {
+          }
+
+          subtopicStats[question.subtopic].total += 1;
+          if (selectedOption === question.correctAnswer) {
             subtopicStats[question.subtopic].correct += 1;
-            }
+          }
         }
-        });
+      });
     }
   });
 
@@ -79,51 +85,51 @@ export default async function DashboardPage() {
   const fourteenDaysAgo = subDays(now, 14);
 
   // 1. Exams Created Trend
-  const examsCreatedLast7Days = allExams.filter(e => 
+  const examsCreatedLast7Days = allExams.filter(e =>
     isWithinInterval(new Date(e.createdAt), { start: sevenDaysAgo, end: now })
   ).length;
-  
-  const examsCreatedPrev7Days = allExams.filter(e => 
+
+  const examsCreatedPrev7Days = allExams.filter(e =>
     isWithinInterval(new Date(e.createdAt), { start: fourteenDaysAgo, end: sevenDaysAgo })
   ).length;
 
   const examsCreatedSparkline = [];
   for (let i = 6; i >= 0; i--) {
-      const date = subDays(now, i);
-      const count = allExams.filter(e => isSameDay(new Date(e.createdAt), date)).length;
-      examsCreatedSparkline.push(count);
+    const date = subDays(now, i);
+    const count = allExams.filter(e => isSameDay(new Date(e.createdAt), date)).length;
+    examsCreatedSparkline.push(count);
   }
 
   // 2. Average Score Trend
-  const resultsLast7Days = allResults.filter(r => 
+  const resultsLast7Days = allResults.filter(r =>
     isWithinInterval(new Date(r.completedAt), { start: sevenDaysAgo, end: now })
   );
-  const resultsPrev7Days = allResults.filter(r => 
+  const resultsPrev7Days = allResults.filter(r =>
     isWithinInterval(new Date(r.completedAt), { start: fourteenDaysAgo, end: sevenDaysAgo })
   );
 
   const avgScoreLast7Days = resultsLast7Days.length > 0
     ? resultsLast7Days.reduce((acc, r) => acc + (r.score / r.totalQuestions * 100), 0) / resultsLast7Days.length
     : 0;
-    
+
   const avgScorePrev7Days = resultsPrev7Days.length > 0
     ? resultsPrev7Days.reduce((acc, r) => acc + (r.score / r.totalQuestions * 100), 0) / resultsPrev7Days.length
     : 0;
 
   const avgScoreSparkline = [];
   for (let i = 6; i >= 0; i--) {
-      const date = subDays(now, i);
-      const dayResults = allResults.filter(r => isSameDay(new Date(r.completedAt), date));
-      const dayAvg = dayResults.length > 0
-          ? dayResults.reduce((acc, r) => acc + (r.score / r.totalQuestions * 100), 0) / dayResults.length
-          : 0;
-      avgScoreSparkline.push(dayAvg);
+    const date = subDays(now, i);
+    const dayResults = allResults.filter(r => isSameDay(new Date(r.completedAt), date));
+    const dayAvg = dayResults.length > 0
+      ? dayResults.reduce((acc, r) => acc + (r.score / r.totalQuestions * 100), 0) / dayResults.length
+      : 0;
+    avgScoreSparkline.push(dayAvg);
   }
 
   // 3. Study Time (1.5 mins per question)
   const calculateStudyTime = (results: typeof allResults) => {
-      const minutes = results.reduce((acc, r) => acc + (r.totalQuestions * 1.5), 0);
-      return minutes / 60;
+    const minutes = results.reduce((acc, r) => acc + (r.totalQuestions * 1.5), 0);
+    return minutes / 60;
   };
 
   const totalStudyHours = calculateStudyTime(allResults);
@@ -132,11 +138,49 @@ export default async function DashboardPage() {
 
   const studyTimeSparkline = [];
   for (let i = 6; i >= 0; i--) {
-      const date = subDays(now, i);
-      const dayResults = allResults.filter(r => isSameDay(new Date(r.completedAt), date));
-      const dayHours = calculateStudyTime(dayResults);
-      studyTimeSparkline.push(dayHours);
+    const date = subDays(now, i);
+    const dayResults = allResults.filter(r => isSameDay(new Date(r.completedAt), date));
+    const dayHours = calculateStudyTime(dayResults);
+    studyTimeSparkline.push(dayHours);
   }
+
+  // 4. Questions Answered
+  // Assuming 'answers' JSON keys represent answered questions
+  const totalQuestionsAnswered = allResults.reduce((acc, result) => {
+    const answers = (typeof result.answers === 'string'
+      ? JSON.parse(result.answers)
+      : result.answers) as Record<string, string>;
+    return acc + Object.keys(answers || {}).length;
+  }, 0);
+
+  // 5. Current Streak
+  // Get unique completion dates (start of day)
+  const uniqueDates = Array.from(new Set(allResults.map(r => new Date(r.completedAt).toISOString().split('T')[0])))
+    .map(dateStr => new Date(dateStr))
+    .sort((a, b) => b.getTime() - a.getTime());
+
+  let streak = 0;
+
+  // Determine start point: Today or Yesterday
+  // If user has activity today, streak includes today.
+  // If no activity today but activity yesterday, streak is alive.
+  // If no activity today or yesterday, streak is 0.
+
+  const todayStr = now.toISOString().split('T')[0];
+  const yesterdayStr = subDays(now, 1).toISOString().split('T')[0];
+
+  const hasActivityToday = uniqueDates.some(d => d.toISOString().split('T')[0] === todayStr);
+  const hasActivityYesterday = uniqueDates.some(d => d.toISOString().split('T')[0] === yesterdayStr);
+
+  if (hasActivityToday || hasActivityYesterday) {
+    let checkDate = hasActivityToday ? now : subDays(now, 1);
+    while (uniqueDates.some(d => d.toISOString().split('T')[0] === checkDate.toISOString().split('T')[0])) {
+      streak++;
+      checkDate = subDays(checkDate, 1);
+    }
+  }
+
+  console.log("Calculated Metrics:", { totalQuestionsAnswered, streak });
 
   // Prepare data for Progress Chart
   const progressData = allResults
@@ -156,50 +200,58 @@ export default async function DashboardPage() {
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-            <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Dashboard</h1>
-            <p className="text-zinc-500 mt-2">Welcome back, {session.user.name || 'Student'}. Here is your progress overview.</p>
+          <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Dashboard</h1>
+          <p className="text-zinc-500 mt-2">Welcome back, {session.user.name || 'Student'}. Here is your progress overview.</p>
         </div>
         <Link href="/dashboard/new">
-            <Button className="h-11 px-6 rounded-full bg-brand-orange hover:bg-orange-600 text-white font-bold gap-2 shadow-lg shadow-orange-900/20 transition-all hover:scale-105 active:scale-95">
-                <Plus weight="bold" className="w-4 h-4" />
-                Create New Exam
-            </Button>
+          <Button className="h-11 px-6 rounded-full bg-brand-orange hover:bg-orange-600 text-white font-bold gap-2 shadow-lg shadow-orange-900/20 transition-all hover:scale-105 active:scale-95">
+            <Plus weight="bold" className="w-4 h-4" />
+            Create New Exam
+          </Button>
         </Link>
       </div>
 
       {/* Stats Grid with Animations */}
-      <StatsGrid 
+      <StatsGrid
         totalExams={{
-            value: totalExams,
-            trend: { current: examsCreatedLast7Days, previous: examsCreatedPrev7Days },
-            sparkline: examsCreatedSparkline
+          value: totalExams,
+          trend: { current: examsCreatedLast7Days, previous: examsCreatedPrev7Days },
+          sparkline: examsCreatedSparkline
         }}
         averageScore={{
-            value: averageScore,
-            trend: { current: avgScoreLast7Days, previous: avgScorePrev7Days },
-            sparkline: avgScoreSparkline
+          value: averageScore,
+          trend: { current: avgScoreLast7Days, previous: avgScorePrev7Days },
+          sparkline: avgScoreSparkline
         }}
         studyTime={{
-            value: totalStudyHours.toFixed(1),
-            trend: { current: studyTimeLast7Days, previous: studyTimePrev7Days },
-            sparkline: studyTimeSparkline
+          value: totalStudyHours.toFixed(1),
+          trend: { current: studyTimeLast7Days, previous: studyTimePrev7Days },
+          sparkline: studyTimeSparkline
+        }}
+        questionsAnswered={{
+          value: totalQuestionsAnswered,
+          trend: { current: 0, previous: 0 } // Trends not calculated for now
+        }}
+        streak={{
+          value: streak,
+          trend: { current: 0, previous: 0 } // Trends not calculated for now
         }}
       />
 
       {/* Progress Chart & Weak Areas */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 h-full">
-              <ProgressChart data={progressData} />
-          </div>
-          <div className="h-full">
-              <WeakAreas weakAreas={weakAreas} />
-          </div>
+        <div className="lg:col-span-2 h-full">
+          <ProgressChart data={progressData} />
+        </div>
+        <div className="h-full">
+          <WeakAreas weakAreas={weakAreas} />
+        </div>
       </div>
 
       {/* Recent Activity Section with Animations */}
-      <RecentActivity 
-        exams={recentExams} 
-        results={allResults} 
+      <RecentActivity
+        exams={recentExams}
+        results={allResults}
       />
     </div>
   );
