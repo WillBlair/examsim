@@ -1,16 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Plus } from "@phosphor-icons/react/dist/ssr";
+import { Plus, ArrowRight, Clock, CheckCircle, Warning, Trophy, TrendUp, Lightning, CaretRight, Calendar, Scroll } from "@phosphor-icons/react/dist/ssr";
 import { db } from "@/db";
-import { exams, examResults, questions } from "@/db/schema";
+import { exams, examResults } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { StatsGrid } from "@/components/dashboard/StatsGrid";
-import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { ProgressChart } from "@/components/dashboard/ProgressChart";
 import { WeakAreas } from "@/components/dashboard/WeakAreas";
-import { isSameDay, subDays, isWithinInterval } from "date-fns";
+import { DashboardEmptyState } from "@/components/dashboard/EmptyState";
+import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { format } from "date-fns";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { getCachedUserStats } from "@/lib/utils/cache";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -19,170 +21,19 @@ export default async function DashboardPage() {
     return redirect("/login");
   }
 
+  // Use cached and optimized stats service
+  const stats = await getCachedUserStats(session.user.id);
+
+  // Fetch exams and results for display
   const allExams = await db.select().from(exams)
     .where(eq(exams.userId, session.user.id))
     .orderBy(desc(exams.createdAt));
 
   const allResults = await db.select().from(examResults)
-    .where(eq(examResults.userId, session.user.id));
+    .where(eq(examResults.userId, session.user.id))
+    .orderBy(desc(examResults.completedAt));
 
-  console.log("Dashboard Stats:", {
-    exams: allExams.length,
-    results: allResults.length,
-    userId: session.user.id
-  });
-
-  const allQuestions = await db.select().from(questions);
-
-  const recentExams = allExams.slice(0, 3);
-  const totalExams = allExams.length;
-  const completedExams = allResults.length;
-
-  // Calculate overall average score
-  const averageScore = completedExams > 0
-    ? Math.round(allResults.reduce((acc, curr) => acc + (curr.score / curr.totalQuestions * 100), 0) / completedExams)
-    : 0;
-
-  // --- Weak Areas Calculation ---
-  const subtopicStats: Record<string, { correct: number; total: number }> = {};
-
-  allResults.forEach(result => {
-    // Ensure answers is an object, not null/undefined/string
-    const answers = (typeof result.answers === 'string' ? JSON.parse(result.answers) : result.answers) as Record<string, string>;
-
-    if (answers) {
-      Object.entries(answers).forEach(([qIdStr, selectedOption]) => {
-        const qId = parseInt(qIdStr);
-        const question = allQuestions.find(q => q.id === qId);
-
-        if (question && question.subtopic) {
-          if (!subtopicStats[question.subtopic]) {
-            subtopicStats[question.subtopic] = { correct: 0, total: 0 };
-          }
-
-          subtopicStats[question.subtopic].total += 1;
-          if (selectedOption === question.correctAnswer) {
-            subtopicStats[question.subtopic].correct += 1;
-          }
-        }
-      });
-    }
-  });
-
-  const weakAreas = Object.entries(subtopicStats)
-    .map(([subtopic, stats]) => ({
-      subtopic,
-      score: (stats.correct / stats.total) * 100,
-      totalQuestions: stats.total
-    }))
-    .filter(area => area.score < 60) // Threshold: <60% score
-    .sort((a, b) => a.score - b.score)
-    .slice(0, 5);
-
-  // --- Trend & Sparkline Calculations ---
-  const now = new Date();
-  const sevenDaysAgo = subDays(now, 7);
-  const fourteenDaysAgo = subDays(now, 14);
-
-  // 1. Exams Created Trend
-  const examsCreatedLast7Days = allExams.filter(e =>
-    isWithinInterval(new Date(e.createdAt), { start: sevenDaysAgo, end: now })
-  ).length;
-
-  const examsCreatedPrev7Days = allExams.filter(e =>
-    isWithinInterval(new Date(e.createdAt), { start: fourteenDaysAgo, end: sevenDaysAgo })
-  ).length;
-
-  const examsCreatedSparkline = [];
-  for (let i = 6; i >= 0; i--) {
-    const date = subDays(now, i);
-    const count = allExams.filter(e => isSameDay(new Date(e.createdAt), date)).length;
-    examsCreatedSparkline.push(count);
-  }
-
-  // 2. Average Score Trend
-  const resultsLast7Days = allResults.filter(r =>
-    isWithinInterval(new Date(r.completedAt), { start: sevenDaysAgo, end: now })
-  );
-  const resultsPrev7Days = allResults.filter(r =>
-    isWithinInterval(new Date(r.completedAt), { start: fourteenDaysAgo, end: sevenDaysAgo })
-  );
-
-  const avgScoreLast7Days = resultsLast7Days.length > 0
-    ? resultsLast7Days.reduce((acc, r) => acc + (r.score / r.totalQuestions * 100), 0) / resultsLast7Days.length
-    : 0;
-
-  const avgScorePrev7Days = resultsPrev7Days.length > 0
-    ? resultsPrev7Days.reduce((acc, r) => acc + (r.score / r.totalQuestions * 100), 0) / resultsPrev7Days.length
-    : 0;
-
-  const avgScoreSparkline = [];
-  for (let i = 6; i >= 0; i--) {
-    const date = subDays(now, i);
-    const dayResults = allResults.filter(r => isSameDay(new Date(r.completedAt), date));
-    const dayAvg = dayResults.length > 0
-      ? dayResults.reduce((acc, r) => acc + (r.score / r.totalQuestions * 100), 0) / dayResults.length
-      : 0;
-    avgScoreSparkline.push(dayAvg);
-  }
-
-  // 3. Study Time (1.5 mins per question)
-  const calculateStudyTime = (results: typeof allResults) => {
-    const minutes = results.reduce((acc, r) => acc + (r.totalQuestions * 1.5), 0);
-    return minutes / 60;
-  };
-
-  const totalStudyHours = calculateStudyTime(allResults);
-  const studyTimeLast7Days = calculateStudyTime(resultsLast7Days);
-  const studyTimePrev7Days = calculateStudyTime(resultsPrev7Days);
-
-  const studyTimeSparkline = [];
-  for (let i = 6; i >= 0; i--) {
-    const date = subDays(now, i);
-    const dayResults = allResults.filter(r => isSameDay(new Date(r.completedAt), date));
-    const dayHours = calculateStudyTime(dayResults);
-    studyTimeSparkline.push(dayHours);
-  }
-
-  // 4. Questions Answered
-  // Assuming 'answers' JSON keys represent answered questions
-  const totalQuestionsAnswered = allResults.reduce((acc, result) => {
-    const answers = (typeof result.answers === 'string'
-      ? JSON.parse(result.answers)
-      : result.answers) as Record<string, string>;
-    return acc + Object.keys(answers || {}).length;
-  }, 0);
-
-  // 5. Current Streak
-  // Get unique completion dates (start of day)
-  const uniqueDates = Array.from(new Set(allResults.map(r => new Date(r.completedAt).toISOString().split('T')[0])))
-    .map(dateStr => new Date(dateStr))
-    .sort((a, b) => b.getTime() - a.getTime());
-
-  let streak = 0;
-
-  // Determine start point: Today or Yesterday
-  // If user has activity today, streak includes today.
-  // If no activity today but activity yesterday, streak is alive.
-  // If no activity today or yesterday, streak is 0.
-
-  const todayStr = now.toISOString().split('T')[0];
-  const yesterdayStr = subDays(now, 1).toISOString().split('T')[0];
-
-  const hasActivityToday = uniqueDates.some(d => d.toISOString().split('T')[0] === todayStr);
-  const hasActivityYesterday = uniqueDates.some(d => d.toISOString().split('T')[0] === yesterdayStr);
-
-  if (hasActivityToday || hasActivityYesterday) {
-    let checkDate = hasActivityToday ? now : subDays(now, 1);
-    while (uniqueDates.some(d => d.toISOString().split('T')[0] === checkDate.toISOString().split('T')[0])) {
-      streak++;
-      checkDate = subDays(checkDate, 1);
-    }
-  }
-
-  console.log("Calculated Metrics:", { totalQuestionsAnswered, streak });
-
-  // Prepare data for Progress Chart
+  // Progress Chart Data
   const progressData = allResults
     .map(result => {
       const exam = allExams.find(e => e.id === result.examId);
@@ -195,64 +46,204 @@ export default async function DashboardPage() {
     })
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
+  const hasExams = stats.totalExams > 0;
+  const firstName = session.user.name?.split(' ')[0] || 'there';
+
+  const recentExams = allExams.slice(0, 3);
+  const recentResults = allResults
+    .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime())
+    .slice(0, 10); 
+
   return (
-    <div className="space-y-8 h-full flex flex-col py-4">
-      {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Dashboard</h1>
-          <p className="text-zinc-500 mt-2">Welcome back, {session.user.name || 'Student'}. Here is your progress overview.</p>
-        </div>
-        <Link href="/dashboard/new">
-          <Button className="h-11 px-6 rounded-full bg-brand-orange hover:bg-orange-600 text-white font-bold gap-2 shadow-lg shadow-orange-900/20 transition-all hover:scale-105 active:scale-95">
-            <Plus weight="bold" className="w-4 h-4" />
-            Create New Exam
-          </Button>
-        </Link>
+    <div className="space-y-8 flex-1">
+      {/* Header with Date */}
+      <div className="flex flex-col gap-1">
+        <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">
+            {format(new Date(), 'EEEE, MMMM d')}
+        </p>
+        <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight">
+            Welcome back, {firstName}!
+        </h1>
+        <p className="text-sm text-zinc-500">
+            Ready to continue your prep? You're doing great.
+        </p>
       </div>
 
-      {/* Stats Grid with Animations */}
-      <StatsGrid
-        totalExams={{
-          value: totalExams,
-          trend: { current: examsCreatedLast7Days, previous: examsCreatedPrev7Days },
-          sparkline: examsCreatedSparkline
-        }}
-        averageScore={{
-          value: averageScore,
-          trend: { current: avgScoreLast7Days, previous: avgScorePrev7Days },
-          sparkline: avgScoreSparkline
-        }}
-        studyTime={{
-          value: totalStudyHours.toFixed(1),
-          trend: { current: studyTimeLast7Days, previous: studyTimePrev7Days },
-          sparkline: studyTimeSparkline
-        }}
-        questionsAnswered={{
-          value: totalQuestionsAnswered,
-          trend: { current: 0, previous: 0 } // Trends not calculated for now
-        }}
-        streak={{
-          value: streak,
-          trend: { current: 0, previous: 0 } // Trends not calculated for now
-        }}
-      />
-
-      {/* Progress Chart & Weak Areas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 h-full">
-          <ProgressChart data={progressData} />
+      {!hasExams ? (
+        /* Empty State - Goal Gradient: clear path forward */
+        <div className="flex-1 flex items-center justify-center min-h-[500px]">
+          <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm w-full max-w-lg p-1 relative overflow-hidden">
+             <div className="absolute inset-0 bg-noise opacity-50 pointer-events-none" />
+             <div className="p-8 text-center relative z-10">
+                <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mx-auto mb-6">
+                    <Plus weight="bold" className="w-8 h-8 text-brand-orange" />
+                </div>
+                <h2 className="text-xl font-bold text-zinc-900 mb-2">Create Your First Exam</h2>
+                <p className="text-zinc-500 mb-8">
+                    Upload your study materials and we'll generate a custom practice exam for you in seconds.
+                </p>
+                <Link href="/dashboard/new" className="block w-full">
+                    <Button className="w-full h-12 bg-zinc-900 text-white hover:bg-zinc-800 rounded-xl font-medium shadow-lg shadow-zinc-900/10 transition-transform hover:scale-[1.02] active:scale-[0.98]">
+                        Get Started
+                    </Button>
+                </Link>
+             </div>
+          </div>
         </div>
-        <div className="h-full">
-          <WeakAreas weakAreas={weakAreas} />
-        </div>
-      </div>
+      ) : (
+        <>
+          {/* Primary Action & Weekly Progress (Redesigned) */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link href="/dashboard/new" className="group md:col-span-2 relative">
+                <div className="h-full min-h-[220px] bg-white rounded-2xl p-8 relative overflow-hidden transition-all duration-300 border border-zinc-200 shadow-md hover:shadow-lg hover:-translate-y-1 hover:border-zinc-300">
+                    {/* Background Effects */}
+                    <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-25 pointer-events-none" />
+                    
+                    {/* Decorative Icon Background */}
+                    <div className="absolute -bottom-6 -right-6 text-zinc-950/[0.03] transform rotate-12 group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+                         <Scroll weight="fill" className="w-56 h-56" />
+                    </div>
 
-      {/* Recent Activity Section with Animations */}
-      <RecentActivity
-        exams={recentExams}
-        results={allResults}
-      />
+                    <div className="relative z-10 flex flex-col justify-between h-full">
+                        <div className="space-y-4">
+                            {/* Badge */}
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-orange/10 text-brand-orange text-xs font-bold tracking-wide uppercase border border-brand-orange/20 w-fit">
+                                <Plus weight="bold" className="w-3.5 h-3.5" />
+                                <span>Create New</span>
+                            </div>
+                            
+                            {/* Content */}
+                            <div>
+                                <h2 className="text-3xl font-bold text-zinc-900 mb-2 tracking-tight group-hover:text-brand-orange transition-colors">Start a New Simulation</h2>
+                                <p className="text-zinc-500 text-lg max-w-md font-medium leading-relaxed">
+                                    Upload materials or paste text to generate a fresh exam instantly.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* CTA Button look-alike */}
+                        <div className="mt-8 flex items-center gap-3">
+                            <span className="inline-flex items-center justify-center h-11 px-6 rounded-[10px] bg-zinc-900 text-white font-medium shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05),0px_0px_0px_1px_rgba(255,255,255,0.1)_inset] group-hover:bg-zinc-800 transition-all duration-200 transform group-hover:-translate-y-0.5 group-hover:shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] active:scale-[0.98] active:translate-y-0">
+                                Begin Now
+                                <ArrowRight weight="bold" className="ml-2 w-4 h-4" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </Link>
+
+            {/* Redesigned Weekly Summary Card */}
+            <div className="bg-white rounded-2xl border border-zinc-200 p-6 shadow-md relative overflow-hidden flex flex-col justify-between h-full hover:shadow-lg hover:-translate-y-1 hover:border-zinc-300 transition-all duration-300">
+                <div className="absolute inset-0 bg-noise opacity-30 pointer-events-none" />
+                <div className="absolute -right-10 -top-10 w-32 h-32 bg-brand-orange/5 rounded-full blur-3xl" />
+                
+                <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-2">
+                            <Calendar weight="fill" className="w-4 h-4 text-zinc-400" />
+                            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Weekly Recap</span>
+                        </div>
+                        <span className="text-[10px] font-medium text-zinc-400 border border-zinc-100 px-2 py-1 rounded-full bg-zinc-50">
+                            Last 7 Days
+                        </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-zinc-50/50 rounded-xl p-3 border border-zinc-100/80">
+                            <div className="flex items-center gap-2 mb-2 text-zinc-500">
+                                <Lightning weight="fill" className="w-3.5 h-3.5 text-brand-orange" />
+                                <span className="text-[10px] uppercase font-bold tracking-wide">Exams</span>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-3xl font-bold text-zinc-900 tracking-tight">{stats.examsCreatedLast7Days}</span>
+                                <span className="text-xs text-zinc-400 font-medium">taken</span>
+                            </div>
+                        </div>
+
+                        <div className="bg-zinc-50/50 rounded-xl p-3 border border-zinc-100/80">
+                            <div className="flex items-center gap-2 mb-2 text-zinc-500">
+                                <TrendUp weight="fill" className="w-3.5 h-3.5 text-emerald-500" />
+                                <span className="text-[10px] uppercase font-bold tracking-wide">Avg Score</span>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-3xl font-bold text-zinc-900 tracking-tight">{Math.round(stats.avgScoreLast7Days)}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="relative z-10 mt-6 pt-4 border-t border-dashed border-zinc-200">
+                     <div className="flex items-center justify-between text-xs mb-2">
+                        <span className="text-zinc-500 font-medium">Weekly Goal</span>
+                        <span className="text-zinc-900 font-bold">{stats.examsCreatedLast7Days}/5 Exams</span>
+                    </div>
+                    <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
+                         <div 
+                            className="h-full bg-brand-orange transition-all duration-500 rounded-full" 
+                            style={{ width: `${Math.min((stats.examsCreatedLast7Days / 5) * 100, 100)}%` }} 
+                         />
+                    </div>
+                    <p className="text-[10px] text-zinc-400 mt-2 text-center">
+                        {stats.examsCreatedLast7Days >= 5 ? "Goal reached! Great job!" : `${5 - stats.examsCreatedLast7Days} more to reach your weekly target`}
+                    </p>
+                </div>
+            </div>
+          </section>
+
+          {/* Stats Row */}
+          <section>
+            <StatsGrid
+              totalExams={{
+                value: stats.totalExams,
+                trend: { current: stats.examsCreatedLast7Days, previous: stats.examsCreatedPrev7Days }
+              }}
+              averageScore={{
+                value: stats.averageScore,
+                trend: { current: stats.avgScoreLast7Days, previous: stats.avgScorePrev7Days }
+              }}
+              studyTime={{
+                value: stats.totalStudyHours.toFixed(1),
+                trend: { current: stats.studyTimeLast7Days, previous: stats.studyTimePrev7Days }
+              }}
+              questionsAnswered={{
+                value: stats.totalQuestionsAnswered,
+                trend: { current: 0, previous: 0 }
+              }}
+              streak={{
+                value: stats.streak,
+                trend: { current: 0, previous: 0 }
+              }}
+            />
+          </section>
+
+          {/* Recent Activity & Weak Areas Split */}
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <div className="space-y-4 h-full flex flex-col">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-bold text-zinc-900 tracking-tight">Recent Activity</h2>
+                    <Link href="/dashboard/exams" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors flex items-center gap-1">
+                        View All <CaretRight className="w-3 h-3" />
+                    </Link>
+                </div>
+                <div className="flex-1">
+                    <RecentActivity exams={recentExams} results={recentResults} />
+                </div>
+            </div>
+            
+            <div className="space-y-4 h-full flex flex-col">
+                <h2 className="text-lg font-bold text-zinc-900 tracking-tight">Focus Areas</h2>
+                <div className="flex-1">
+                    <WeakAreas weakAreas={stats.weakAreas} />
+                </div>
+            </div>
+          </section>
+
+          {/* Progress Chart - Full Width at Bottom */}
+          <section className="h-[400px] mt-8">
+             <ProgressChart data={progressData} />
+          </section>
+        </>
+      )}
     </div>
   );
 }

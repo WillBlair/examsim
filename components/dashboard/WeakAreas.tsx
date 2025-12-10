@@ -1,10 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Warning, TrendDown } from "@phosphor-icons/react/dist/ssr";
+"use client";
+
+import { motion } from "framer-motion";
+import { CheckCircle, ArrowRight, Target } from "@phosphor-icons/react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface WeakArea {
   subtopic: string;
-  score: number; // 0-100
+  score: number;
   totalQuestions: number;
 }
 
@@ -14,46 +17,84 @@ interface WeakAreasProps {
 
 export function WeakAreas({ weakAreas }: WeakAreasProps) {
   return (
-    <Card className="h-full border-zinc-200 shadow-sm bg-white">
-        <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-                <Warning weight="bold" className="w-5 h-5 text-red-500" />
-                Weak Areas
-            </CardTitle>
-            <p className="text-sm text-zinc-500">
-                Topics where you're performing below 60%.
-            </p>
-        </CardHeader>
-        <CardContent>
-            {weakAreas.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mb-3">
-                        <TrendDown weight="bold" className="w-6 h-6 text-green-600" />
-                    </div>
-                    <p className="text-zinc-900 font-medium">No weak areas detected</p>
-                    <p className="text-zinc-500 text-xs mt-1">Keep up the good work!</p>
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    {weakAreas.map((area, i) => (
-                        <div key={i} className="flex items-center justify-between group p-3 rounded-xl hover:bg-zinc-50 transition-colors border border-transparent hover:border-zinc-100">
-                            <div className="flex flex-col gap-1">
-                                <span className="font-medium text-sm text-zinc-800">{area.subtopic}</span>
-                                <span className="text-xs text-zinc-500">{area.totalQuestions} questions attempted</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-red-600 bg-red-50 border-red-200 font-bold">
-                                    {Math.round(area.score)}%
-                                </Badge>
-                            </div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.15, duration: 0.3 }}
+      className="h-full"
+    >
+      <div className="h-full p-6 rounded-2xl bg-white border border-zinc-200 flex flex-col relative overflow-hidden shadow-md">
+        {/* Content */}
+        <div className="relative z-10 flex flex-col h-full">
+          {weakAreas.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mb-3">
+                <CheckCircle weight="fill" className="w-6 h-6 text-emerald-500" />
+              </div>
+              <p className="text-sm font-semibold text-zinc-900">All Systems Go</p>
+              <p className="text-xs text-zinc-500 mt-1">No major weak areas detected in your recent performance.</p>
+            </div>
+          ) : (
+            <div className="flex-1 space-y-3">
+              {weakAreas.slice(0, 4).map((area, index) => {
+                // Simplified logic: red for really bad, amber for warning
+                const isCritical = area.score < 40;
+                
+                return (
+                  <motion.div
+                    key={area.subtopic}
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + index * 0.05 }}
+                  >
+                    <div className="group flex items-center justify-between p-3 rounded-lg border border-zinc-100 bg-zinc-50/50 hover:bg-white hover:border-zinc-200 hover:shadow-sm transition-all">
+                      <div className="flex-1 min-w-0 pr-4">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <p className="text-xs font-semibold text-zinc-700 truncate pr-2">
+                            {area.subtopic}
+                          </p>
+                          <span className={cn(
+                            "text-[10px] font-bold px-1.5 py-0.5 rounded",
+                            isCritical ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-600"
+                          )}>
+                            {Math.round(area.score)}%
+                          </span>
                         </div>
-                    ))}
-                </div>
-            )}
-        </CardContent>
-    </Card>
-  )
+                        
+                        {/* Clean Progress Bar */}
+                        <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
+                          <div 
+                            className={cn(
+                              "h-full rounded-full transition-all duration-500",
+                              isCritical ? "bg-red-500" : "bg-amber-500"
+                            )}
+                            style={{ width: `${area.score}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Action Button */}
+                      <Link href="/dashboard/practice">
+                        <button className="p-2 rounded-md text-zinc-400 hover:text-brand-orange hover:bg-orange-50 transition-colors">
+                          <Target weight="duotone" className="w-4 h-4" />
+                        </button>
+                      </Link>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+          
+          {weakAreas.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-zinc-100 text-center">
+              <Link href="/dashboard/practice" className="inline-flex items-center text-xs font-medium text-brand-orange hover:text-orange-600 transition-colors">
+                Practice these topics <ArrowRight className="w-3 h-3 ml-1" />
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
 }
-
-
-

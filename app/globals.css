@@ -46,17 +46,17 @@
 }
 
 :root {
-  /* Light Mode (Default) */
-  --background: 210 20% 98%;
-  --foreground: 0 0% 3.9%; /* Zinc 950 */
+  /* Ultra-Premium Theme - High Contrast, Sharp Lines */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 9%;
   
   --card: 0 0% 100%;
-  --card-foreground: 0 0% 3.9%;
+  --card-foreground: 0 0% 9%;
   
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 3.9%;
+  --popover-foreground: 0 0% 9%;
   
-  --primary: 22 100% 50%; /* #FF5C00 (Brand Orange) */
+  --primary: 0 0% 9%;
   --primary-foreground: 0 0% 98%;
 
   --secondary: 0 0% 96.1%;
@@ -71,81 +71,105 @@
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
 
+  /* Thinner, sharper borders for the "expensive" look */
   --border: 0 0% 89.8%;
   --input: 0 0% 89.8%;
-  --ring: 22 100% 50%; /* #FF5C00 */
+  --ring: 0 0% 9%;
   
   --radius: 0.5rem;
   
-  /* Custom Colors */
-  --brand-green: 121 100% 70%; /* #66ff68 */
-  --brand-orange: 22 100% 50%; /* #FF5C00 */
-}
-
-.dark {
-  --background: 0 0% 3.9%;
-  --foreground: 0 0% 98%;
+  /* Brand Colors - Refined */
+  --brand-orange: 24 95% 53%; /* Slightly more vibrant/expensive orange */
+  --brand-orange-muted: 24 80% 90%;
   
-  --card: 0 0% 3.9%;
-  --card-foreground: 0 0% 98%;
-  
-  --popover: 0 0% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  
-  --primary: 22 100% 50%; /* #FF5C00 */
-  --primary-foreground: 0 0% 98%;
-
-  --secondary: 0 0% 14.9%;
-  --secondary-foreground: 0 0% 98%;
-  
-  --muted: 0 0% 14.9%;
-  --muted-foreground: 0 0% 63.9%;
-  
-  --accent: 0 0% 14.9%;
-  --accent-foreground: 0 0% 98%;
-  
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  
-  --border: 0 0% 14.9%;
-  --input: 0 0% 14.9%;
-  --ring: 22 100% 50%;
+  /* Chart Colors */
+  --chart-1: 173 58% 39%;
+  --chart-2: 12 76% 61%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 8rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+  
   * {
     @apply border-border outline-ring/50;
   }
+  
   body {
-    @apply bg-background text-foreground antialiased tracking-tight;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+  
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tighter;
+    @apply tracking-tight font-semibold text-primary;
   }
 }
 
 @layer utilities {
-  .bg-brand-green {
-    background-color: hsl(var(--brand-green));
+  /* Expensive Thin Lines */
+  .border-thin {
+    border-width: 0.5px;
   }
-  .text-brand-green {
-    color: hsl(var(--brand-green));
+  
+  .border-b-thin {
+    border-bottom-width: 0.5px;
   }
-  .shadow-brand-green {
-    --tw-shadow-color: hsl(var(--brand-green));
-    --tw-shadow: var(--tw-shadow-colored);
-  }
+
   .bg-brand-orange {
     background-color: hsl(var(--brand-orange));
   }
+  
   .text-brand-orange {
     color: hsl(var(--brand-orange));
   }
+  
   .border-brand-orange {
     border-color: hsl(var(--brand-orange));
+  }
+
+  /* Subtle, expensive shadows */
+  .shadow-sharp {
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+  
+  .shadow-elevated {
+    box-shadow: 
+      0 4px 6px -1px rgb(0 0 0 / 0.05),
+      0 2px 4px -2px rgb(0 0 0 / 0.05);
+  }
+
+  /* Premium Pattern */
+  .pattern-dots {
+    background-image: radial-gradient(hsl(var(--foreground) / 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  /* Noise Texture */
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
   }
 }

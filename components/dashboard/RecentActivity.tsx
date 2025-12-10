@@ -23,13 +23,6 @@ interface RecentActivityProps {
 export function RecentActivity({ exams, results }: RecentActivityProps) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-zinc-900">Recent Simulations</h2>
-        <Link href="/dashboard/exams" className="text-sm font-medium text-zinc-500 hover:text-zinc-900 flex items-center gap-1 transition-colors">
-            View all <CaretRight weight="bold" className="w-3 h-3" />
-        </Link>
-      </div>
-
       {exams.length === 0 ? (
          <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
@@ -59,7 +52,7 @@ export function RecentActivity({ exams, results }: RecentActivityProps) {
                         transition={{ delay: 0.3 + (index * 0.1) }}
                     >
                         <Link href={`/dashboard/exams/${exam.id}`}>
-                            <div className="group bg-white p-5 rounded-2xl border border-zinc-200 shadow-sm hover:shadow-md hover:border-zinc-300 transition-all flex items-center justify-between">
+                            <div className="group bg-white p-5 rounded-2xl border border-zinc-200 shadow-md hover:shadow-lg hover:border-zinc-300 transition-all flex items-center justify-between">
                                 <div className="flex items-center gap-5">
                                     <div className="w-12 h-12 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center text-lg font-bold text-zinc-700 group-hover:scale-110 transition-transform shadow-sm">
                                         {exam.title.substring(0, 2).toUpperCase()}
@@ -98,6 +91,8 @@ export function RecentActivity({ exams, results }: RecentActivityProps) {
     </div>
   );
 }
+
+
 
 
 

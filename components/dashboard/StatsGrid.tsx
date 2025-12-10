@@ -1,10 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { Clock, CheckCircle, TrendUp, ListChecks, Fire } from "@phosphor-icons/react";
-import { Sparkline } from "@/components/ui/sparkline";
-import { TrendIndicator } from "@/components/ui/trend-indicator";
+import { Clock, CheckCircle, TrendUp, ListChecks, Fire, ArrowUp, ArrowDown, Minus } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 interface StatData {
@@ -12,9 +9,7 @@ interface StatData {
   trend?: {
     current: number;
     previous: number;
-    label?: string;
   };
-  sparkline?: number[];
 }
 
 interface StatsGridProps {
@@ -25,123 +20,161 @@ interface StatsGridProps {
   streak: StatData;
 }
 
+function TrendBadge({ current, previous }: { current: number; previous: number }) {
+  if (current === 0 && previous === 0) {
+    return (
+      <span className="text-xs text-muted-foreground flex items-center gap-1">
+        <Minus weight="bold" className="w-3 h-3" />
+        No change
+      </span>
+    );
+  }
+
+  const percentChange = previous === 0 
+    ? (current > 0 ? 100 : 0)
+    : Math.round(((current - previous) / previous) * 100);
+
+  const isPositive = percentChange > 0;
+  const isNeutral = percentChange === 0;
+
+  return (
+    <span className={cn(
+      "text-xs font-medium flex items-center gap-1",
+      isPositive ? "text-emerald-400" : isNeutral ? "text-muted-foreground" : "text-red-400"
+    )}>
+      {isPositive ? (
+        <ArrowUp weight="bold" className="w-3 h-3" />
+      ) : isNeutral ? (
+        <Minus weight="bold" className="w-3 h-3" />
+      ) : (
+        <ArrowDown weight="bold" className="w-3 h-3" />
+      )}
+      {Math.abs(percentChange)}% vs last week
+    </span>
+  );
+}
+
 export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswered, streak }: StatsGridProps) {
-  const cards = [
+  const stats = [
     {
-      label: "Total Created",
+      label: "Total Exams",
       data: totalExams,
       icon: CheckCircle,
-      color: "text-zinc-900",
-      bgColor: "bg-zinc-100",
-      iconColor: "text-zinc-900",
-      subtext: "exams generated",
-      showGraph: false,
-      special: false
+      iconBg: "bg-blue-500/10",
+      iconColor: "text-blue-400",
     },
     {
-      label: "Average Score",
+      label: "Avg. Score",
       data: averageScore,
       icon: TrendUp,
-      color: "text-zinc-900",
-      bgColor: "bg-green-100",
-      iconColor: "text-green-700",
-      subtext: "across all tests",
-      valueSuffix: "%",
-      showGraph: false,
-      special: false
+      suffix: "%",
+      iconBg: "bg-emerald-500/10",
+      iconColor: "text-emerald-400",
     },
     {
-      label: "Questions Answered",
+      label: "Questions",
       data: questionsAnswered,
       icon: ListChecks,
-      color: "text-zinc-900",
-      bgColor: "bg-blue-100",
-      iconColor: "text-blue-700",
-      subtext: "total questions",
-      showGraph: false,
-      special: false
+      iconBg: "bg-violet-500/10",
+      iconColor: "text-violet-400",
     },
     {
       label: "Study Time",
       data: studyTime,
       icon: Clock,
-      color: "text-zinc-900",
-      bgColor: "bg-orange-100",
-      iconColor: "text-orange-700",
-      subtext: "total hours",
-      special: false,
-      valueSuffix: "h",
-      sparklineColor: "#ea580c",
-      showGraph: true
+      suffix: "h",
+      iconBg: "bg-amber-500/10",
+      iconColor: "text-amber-400",
     },
-    {
-      label: "Current Streak",
-      data: streak,
-      icon: Fire,
-      color: "text-white",
-      bgColor: "bg-orange-500",
-      iconColor: "text-white",
-      subtext: "consecutive days",
-      special: true, // Highlight this card
-      showGraph: false
-    }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-      {cards.map((card, index) => (
+    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      {/* Regular Stats */}
+      {stats.map((stat, index) => (
         <motion.div
-          key={card.label}
-          initial={{ opacity: 0, y: 20 }}
+          key={stat.label}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
+          transition={{ delay: index * 0.05, duration: 0.3 }}
           className="h-full"
         >
-          <Card className={cn(
-            "p-6 flex flex-col justify-center items-center h-40 border-zinc-200 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 overflow-hidden relative gap-3",
-            card.special ? "bg-gradient-to-br from-brand-orange to-orange-600 border-orange-500 text-white" : "bg-white"
-          )}>
-            {/* Header */}
-            <div className="flex justify-center items-center z-10 relative">
-              <div className={cn("flex items-center gap-2 text-sm font-medium", card.special ? "text-orange-100" : "text-zinc-500")}>
-                <div className={cn("p-2 rounded-lg", card.bgColor, card.iconColor)}>
-                  <card.icon weight="fill" className="w-4 h-4" />
-                </div>
-                {card.label}
+          <div className="p-4 rounded-xl bg-white border border-zinc-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 h-full flex flex-col justify-between group">
+            <div>
+              {/* Icon */}
+              <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-110", stat.iconBg)}>
+                <stat.icon weight="fill" className={cn("w-4 h-4", stat.iconColor)} />
               </div>
+
+              {/* Value */}
+              <div className="flex items-baseline gap-0.5 mb-1">
+                <span className="text-2xl font-semibold text-foreground tabular-nums">
+                  {stat.data.value}
+                </span>
+                {stat.suffix && (
+                  <span className="text-sm font-medium text-muted-foreground">{stat.suffix}</span>
+                )}
+              </div>
+
+              {/* Label */}
+              <p className="text-xs text-muted-foreground">{stat.label}</p>
             </div>
 
-            {/* Content */}
-            <div className="z-10 relative flex flex-col items-center">
-              <div className={cn("text-4xl font-bold tracking-tight", card.special ? "text-white" : "text-zinc-900")}>
-                {card.data.value}{card.valueSuffix || ""}
-              </div>
-              {card.data.trend && (
-                <TrendIndicator
-                  current={card.data.trend.current}
-                  previous={card.data.trend.previous}
-                  className="mt-2"
-                  darkBackground={card.special}
-                />
+            {/* Trend */}
+            <div className="mt-3">
+              {stat.data.trend && (
+                <TrendBadge current={stat.data.trend.current} previous={stat.data.trend.previous} />
               )}
             </div>
-
-            {/* Graph (Study Time Only) */}
-            {card.showGraph && card.data.sparkline && (
-              <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none opacity-20">
-                <Sparkline
-                  data={card.data.sparkline.length > 0 && card.data.sparkline.some(x => x > 0) ? card.data.sparkline : [0, 0, 0, 0, 0, 0, 0]}
-                  color={card.sparklineColor || "#000"}
-                  width={300}
-                  height={100}
-                  className="w-full h-full"
-                  fill={true}
-                />
-              </div>
-            )}
-          </Card>
+          </div>
         </motion.div>
       ))}
+
+      {/* Streak Card - Special Styling */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+        className="h-full"
+      >
+        <div className="p-4 rounded-xl bg-gradient-to-br from-brand-orange to-orange-500 shadow-md h-full flex flex-col justify-between relative overflow-hidden group">
+          {/* Decorative background pattern */}
+          <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-5 mix-blend-overlay" />
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/20 rounded-full blur-2xl pointer-events-none" />
+          
+          <div className="relative z-10">
+            {/* Icon */}
+            <div className="w-9 h-9 rounded-lg bg-white/90 shadow-sm flex items-center justify-center mb-3">
+              <Fire weight="fill" className="w-4 h-4 text-brand-orange" />
+            </div>
+
+            {/* Value */}
+            <div className="flex items-baseline gap-1 mb-1">
+              <span className="text-2xl font-bold text-zinc-950 tabular-nums">
+                {streak.value}
+              </span>
+              <span className="text-sm font-bold text-zinc-800">days</span>
+            </div>
+
+            {/* Label */}
+            <p className="text-xs text-zinc-800 font-medium">Current Streak</p>
+          </div>
+          
+          {/* Status */}
+          <div className="mt-3 relative z-10">
+            {Number(streak.value) > 0 ? (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white shadow-sm border border-orange-200/50">
+                <Fire weight="fill" className="w-3 h-3 text-brand-orange" />
+                <span className="text-[10px] font-bold text-zinc-900 uppercase tracking-wider">On fire!</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/90 shadow-sm border border-orange-200/50">
+                <span className="text-[10px] font-bold text-zinc-800">Start today!</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 }
