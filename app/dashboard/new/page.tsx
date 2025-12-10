@@ -22,7 +22,15 @@ import { toast } from "sonner";
 
 // Simplified options for a cleaner UI
 const DIFFICULTY_OPTIONS = ["Easy", "Medium", "Hard"];
-const QUESTION_COUNTS = [5, 10, 20];
+const QUESTION_COUNTS = [5, 10, 15, 20, 30, 50];
+const TIME_LIMITS = [
+    { label: "None", value: 0 },
+    { label: "15m", value: 15 },
+    { label: "30m", value: 30 },
+    { label: "45m", value: 45 },
+    { label: "60m", value: 60 },
+    { label: "90m", value: 90 },
+];
 
 export default function NewExamPage() {
   const router = useRouter();
@@ -35,6 +43,7 @@ export default function NewExamPage() {
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("Medium");
   const [questionCount, setQuestionCount] = useState(10);
+  const [timeLimit, setTimeLimit] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const [pastedText, setPastedText] = useState("");
 
@@ -52,6 +61,9 @@ export default function NewExamPage() {
     formData.append("topic", topic);
     formData.append("difficulty", difficulty);
     formData.append("count", questionCount.toString());
+    if (timeLimit > 0) {
+        formData.append("timeLimit", timeLimit.toString());
+    }
     
     if (sourceType === "files") {
         files.forEach(f => formData.append("files", f));
@@ -106,32 +118,30 @@ export default function NewExamPage() {
     <div className="max-w-5xl mx-auto py-8 px-4">
       <GenerationOverlay isOpen={isLoading} currentStep={currentStep} statusMessage={statusMessage} />
 
-      {/* Header */}
-      <div className="mb-10 flex items-center justify-between">
-        <div>
-            <Link 
-            href="/dashboard" 
-            className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-2 group"
-            >
-            <CaretLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Dashboard
-            </Link>
-            <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Create New Exam</h1>
-            <p className="text-zinc-500 mt-1">Transform your study materials into an interactive simulation.</p>
-        </div>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-stretch">
+        {/* Left Column: Header & Input Source */}
+        <div className="lg:col-span-2 flex flex-col gap-8 h-full">
+            {/* Header */}
+            <div className="bg-white border-2 border-zinc-900 shadow-neo rounded-lg p-6 w-full">
+                <Link 
+                href="/dashboard" 
+                className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-2 group font-medium"
+                >
+                <CaretLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                Back to Dashboard
+                </Link>
+                <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Create New Exam</h1>
+                <p className="text-zinc-500 mt-1 font-medium">Transform your study materials into an interactive simulation.</p>
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        {/* Left Column: Input Source */}
-        <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white rounded-2xl border border-zinc-200 p-1 shadow-sm">
-                <div className="flex p-1 bg-zinc-100/50 rounded-xl mb-6 mx-6 mt-6">
+            <div className="bg-white rounded-lg border-2 border-zinc-900 p-1 shadow-neo flex flex-col flex-1 h-full">
+                <div className="flex p-1 bg-zinc-100 rounded-sm mb-6 mx-6 mt-6 border border-zinc-200 shrink-0">
                     <button
                         onClick={() => setSourceType("files")}
                         className={cn(
-                            "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all",
+                            "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-sm transition-all",
                             sourceType === "files" 
-                                ? "bg-accent-purple/10 text-accent-purple shadow-sm ring-1 ring-accent-purple/20" 
+                                ? "bg-white text-zinc-900 shadow-sm border border-zinc-200" 
                                 : "text-zinc-500 hover:text-zinc-900"
                         )}
                     >
@@ -141,9 +151,9 @@ export default function NewExamPage() {
                     <button
                         onClick={() => setSourceType("text")}
                         className={cn(
-                            "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all",
+                            "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-sm transition-all",
                             sourceType === "text" 
-                                ? "bg-accent-purple/10 text-accent-purple shadow-sm ring-1 ring-accent-purple/20" 
+                                ? "bg-white text-zinc-900 shadow-sm border border-zinc-200" 
                                 : "text-zinc-500 hover:text-zinc-900"
                         )}
                     >
@@ -152,15 +162,17 @@ export default function NewExamPage() {
                     </button>
                 </div>
 
-                <div className="px-6 pb-8">
+                <div className="px-6 pb-8 flex-1">
                     {sourceType === "files" ? (
-                        <UploadArea onFilesChange={setFiles} />
+                        <div className="h-full">
+                            <UploadArea onFilesChange={setFiles} />
+                        </div>
                     ) : (
                         <Textarea
                             value={pastedText}
                             onChange={(e) => setPastedText(e.target.value)}
                             placeholder="Paste your notes, syllabus, or lecture transcript here..."
-                            className="min-h-[300px] resize-none border-zinc-200 focus:ring-zinc-900 focus:border-zinc-900 bg-zinc-50/30 text-base"
+                            className="min-h-[350px] h-full resize-none border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 bg-zinc-50/30 text-base rounded-sm"
                         />
                     )}
                 </div>
@@ -168,23 +180,23 @@ export default function NewExamPage() {
         </div>
 
         {/* Right Column: Configuration & Action */}
-        <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-zinc-200 p-6 shadow-sm sticky top-6">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-6">Exam Settings</h3>
+        <div className="flex flex-col h-full">
+            <div className="bg-white rounded-lg border-2 border-zinc-900 p-5 shadow-neo flex flex-col h-full">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-4 shrink-0">Exam Settings</h3>
                 
-                <div className="space-y-6">
+                <div className="space-y-5 flex-1 flex flex-col">
                     <div>
-                        <label className="block text-sm font-medium text-zinc-900 mb-2">Topic <span className="text-zinc-400 font-normal">(Optional)</span></label>
+                        <label className="block text-sm font-medium text-zinc-900 mb-1.5">Topic <span className="text-zinc-400 font-normal">(Optional)</span></label>
                         <Input 
                             value={topic}
                             onChange={(e) => setTopic(e.target.value)}
                             placeholder="e.g. Biology 101"
-                            className="bg-white border-zinc-200 focus:ring-zinc-900 focus:border-zinc-900 h-11"
+                            className="bg-white border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 h-10 rounded-sm"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-zinc-900 mb-2">Difficulty</label>
+                        <label className="block text-sm font-medium text-zinc-900 mb-1.5">Difficulty</label>
                         <div className="grid grid-cols-3 gap-2">
                             {DIFFICULTY_OPTIONS.map(opt => (
                                 <button
@@ -192,10 +204,10 @@ export default function NewExamPage() {
                                     type="button"
                                     onClick={() => setDifficulty(opt)}
                                     className={cn(
-                                        "px-3 py-2 text-sm rounded-lg border transition-all",
+                                        "px-3 py-2 text-sm rounded-sm border-2 transition-all",
                                         difficulty === opt
-                                            ? "bg-zinc-900 text-white border-zinc-900 font-medium"
-                                            : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300"
+                                            ? "bg-zinc-900 text-white border-zinc-900 font-bold"
+                                            : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900"
                                     )}
                                 >
                                     {opt}
@@ -205,7 +217,7 @@ export default function NewExamPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-zinc-900 mb-2">Questions</label>
+                        <label className="block text-sm font-medium text-zinc-900 mb-1.5">Questions</label>
                         <div className="grid grid-cols-3 gap-2">
                             {QUESTION_COUNTS.map(count => (
                                 <button
@@ -213,10 +225,10 @@ export default function NewExamPage() {
                                     type="button"
                                     onClick={() => setQuestionCount(count)}
                                     className={cn(
-                                        "px-3 py-2 text-sm rounded-lg border transition-all",
+                                        "px-3 py-2 text-sm rounded-sm border-2 transition-all",
                                         questionCount === count
-                                            ? "bg-zinc-900 text-white border-zinc-900 font-medium"
-                                            : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300"
+                                            ? "bg-zinc-900 text-white border-zinc-900 font-bold"
+                                            : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900"
                                     )}
                                 >
                                     {count}
@@ -225,11 +237,32 @@ export default function NewExamPage() {
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-zinc-100">
+                    <div>
+                        <label className="block text-sm font-medium text-zinc-900 mb-1.5">Time Limit</label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {TIME_LIMITS.map(opt => (
+                                <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => setTimeLimit(opt.value)}
+                                    className={cn(
+                                        "px-3 py-2 text-sm rounded-sm border-2 transition-all",
+                                        timeLimit === opt.value
+                                            ? "bg-zinc-900 text-white border-zinc-900 font-bold"
+                                            : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900"
+                                    )}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-zinc-100 mt-auto">
                         <Button
                             onClick={handleSubmit}
                             disabled={!canProceed || isLoading}
-                            className="w-full h-12 bg-brand-orange hover:bg-emerald-600 text-white rounded-xl font-bold text-base shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+                            className="w-full h-11 bg-brand-orange hover:bg-emerald-600 text-white rounded-sm font-bold text-base border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none"
                         >
                             {isLoading ? (
                                 <Spinner className="w-5 h-5 animate-spin mr-2" />
@@ -238,7 +271,7 @@ export default function NewExamPage() {
                             )}
                             Generate Exam
                         </Button>
-                        <p className="text-xs text-center text-zinc-400 mt-3">
+                        <p className="text-xs text-center text-zinc-400 mt-3 font-medium">
                             Estimated time: ~30 seconds
                         </p>
                     </div>

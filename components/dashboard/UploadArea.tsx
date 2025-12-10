@@ -107,10 +107,10 @@ export function UploadArea({ onFilesChange }: UploadAreaProps) {
         onClick={() => fileInputRef.current?.click()}
         className={cn(
           "relative group cursor-pointer transition-all duration-300 ease-out",
-          "h-64 rounded-xl border-2 border-dashed flex flex-col items-center justify-center text-center p-8 bg-white",
+          "min-h-[350px] h-full rounded-sm border-2 border-dashed flex flex-col items-center justify-center text-center p-8 bg-zinc-50/30",
           isDragging
             ? "border-accent-purple bg-accent-purple/5"
-            : "border-zinc-200 hover:border-accent-purple/50 hover:bg-accent-purple/5 transition-all"
+            : "border-zinc-300 hover:border-zinc-400 transition-all"
         )}
       >
         <div className={cn(

@@ -2,31 +2,30 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Terminal } from "lucide-react";
+import { AppIcon } from "@/components/ui/icon";
 
 export function Navbar() {
   return (
     <div className="fixed top-0 left-0 right-0 z-[100] flex justify-center px-4 pt-6">
       <nav 
-        className="flex items-center gap-8 px-6 py-3 bg-brand-orange backdrop-blur-md rounded-full border border-white/10 shadow-lg shadow-brand-orange/20"
-        style={{ backgroundColor: 'hsl(var(--brand-orange) / 0.95)' }}
+        className="flex items-center gap-8 px-6 py-3 bg-white/95 backdrop-blur-md rounded-md border-2 border-zinc-900 shadow-neo w-full max-w-5xl justify-between"
       >
         <Link 
           href="/" 
-          className="flex items-center gap-2 text-white font-bold text-lg tracking-tight"
+          className="flex items-center gap-2 text-zinc-900 font-bold text-lg tracking-tight group"
         >
-          <div className="p-1 bg-white rounded-lg">
-            <Terminal className="w-4 h-4 text-brand-orange" fill="currentColor" />
+          <div className="w-8 h-8 bg-brand-orange rounded-sm flex items-center justify-center border border-zinc-900 shadow-sm group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-transform">
+            <AppIcon name="Terminal" className="w-4 h-4 text-white" />
           </div>
-          <span>ExamSim</span>
+          <span className="font-display">ExamSim</span>
         </Link>
         
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-8">
           {["Features", "Why Choose Us", "Reviews", "FAQ"].map((item) => (
             <Link
               key={item}
               href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
-              className="text-sm font-medium text-white/90 hover:text-white transition-colors"
+              className="text-sm font-bold text-zinc-600 hover:text-zinc-900 transition-colors font-display uppercase tracking-wide"
             >
               {item}
             </Link>
@@ -34,10 +33,10 @@ export function Navbar() {
         </div>
         
         <div className="flex items-center gap-4">
-             <Link href="/login" className="text-sm font-bold text-white hover:underline decoration-white/50">
+             <Link href="/login" className="text-sm font-bold text-zinc-900 hover:underline decoration-zinc-900/30">
                 Sign In
              </Link>
-             <Link href="/register" className="px-4 py-2 rounded-full bg-white text-brand-orange text-sm font-bold hover:bg-white/90 transition-all shadow-sm">
+             <Link href="/register" className="px-5 py-2 rounded-sm bg-brand-orange text-white text-sm font-bold border border-zinc-900 shadow-neo-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
                 Get Started
              </Link>
         </div>

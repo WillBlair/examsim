@@ -11,7 +11,7 @@ import { GridBackground } from "@/components/GridBackground";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white font-sans selection:bg-green-100 selection:text-green-900">
+    <main className="min-h-screen bg-white font-sans selection:bg-brand-orange/20 selection:text-brand-orange">
       <GridBackground />
       <Navbar />
       

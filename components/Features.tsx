@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Brain, Funnel } from "@phosphor-icons/react";
+import { AppIcon } from "@/components/ui/icon";
 import { IngestionVisualization } from "./IngestionVisualization";
 
 export function Features() {
@@ -9,11 +9,11 @@ export function Features() {
       <div className="container max-w-5xl px-4 md:px-6 mx-auto space-y-24">
         
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4 tracking-tight">
             Turn passive consumption into <br />
-            <span className="text-green-600">active mastery.</span>
+            <span className="text-brand-orange">active mastery.</span>
           </h2>
-          <p className="text-zinc-600 text-lg">
+          <p className="text-zinc-600 text-lg font-medium">
             Don&apos;t just read. Simulate. The only study tool built for retention.
           </p>
         </div>
@@ -21,13 +21,13 @@ export function Features() {
         {/* Highlighted Feature 1 - Large, Split Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           <div>
-            <div className="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold uppercase tracking-wide mb-6">
+            <div className="inline-block px-3 py-1 rounded-sm bg-brand-orange/10 text-brand-orange border border-brand-orange/20 text-xs font-bold uppercase tracking-wide mb-6">
               Ingestion Engine
             </div>
-            <h3 className="text-3xl font-bold text-zinc-900 mb-6">
+            <h3 className="text-3xl font-bold text-zinc-900 mb-6 tracking-tight">
               Turn chaos into structure instantly.
             </h3>
-            <p className="text-zinc-600 text-lg leading-relaxed mb-8">
+            <p className="text-zinc-600 text-lg leading-relaxed mb-8 font-medium">
               Don&apos;t waste time organizing notes. Just dump your PDFs, slides, and docs. 
               Our engine parses and structures everything into a coherent study graph.
             </p>
@@ -36,29 +36,35 @@ export function Features() {
                 {
                   title: "Broad Format Support",
                   text: "Supports PDF, PPTX, DOCX, and Text",
-                  icon: <FileText weight="fill" className="w-6 h-6 text-emerald-500" />,
-                  bg: "bg-emerald-50"
+                  icon: "Page",
+                  color: "text-emerald-600",
+                  bg: "bg-emerald-50",
+                  border: "border-emerald-200"
                 },
                 {
                   title: "Semantic Analysis",
                   text: "Identifies and links key concepts",
-                  icon: <Brain weight="fill" className="w-6 h-6 text-accent-purple" />,
-                  bg: "bg-accent-purple/10"
+                  icon: "Brain",
+                  color: "text-accent-purple",
+                  bg: "bg-accent-purple/10",
+                  border: "border-accent-purple/20"
                 },
                 {
                   title: "Smart Deduplication",
                   text: "Automatically merges redundant content",
-                  icon: <Funnel weight="fill" className="w-6 h-6 text-violet-500" />,
-                  bg: "bg-violet-50"
+                  icon: "FilterList",
+                  color: "text-blue-600",
+                  bg: "bg-blue-50",
+                  border: "border-blue-200"
                 }
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-4 text-zinc-700">
-                  <div className={`w-10 h-10 rounded-lg ${item.bg} flex items-center justify-center flex-shrink-0 border border-zinc-200/50 mt-1`}>
-                    {item.icon}
+                  <div className={`w-10 h-10 rounded-sm ${item.bg} flex items-center justify-center flex-shrink-0 border ${item.border} shadow-sm mt-1`}>
+                    <AppIcon name={item.icon} className={`w-5 h-5 ${item.color}`} />
                   </div>
                   <div>
                     <h4 className="font-bold text-zinc-900 text-base mb-1">{item.title}</h4>
-                    <p className="text-zinc-600 text-sm leading-relaxed">{item.text}</p>
+                    <p className="text-zinc-600 text-sm leading-relaxed font-medium">{item.text}</p>
                   </div>
                 </li>
               ))}
@@ -74,47 +80,47 @@ export function Features() {
         {/* Highlighted Features 2 & 3 - Side by Side */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Feature 2 */}
-          <div className="bg-white rounded-2xl p-8 md:p-12 border border-zinc-200 shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-48 bg-zinc-50 rounded-xl border border-zinc-100 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
+          <div className="bg-white rounded-lg p-8 md:p-12 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
+            <div className="h-48 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
                {/* Abstract UI for Config */}
-               <div className="w-3/4 h-3/4 bg-zinc-50 rounded border border-zinc-100 p-4 space-y-2">
-                   <div className="h-2 bg-zinc-200 rounded w-1/2" />
-                   <div className="h-8 bg-white border border-zinc-200 rounded" />
-                   <div className="h-2 bg-zinc-200 rounded w-1/3 mt-4" />
+               <div className="w-3/4 h-3/4 bg-white rounded-sm border-2 border-zinc-900 shadow-neo-sm p-4 space-y-2">
+                   <div className="h-2 bg-zinc-200 rounded-sm w-1/2" />
+                   <div className="h-8 bg-zinc-50 border border-zinc-200 rounded-sm" />
+                   <div className="h-2 bg-zinc-200 rounded-sm w-1/3 mt-4" />
                    <div className="flex gap-2">
-                       <div className="h-8 w-8 rounded bg-zinc-100" />
-                       <div className="h-8 w-8 rounded bg-zinc-100" />
+                       <div className="h-8 w-8 rounded-sm bg-zinc-100 border border-zinc-200" />
+                       <div className="h-8 w-8 rounded-sm bg-zinc-100 border border-zinc-200" />
                    </div>
                </div>
             </div>
-            <h3 className="text-2xl font-bold text-zinc-900 mb-4">Exam Simulation</h3>
-            <p className="text-zinc-600 leading-relaxed">
+            <h3 className="text-2xl font-bold text-zinc-900 mb-4 tracking-tight">Exam Simulation</h3>
+            <p className="text-zinc-600 leading-relaxed font-medium">
               Configure the exact conditions of your exam. Time limits, question types, and difficulty levels mirrored perfectly.
             </p>
           </div>
 
           {/* Feature 3 */}
-          <div className="bg-white rounded-2xl p-8 md:p-12 border border-zinc-200 shadow-sm hover:shadow-md transition-shadow">
-            <div className="h-48 bg-zinc-50 rounded-xl border border-zinc-100 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
+          <div className="bg-white rounded-lg p-8 md:p-12 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
+            <div className="h-48 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
                {/* Abstract UI for Grading */}
-               <div className="w-3/4 h-3/4 flex flex-col gap-2">
-                   <div className="flex items-start gap-2 bg-green-50 p-2 rounded border border-green-100">
-                       <div className="w-4 h-4 rounded-full bg-green-200 shrink-0" />
-                       <div className="space-y-1 w-full">
-                           <div className="h-2 bg-green-200 rounded w-3/4" />
-                           <div className="h-2 bg-green-200 rounded w-1/2" />
+               <div className="w-3/4 h-3/4 flex flex-col gap-3 p-4">
+                   <div className="flex items-start gap-3 bg-emerald-50/50 p-3 rounded-sm border border-emerald-100">
+                       <div className="w-4 h-4 rounded-full bg-emerald-400 shrink-0 mt-0.5" />
+                       <div className="space-y-1.5 w-full">
+                           <div className="h-2 bg-emerald-200/50 rounded-sm w-3/4" />
+                           <div className="h-2 bg-emerald-200/50 rounded-sm w-1/2" />
                        </div>
                    </div>
-                   <div className="flex items-start gap-2 bg-red-50 p-2 rounded border border-red-100">
-                       <div className="w-4 h-4 rounded-full bg-red-200 shrink-0" />
-                       <div className="space-y-1 w-full">
-                           <div className="h-2 bg-red-200 rounded w-full" />
+                   <div className="flex items-start gap-3 bg-red-50/50 p-3 rounded-sm border border-red-100">
+                       <div className="w-4 h-4 rounded-full bg-red-400 shrink-0 mt-0.5" />
+                       <div className="space-y-1.5 w-full">
+                           <div className="h-2 bg-red-200/50 rounded-sm w-full" />
                        </div>
                    </div>
                </div>
             </div>
-            <h3 className="text-2xl font-bold text-zinc-900 mb-4">AI Tutor Grading</h3>
-            <p className="text-zinc-600 leading-relaxed">
+            <h3 className="text-2xl font-bold text-zinc-900 mb-4 tracking-tight">AI Tutor Grading</h3>
+            <p className="text-zinc-600 leading-relaxed font-medium">
               Get instant feedback on your essays. Our AI evaluates your logic and cites the exact source material you missed.
             </p>
           </div>
