@@ -8,6 +8,7 @@ import { z } from "zod";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { env } from "@/lib/env";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
@@ -15,8 +16,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Google({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        clientId: env.GOOGLE_CLIENT_ID || "",
+        clientSecret: env.GOOGLE_CLIENT_SECRET || "",
         allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
@@ -49,13 +50,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       
       if (token.hasOnboarded !== undefined) {
-         // @ts-ignore
-         session.user.hasOnboarded = token.hasOnboarded;
+        (session.user as { hasOnboarded?: boolean }).hasOnboarded = token.hasOnboarded as boolean;
       }
 
       if (token.username) {
-        // @ts-ignore
-        session.user.username = token.username;
+        (session.user as { username?: string }).username = token.username as string;
       }
 
       return session;

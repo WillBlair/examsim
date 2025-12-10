@@ -23,7 +23,8 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
       transition={{ delay: 0.15, duration: 0.3 }}
       className="h-full"
     >
-      <div className="h-full p-6 rounded-2xl bg-white border border-zinc-200 flex flex-col relative overflow-hidden shadow-md">
+      <div className="h-full p-6 rounded-lg bg-white border-2 border-zinc-900 shadow-neo flex flex-col relative overflow-hidden transition-all duration-300">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
         {/* Content */}
         <div className="relative z-10 flex flex-col h-full">
           {weakAreas.length === 0 ? (
@@ -47,7 +48,7 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 + index * 0.05 }}
                   >
-                    <div className="group flex items-center justify-between p-3 rounded-lg border border-zinc-100 bg-zinc-50/50 hover:bg-white hover:border-zinc-200 hover:shadow-sm transition-all">
+                    <div className="group flex items-center justify-between p-3 rounded-sm border border-zinc-200 bg-white hover:bg-red-50/10 hover:border-zinc-900 hover:shadow-neo-sm transition-all">
                       <div className="flex-1 min-w-0 pr-4">
                         <div className="flex items-center justify-between mb-1.5">
                           <p className="text-xs font-semibold text-zinc-700 truncate pr-2">
@@ -62,10 +63,10 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
                         </div>
                         
                         {/* Clean Progress Bar */}
-                        <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
+                        <div className="h-1.5 w-full bg-zinc-100 rounded-[3px] overflow-hidden">
                           <div 
                             className={cn(
-                              "h-full rounded-full transition-all duration-500",
+                              "h-full rounded-[2px] transition-all duration-500",
                               isCritical ? "bg-red-500" : "bg-amber-500"
                             )}
                             style={{ width: `${area.score}%` }}
@@ -75,7 +76,7 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
 
                       {/* Action Button */}
                       <Link href="/dashboard/practice">
-                        <button className="p-2 rounded-md text-zinc-400 hover:text-brand-orange hover:bg-orange-50 transition-colors">
+                        <button className="p-2 rounded-md text-zinc-400 hover:text-brand-orange hover:bg-emerald-50 transition-colors">
                           <Target weight="duotone" className="w-4 h-4" />
                         </button>
                       </Link>
@@ -88,7 +89,7 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
           
           {weakAreas.length > 0 && (
             <div className="mt-4 pt-3 border-t border-zinc-100 text-center">
-              <Link href="/dashboard/practice" className="inline-flex items-center text-xs font-medium text-brand-orange hover:text-orange-600 transition-colors">
+              <Link href="/dashboard/practice" className="inline-flex items-center text-xs font-medium text-brand-orange hover:text-emerald-600 transition-colors">
                 Practice these topics <ArrowRight className="w-3 h-3 ml-1" />
               </Link>
             </div>

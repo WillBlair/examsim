@@ -44,22 +44,24 @@ export function ProgressChart({ data }: ProgressChartProps) {
       transition={{ delay: 0.1, duration: 0.3 }}
       className="h-full min-h-[400px]"
     >
-      <div className="h-full p-6 rounded-2xl bg-white border border-zinc-200 flex flex-col relative overflow-hidden shadow-md">
+      <div className="h-full p-6 rounded-lg bg-white border-2 border-zinc-900 shadow-neo flex flex-col relative overflow-hidden transition-all duration-300">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent-purple/5 rounded-full blur-3xl pointer-events-none" />
+        
         {/* Header */}
         <div className="relative flex items-center justify-between mb-6 z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center border border-emerald-100">
-              <ChartLineUp weight="duotone" className="w-5 h-5 text-emerald-600" />
+            <div className="w-10 h-10 rounded-sm bg-accent-purple shadow-sm border border-zinc-900 flex items-center justify-center">
+              <ChartLineUp weight="fill" className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-900">Performance Trend</h3>
-              <p className="text-xs text-zinc-500">Last {chartData.length} exams</p>
+              <h3 className="text-sm font-bold text-zinc-900">Performance Trend</h3>
+              <p className="text-xs text-zinc-500 font-medium">Last {chartData.length} exams</p>
             </div>
           </div>
           {hasData && (
             <div className="text-right">
               <p className="text-2xl font-bold text-zinc-900 tracking-tight">{avgScore}%</p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium">Avg Score</p>
+              <p className="text-[10px] text-accent-purple uppercase tracking-wider font-bold">Avg Score</p>
             </div>
           )}
         </div>
@@ -103,10 +105,10 @@ export function ProgressChart({ data }: ProgressChartProps) {
                   dataKey="score"
                   type="monotone"
                   fill="url(#fillScore)"
-                  fillOpacity={0.4}
+                  fillOpacity={0.15}
                   stroke="hsl(var(--brand-orange))"
-                  strokeWidth={2}
-                  activeDot={{ r: 4, strokeWidth: 0, fill: "hsl(var(--brand-orange))" }}
+                  strokeWidth={2.5}
+                  activeDot={{ r: 6, strokeWidth: 0, fill: "hsl(var(--brand-orange))" }}
                 />
               </AreaChart>
             </ChartContainer>

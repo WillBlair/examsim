@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { signIn, signOut } from "@/auth";
+import { signIn, signOut, auth } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 const LoginSchema = z.object({
@@ -105,4 +105,9 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
 export const logout = async () => {
   await signOut({ redirectTo: "/" });
+};
+
+export const checkAuth = async () => {
+  const session = await auth();
+  return !!session?.user;
 };

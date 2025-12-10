@@ -7,8 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -71,16 +72,20 @@
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
 
-  /* Thinner, sharper borders for the "expensive" look */
-  --border: 0 0% 89.8%;
-  --input: 0 0% 89.8%;
-  --ring: 0 0% 9%;
+  /* Thinner, sharper borders for the "expensive" look, slightly darker for neo-brutalist definition */
+  --border: 0 0% 85%;
+  --input: 0 0% 85%;
+  --ring: 262 83% 58%; /* Purple-600 for focus rings */
   
-  --radius: 0.5rem;
+  --radius: 0.3rem;
   
-  /* Brand Colors - Refined */
-  --brand-orange: 24 95% 53%; /* Slightly more vibrant/expensive orange */
-  --brand-orange-muted: 24 80% 90%;
+  /* Brand Colors - Refined (Emerald Option) */
+  --brand-orange: 158 64% 52%; /* Emerald-500 */
+  --brand-orange-muted: 152 76% 96%; /* Emerald-50 */
+  
+  /* Accent Purple */
+  --accent-purple: 262 83% 58%; /* Purple-600 */
+  --accent-purple-muted: 262 83% 96%; /* Purple-50 */
   
   /* Chart Colors */
   --chart-1: 173 58% 39%;
@@ -107,11 +112,37 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-semibold text-primary;
+    @apply tracking-tight font-semibold text-primary font-display;
   }
 }
 
 @layer utilities {
+  /* Neo-Brutalist Utilities */
+  .shadow-neo {
+    box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+    border: 1px solid rgba(0,0,0,1);
+  }
+  
+  .shadow-neo-sm {
+    box-shadow: 1px 1px 0px 0px rgba(0,0,0,1);
+    border: 1px solid rgba(0,0,0,1);
+  }
+  
+  .shadow-neo-lg {
+    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+    border: 1px solid rgba(0,0,0,1);
+  }
+
+  .shadow-neo-brand {
+    box-shadow: 2px 2px 0px 0px hsl(var(--brand-orange));
+    border: 1px solid hsl(var(--brand-orange));
+  }
+
+  .shadow-neo-purple {
+    box-shadow: 2px 2px 0px 0px hsl(var(--accent-purple));
+    border: 1px solid hsl(var(--accent-purple));
+  }
+
   /* Expensive Thin Lines */
   .border-thin {
     border-width: 0.5px;
@@ -129,6 +160,14 @@
     color: hsl(var(--brand-orange));
   }
   
+  .text-accent-purple {
+    color: hsl(var(--accent-purple));
+  }
+  
+  .bg-accent-purple {
+    background-color: hsl(var(--accent-purple));
+  }
+
   .border-brand-orange {
     border-color: hsl(var(--brand-orange));
   }

@@ -1,14 +1,20 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { GridBackground } from "@/components/GridBackground";
 import { Button } from "@/components/ui/button";
-import { Play, Star, ArrowRight, House, FileText, ChartBar, Gear, Bell, Plus } from "@phosphor-icons/react";
+import { AppIcon } from "@/components/ui/icon";
 import Link from "next/link";
+import { checkAuth } from "@/app/actions/auth";
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    checkAuth().then(setIsAuthenticated);
+  }, []);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -43,7 +49,7 @@ export function Hero() {
         >
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-zinc-900 mb-8 tracking-tighter leading-[1.1]">
             Experience the exam <br className="hidden md:block" />
-            <span className="text-brand-orange">before it happens.</span>
+            <span className="text-accent-purple">before it happens.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-zinc-600 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
@@ -53,10 +59,10 @@ export function Hero() {
 
           {/* CTA Button */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-            <Link href="/register">
-              <Button className="h-14 px-8 rounded-full bg-black text-white hover:bg-zinc-800 font-bold text-base flex items-center gap-2 shadow-xl shadow-black/10 transition-all hover:scale-105">
+            <Link href={isAuthenticated ? "/dashboard/new" : "/register"}>
+              <Button className="h-12 px-8 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 font-semibold text-base flex items-center gap-2 shadow-lg shadow-purple-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
                 Generate My First Exam
-                <ArrowRight weight="bold" className="w-4 h-4" />
+                <AppIcon name="ArrowRight" className="w-4 h-4" />
               </Button>
             </Link>
           </div>
@@ -100,18 +106,18 @@ export function Hero() {
              <div className="aspect-[16/9] bg-zinc-50 flex relative">
                  {/* Sidebar Mockup */}
                  <div className="w-64 bg-white border-r border-zinc-200 flex flex-col p-4 hidden md:flex">
-                     <div className="h-8 w-8 bg-brand-orange rounded-lg mb-8 flex items-center justify-center text-white font-bold">ES</div>
+                     <div className="h-8 w-8 bg-zinc-900 rounded-lg mb-8 flex items-center justify-center text-white font-bold">ES</div>
                      <div className="space-y-1">
-                         <div className="flex items-center gap-3 px-3 py-2 bg-orange-50 text-brand-orange rounded-md text-sm font-medium">
-                             <House weight="fill" />
+                         <div className="flex items-center gap-3 px-3 py-2 bg-accent-purple/10 text-accent-purple rounded-md text-sm font-medium">
+                             <AppIcon name="Home" className="w-4 h-4" />
                              <span>Home</span>
                          </div>
                          <div className="flex items-center gap-3 px-3 py-2 text-zinc-500 rounded-md text-sm font-medium">
-                             <FileText />
+                             <AppIcon name="Page" className="w-4 h-4" />
                              <span>Exams</span>
                          </div>
                          <div className="flex items-center gap-3 px-3 py-2 text-zinc-500 rounded-md text-sm font-medium">
-                             <ChartBar />
+                             <AppIcon name="GraphUp" className="w-4 h-4" />
                              <span>Analytics</span>
                          </div>
                      </div>
@@ -126,8 +132,8 @@ export function Hero() {
                              <p className="text-sm text-zinc-500">Here's your exam preparation overview</p>
                          </div>
                          <div className="flex items-center gap-3">
-                             <Button size="sm" className="bg-brand-orange text-white hover:bg-orange-600">
-                                <Plus weight="bold" className="mr-2"/> New Exam
+                             <Button size="sm" className="bg-brand-orange text-white hover:bg-emerald-600">
+                                <AppIcon name="Plus" className="w-4 h-4 mr-2" /> New Exam
                              </Button>
                          </div>
                      </div>
@@ -140,7 +146,7 @@ export function Hero() {
                          </div>
                          <div className="bg-white p-4 rounded-xl border border-zinc-100 shadow-sm">
                              <div className="text-sm text-zinc-500 mb-1">Avg. Score</div>
-                             <div className="text-2xl font-bold text-green-600">85%</div>
+                             <div className="text-2xl font-bold text-emerald-600">85%</div>
                          </div>
                          <div className="bg-white p-4 rounded-xl border border-zinc-100 shadow-sm">
                              <div className="text-sm text-zinc-500 mb-1">Time Spent</div>

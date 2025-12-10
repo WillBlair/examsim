@@ -14,7 +14,7 @@ export function Features() {
             <span className="text-green-600">active mastery.</span>
           </h2>
           <p className="text-zinc-600 text-lg">
-            Don't just read. Simulate. The only study tool built for retention.
+            Don&apos;t just read. Simulate. The only study tool built for retention.
           </p>
         </div>
 
@@ -28,7 +28,7 @@ export function Features() {
               Turn chaos into structure instantly.
             </h3>
             <p className="text-zinc-600 text-lg leading-relaxed mb-8">
-              Don't waste time organizing notes. Just dump your PDFs, slides, and docs. 
+              Don&apos;t waste time organizing notes. Just dump your PDFs, slides, and docs. 
               Our engine parses and structures everything into a coherent study graph.
             </p>
             <ul className="space-y-6">
@@ -36,20 +36,20 @@ export function Features() {
                 {
                   title: "Broad Format Support",
                   text: "Supports PDF, PPTX, DOCX, and Text",
-                  icon: <FileText weight="duotone" className="w-6 h-6 text-brand-orange" />,
-                  bg: "bg-orange-50"
+                  icon: <FileText weight="fill" className="w-6 h-6 text-emerald-500" />,
+                  bg: "bg-emerald-50"
                 },
                 {
                   title: "Semantic Analysis",
                   text: "Identifies and links key concepts",
-                  icon: <Brain weight="duotone" className="w-6 h-6 text-brand-orange" />,
-                  bg: "bg-orange-50"
+                  icon: <Brain weight="fill" className="w-6 h-6 text-accent-purple" />,
+                  bg: "bg-accent-purple/10"
                 },
                 {
                   title: "Smart Deduplication",
                   text: "Automatically merges redundant content",
-                  icon: <Funnel weight="duotone" className="w-6 h-6 text-brand-orange" />,
-                  bg: "bg-orange-50"
+                  icon: <Funnel weight="fill" className="w-6 h-6 text-violet-500" />,
+                  bg: "bg-violet-50"
                 }
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-4 text-zinc-700">

@@ -9,6 +9,21 @@ import { auth } from "@/auth";
 
 export const maxDuration = 60; // Allow 1 minute timeout
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_FILE_TYPES = [
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "text/plain",
+] as const;
+
+interface StreamUpdate {
+  step?: number;
+  message?: string;
+  success?: boolean;
+  examId?: number;
+  error?: string;
+}
+
 export async function POST(req: NextRequest) {
     try {
         const session = await auth();
@@ -28,12 +43,36 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Topic, file, or text content is required" }, { status: 400 });
         }
 
+        // Validate file uploads
+        for (const file of files) {
+            console.log(`[Exam Generate] Processing file: ${file.name}, type: ${file.type}, size: ${file.size}`);
+            
+            if (file.size > MAX_FILE_SIZE) {
+                return NextResponse.json(
+                    { error: `File "${file.name}" exceeds the 10MB size limit` },
+                    { status: 400 }
+                );
+            }
+            
+            // Check file type - be lenient with PDF detection (some browsers report different types)
+            const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+            const isDocx = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.toLowerCase().endsWith(".docx");
+            const isTxt = file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
+            
+            if (!isPdf && !isDocx && !isTxt) {
+                return NextResponse.json(
+                    { error: `File type "${file.type}" is not allowed. Supported types: PDF, DOCX, TXT` },
+                    { status: 400 }
+                );
+            }
+        }
+
         const { readable, writable } = new TransformStream();
         const writer = writable.getWriter();
         const encoder = new TextEncoder();
 
         // Helper to send updates
-        const sendUpdate = async (data: any) => {
+        const sendUpdate = async (data: StreamUpdate) => {
             await writer.write(encoder.encode(JSON.stringify(data) + "\n"));
         };
 
@@ -58,27 +97,38 @@ export async function POST(req: NextRequest) {
 
                         const buffer = Buffer.from(await file.arrayBuffer());
 
-                        if (file.type === "application/pdf") {
-                            // @ts-ignore
+                        const isPdfFile = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+                        const isDocxFile = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.toLowerCase().endsWith(".docx");
+                        const isTxtFile = file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
+
+                        if (isPdfFile) {
+                            // eslint-disable-next-line @typescript-eslint/no-require-imports
                             const pdfLib = require("pdf-parse");
                             const PDFParseClass = pdfLib.PDFParse || pdfLib.default?.PDFParse;
 
                             let text = "";
-                            if (PDFParseClass) {
-                                const parser = new PDFParseClass({ data: buffer });
-                                const result = await parser.getText();
-                                text = result.text;
-                            } else {
-                                const pdf = pdfLib.default || pdfLib;
-                                const data = await pdf(buffer);
-                                text = data.text;
+                            try {
+                                if (PDFParseClass) {
+                                    const parser = new PDFParseClass({ data: buffer });
+                                    const result = await parser.getText();
+                                    text = result.text;
+                                } else {
+                                    const pdf = pdfLib.default || pdfLib;
+                                    const data = await pdf(buffer);
+                                    text = data.text;
+                                }
+                            } catch (pdfError) {
+                                const errorMessage = pdfError instanceof Error ? pdfError.message : "Failed to parse PDF";
+                                console.error(`PDF parse error for ${file.name}:`, pdfError);
+                                await sendUpdate({ error: `Failed to parse PDF "${file.name}": ${errorMessage}` });
+                                continue;
                             }
                             contextText += `\n\n--- Content from ${file.name} ---\n${text}`;
 
-                        } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                        } else if (isDocxFile) {
                             const result = await mammoth.extractRawText({ buffer });
                             contextText += `\n\n--- Content from ${file.name} ---\n${result.value}`;
-                        } else if (file.type === "text/plain") {
+                        } else if (isTxtFile) {
                             const text = buffer.toString("utf-8");
                             contextText += `\n\n--- Content from ${file.name} ---\n${text}`;
                         }
@@ -87,8 +137,14 @@ export async function POST(req: NextRequest) {
 
                 await sendUpdate({ step: 1, message: "Structuring knowledge context..." });
 
+                // Debug: Log context length to verify content was extracted
+                console.log(`[Exam Generate] Context text length: ${contextText.length} characters`);
+                if (contextText.length > 0) {
+                    console.log(`[Exam Generate] Context preview: ${contextText.substring(0, 200)}...`);
+                }
+
                 const prompt = `
-            Generate a ${difficulty} difficulty exam about "${topic}" with ${count} questions.
+            Generate a ${difficulty} difficulty exam ${topic ? `about "${topic}"` : "based on the provided content"} with ${count} questions.
             ${contextText ? `Base the questions STRICTLY on the following source material:\n${contextText}` : ""}
             The questions should be challenging and test deep understanding.
             For each question, identify a specific sub-topic (e.g., 'Cell Biology > Mitosis').
@@ -148,9 +204,10 @@ export async function POST(req: NextRequest) {
 
                 await sendUpdate({ success: true, examId: newExam.id });
 
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error("Stream processing error:", error);
-                await sendUpdate({ error: error.message || "Unknown error" });
+                const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+                await sendUpdate({ error: errorMessage });
             } finally {
                 writer.close();
             }
@@ -164,7 +221,8 @@ export async function POST(req: NextRequest) {
             },
         });
 
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

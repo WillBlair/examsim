@@ -19,9 +19,13 @@ export async function saveExamResult(
   
   const userId = session?.user?.id;
 
+  if (!userId) {
+    return { success: false, error: "You must be logged in to save exam results" };
+  }
+
   try {
     await db.insert(examResults).values({
-      userId: userId, // Can be null if we allow guests, but we intend to enforce auth
+      userId,
       examId,
       score,
       totalQuestions,
@@ -29,9 +33,11 @@ export async function saveExamResult(
     });
 
     revalidatePath("/dashboard");
+    revalidatePath("/dashboard/exams");
     return { success: true };
   } catch (error) {
     console.error("Failed to save exam result:", error);
-    return { success: false, error: "Failed to save result" };
+    const errorMessage = error instanceof Error ? error.message : "Failed to save result";
+    return { success: false, error: errorMessage };
   }
 }

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, jsonb, integer, boolean, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, jsonb, integer, boolean, primaryKey, index } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";
 
 export const users = pgTable("user", {
@@ -71,7 +71,10 @@ export const exams = pgTable("exams", {
   difficulty: text("difficulty").notNull(), // 'Easy', 'Medium', 'Hard'
   timeLimit: integer("time_limit"), // Duration in minutes
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  userIdIdx: index("exams_user_id_idx").on(table.userId),
+  createdAtIdx: index("exams_created_at_idx").on(table.createdAt),
+}));
 
 export const questions = pgTable("questions", {
   id: serial("id").primaryKey(),
@@ -82,7 +85,10 @@ export const questions = pgTable("questions", {
   explanation: text("explanation"),
   type: text("type").notNull(), // 'Multiple Choice', 'True/False', etc.
   subtopic: text("subtopic"), // e.g., "Biology > Mitosis"
-});
+}, (table) => ({
+  examIdIdx: index("questions_exam_id_idx").on(table.examId),
+  subtopicIdx: index("questions_subtopic_idx").on(table.subtopic),
+}));
 
 export const examResults = pgTable("exam_results", {
   id: serial("id").primaryKey(),
@@ -92,4 +98,8 @@ export const examResults = pgTable("exam_results", {
   totalQuestions: integer("total_questions").notNull(),
   completedAt: timestamp("completed_at").defaultNow().notNull(),
   answers: jsonb("answers").notNull(), // Record<questionId, selectedAnswer>
-});
+}, (table) => ({
+  userIdIdx: index("exam_results_user_id_idx").on(table.userId),
+  examIdIdx: index("exam_results_exam_id_idx").on(table.examId),
+  completedAtIdx: index("exam_results_completed_at_idx").on(table.completedAt),
+}));

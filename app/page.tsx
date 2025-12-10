@@ -3,7 +3,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
-import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { Testimonials } from "@/components/Testimonials";
 import { FAQ } from "@/components/FAQ";
 import { Footer } from "@/components/Footer";
@@ -24,10 +23,6 @@ export default function Home() {
         <Features />
       </div>
       
-      <div className="relative z-20">
-        <WhyChooseUs />
-      </div>
-
       <div className="relative z-10">
         <Testimonials />
       </div>

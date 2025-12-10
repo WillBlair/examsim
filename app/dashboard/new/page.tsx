@@ -2,365 +2,250 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Spinner, UploadSimple, FileText, Sparkle, CaretLeft, Timer } from "@phosphor-icons/react";
+import { 
+  Spinner, 
+  Sparkle, 
+  CaretLeft, 
+  Files,
+  TextAa,
+  ArrowRight
+} from "@phosphor-icons/react";
 import { UploadArea } from "@/components/dashboard/UploadArea";
-// import { generateExamAction } from "@/app/actions/generate-exam"; // Replaced by API route
 import { GenerationOverlay } from "@/components/dashboard/GenerationOverlay";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { toast } from "sonner";
+
+// Simplified options for a cleaner UI
+const DIFFICULTY_OPTIONS = ["Easy", "Medium", "Hard"];
+const QUESTION_COUNTS = [5, 10, 20];
 
 export default function NewExamPage() {
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
-    const [currentStep, setCurrentStep] = useState(0);
-    const [statusMessage, setStatusMessage] = useState("");
-    const [sourceType, setSourceType] = useState<"files" | "text">("files");
-    const [difficulty, setDifficulty] = useState("Easy");
-    const [questionCount, setQuestionCount] = useState<number | string>(5);
-    const [isCustomCount, setIsCustomCount] = useState(false);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [sourceType, setSourceType] = useState<"files" | "text">("files");
+  
+  // Configuration State
+  const [topic, setTopic] = useState("");
+  const [difficulty, setDifficulty] = useState("Medium");
+  const [questionCount, setQuestionCount] = useState(10);
+  const [files, setFiles] = useState<File[]>([]);
+  const [pastedText, setPastedText] = useState("");
 
-    // Timer State
-    const [timerEnabled, setTimerEnabled] = useState(false);
-    const [timerDuration, setTimerDuration] = useState<string>("30");
+  // Step 1 validation
+  const canProceed = sourceType === "files" ? files.length > 0 : pastedText.trim().length > 0;
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-
-        setIsLoading(true);
-        setStatusMessage("Initializing...");
-        setCurrentStep(0);
-
-        if (timerEnabled && timerDuration) {
-            formData.append("timeLimit", timerDuration);
-        }
-
-        try {
-            const response = await fetch("/api/exam/generate", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!response.ok || !response.body) {
-                throw new Error("Failed to start generation");
-            }
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let done = false;
-
-            while (!done) {
-                const { value, done: readerDone } = await reader.read();
-                done = readerDone;
-                if (value) {
-                    const chunk = decoder.decode(value, { stream: true });
-                    const lines = chunk.split("\n").filter((line) => line.trim() !== "");
-
-                    for (const line of lines) {
-                        try {
-                            const data = JSON.parse(line);
-
-                            if (data.error) {
-                                throw new Error(data.error);
-                            }
-
-                            if (data.step !== undefined) {
-                                setCurrentStep(data.step);
-                            }
-
-                            if (data.message) {
-                                setStatusMessage(data.message);
-                            }
-
-                            if (data.success && data.examId) {
-                                router.push(`/dashboard/exams/${data.examId}`);
-                                return;
-                            }
-                        } catch (e) {
-                            // Ignore incomplete JSON chunks or parse errors in stream
-                        }
-                    }
-                }
-            }
-
-        } catch (error) {
-            console.error(error);
-            setIsLoading(false);
-            alert(error instanceof Error ? error.message : "Error generating exam");
-        }
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    
+    setIsLoading(true);
+    setStatusMessage("Initializing...");
+    
+    // Construct FormData manually since we're using controlled inputs for better UI
+    const formData = new FormData();
+    formData.append("topic", topic);
+    formData.append("difficulty", difficulty);
+    formData.append("count", questionCount.toString());
+    
+    if (sourceType === "files") {
+        files.forEach(f => formData.append("files", f));
+    } else {
+        formData.append("pastedText", pastedText);
     }
 
-    const handlePresetClick = (count: number) => {
-        setQuestionCount(count);
-        setIsCustomCount(false);
-    };
+    try {
+      const response = await fetch("/api/exam/generate", {
+        method: "POST",
+        body: formData,
+      });
 
-    const handleCustomClick = () => {
-        setIsCustomCount(true);
-        setQuestionCount("");
-    };
+      if (!response.ok || !response.body) throw new Error("Failed to start generation");
 
-    return (
-        <div className="h-full flex flex-col relative z-10 w-full">
-            <GenerationOverlay isOpen={isLoading} currentStep={currentStep} statusMessage={statusMessage} />
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
 
-            {/* Full height background */}
-            <div className="fixed top-0 right-0 bottom-0 left-[140px] bg-zinc-200/80 -z-10" />
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split("\n").filter((line) => line.trim() !== "");
 
-            <div className="mb-6 flex-shrink-0 flex items-center gap-4">
-                <Link href="/dashboard" className="p-2 rounded-full hover:bg-zinc-100 transition-colors">
-                    <CaretLeft className="w-5 h-5 text-zinc-500" />
-                </Link>
-                <div>
-                    <h1 className="text-xl font-bold text-zinc-900">Create New Simulation</h1>
-                    <p className="text-zinc-500 text-xs">Upload your materials and configure your exam parameters.</p>
+          for (const line of lines) {
+            try {
+              const data = JSON.parse(line);
+              if (data.error) throw new Error(data.error);
+              if (data.step !== undefined) setCurrentStep(data.step);
+              if (data.message) setStatusMessage(data.message);
+              if (data.success && data.examId) {
+                // Exam ready, redirect without toast
+                router.push(`/dashboard/exams/${data.examId}`);
+                return;
+              }
+            } catch { /* Ignore incomplete chunks */ }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+      toast.error("Generation Failed", {
+        description: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  }
+
+  return (
+    <div className="max-w-5xl mx-auto py-8 px-4">
+      <GenerationOverlay isOpen={isLoading} currentStep={currentStep} statusMessage={statusMessage} />
+
+      {/* Header */}
+      <div className="mb-10 flex items-center justify-between">
+        <div>
+            <Link 
+            href="/dashboard" 
+            className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-2 group"
+            >
+            <CaretLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Back to Dashboard
+            </Link>
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Create New Exam</h1>
+            <p className="text-zinc-500 mt-1">Transform your study materials into an interactive simulation.</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        {/* Left Column: Input Source */}
+        <div className="lg:col-span-2 space-y-8">
+            <div className="bg-white rounded-2xl border border-zinc-200 p-1 shadow-sm">
+                <div className="flex p-1 bg-zinc-100/50 rounded-xl mb-6 mx-6 mt-6">
+                    <button
+                        onClick={() => setSourceType("files")}
+                        className={cn(
+                            "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all",
+                            sourceType === "files" 
+                                ? "bg-accent-purple/10 text-accent-purple shadow-sm ring-1 ring-accent-purple/20" 
+                                : "text-zinc-500 hover:text-zinc-900"
+                        )}
+                    >
+                        <Files className="w-4 h-4" />
+                        Upload Files
+                    </button>
+                    <button
+                        onClick={() => setSourceType("text")}
+                        className={cn(
+                            "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all",
+                            sourceType === "text" 
+                                ? "bg-accent-purple/10 text-accent-purple shadow-sm ring-1 ring-accent-purple/20" 
+                                : "text-zinc-500 hover:text-zinc-900"
+                        )}
+                    >
+                        <TextAa className="w-4 h-4" />
+                        Paste Text
+                    </button>
+                </div>
+
+                <div className="px-6 pb-8">
+                    {sourceType === "files" ? (
+                        <UploadArea onFilesChange={setFiles} />
+                    ) : (
+                        <Textarea
+                            value={pastedText}
+                            onChange={(e) => setPastedText(e.target.value)}
+                            placeholder="Paste your notes, syllabus, or lecture transcript here..."
+                            className="min-h-[300px] resize-none border-zinc-200 focus:ring-zinc-900 focus:border-zinc-900 bg-zinc-50/30 text-base"
+                        />
+                    )}
                 </div>
             </div>
+        </div>
 
-            <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-6 min-h-0 pb-6">
+        {/* Right Column: Configuration & Action */}
+        <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-zinc-200 p-6 shadow-sm sticky top-6">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-6">Exam Settings</h3>
+                
+                <div className="space-y-6">
+                    <div>
+                        <label className="block text-sm font-medium text-zinc-900 mb-2">Topic <span className="text-zinc-400 font-normal">(Optional)</span></label>
+                        <Input 
+                            value={topic}
+                            onChange={(e) => setTopic(e.target.value)}
+                            placeholder="e.g. Biology 101"
+                            className="bg-white border-zinc-200 focus:ring-zinc-900 focus:border-zinc-900 h-11"
+                        />
+                    </div>
 
-                <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0">
-                    {/* Left Column: Source Material */}
-                    <div className="lg:col-span-5 h-full flex flex-col min-h-0">
-                        <div className="bg-white rounded-3xl p-0 shadow-sm border border-zinc-200 flex-1 flex flex-col min-h-0 overflow-hidden">
-                            <div className="p-6 border-b border-zinc-50 bg-zinc-50/50 flex-shrink-0 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-sm">1</div>
-                                    <div>
-                                        <h2 className="text-lg font-extrabold text-zinc-900">Source Material</h2>
-                                    </div>
-                                </div>
-
-                                <div className="flex p-1 bg-white rounded-lg border border-zinc-200 shadow-sm">
-                                    <button
-                                        type="button"
-                                        onClick={() => setSourceType("files")}
-                                        className={cn(
-                                            "flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md transition-all",
-                                            sourceType === "files"
-                                                ? "bg-zinc-100 text-zinc-900 font-bold"
-                                                : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50"
-                                        )}
-                                    >
-                                        <UploadSimple weight="bold" className="w-3.5 h-3.5" />
-                                        <span>Upload</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setSourceType("text")}
-                                        className={cn(
-                                            "flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md transition-all",
-                                            sourceType === "text"
-                                                ? "bg-zinc-100 text-zinc-900 font-bold"
-                                                : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50"
-                                        )}
-                                    >
-                                        <FileText weight="bold" className="w-3.5 h-3.5" />
-                                        <span>Paste Text</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="flex-1 min-h-0 p-6 flex flex-col">
-                                {sourceType === "files" ? (
-                                    <UploadArea />
-                                ) : (
-                                    <Textarea
-                                        name="pastedText"
-                                        placeholder="Paste your study notes, article, or syllabus content here..."
-                                        className="h-full resize-none bg-zinc-50 border-0 focus:ring-0 p-6 text-sm leading-relaxed rounded-xl"
-                                    />
-                                )}
-                            </div>
+                    <div>
+                        <label className="block text-sm font-medium text-zinc-900 mb-2">Difficulty</label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {DIFFICULTY_OPTIONS.map(opt => (
+                                <button
+                                    key={opt}
+                                    type="button"
+                                    onClick={() => setDifficulty(opt)}
+                                    className={cn(
+                                        "px-3 py-2 text-sm rounded-lg border transition-all",
+                                        difficulty === opt
+                                            ? "bg-zinc-900 text-white border-zinc-900 font-medium"
+                                            : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300"
+                                    )}
+                                >
+                                    {opt}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Right Column: Configuration */}
-                    <div className="lg:col-span-7 h-full flex flex-col min-h-0 gap-6">
-                        <div className="bg-white rounded-3xl p-0 shadow-sm border border-zinc-200 flex-1 flex flex-col min-h-0 overflow-hidden">
-                            <div className="p-6 border-b border-zinc-50 bg-zinc-50/50 flex-shrink-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-sm">2</div>
-                                    <div>
-                                        <h2 className="text-lg font-extrabold text-zinc-900">Configuration</h2>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="p-8 space-y-8 flex-1 overflow-y-auto custom-scrollbar">
-                                {/* Topic Input */}
-                                <div className="space-y-3">
-                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Topic</label>
-                                    <div className="relative group">
-                                        <Sparkle className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-brand-orange transition-colors" />
-                                        <Input
-                                            name="topic"
-                                            placeholder="e.g. Biology 101"
-                                            className="bg-zinc-50 border-transparent hover:bg-zinc-100 focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/10 h-12 rounded-xl pl-11 transition-all"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Difficulty Selector */}
-                                <div className="space-y-3">
-                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex justify-between">
-                                        <span>Difficulty</span>
-                                    </label>
-                                    <input type="hidden" name="difficulty" value={difficulty} />
-                                    <div className="grid grid-cols-3 gap-2 p-1.5 bg-zinc-100/80 rounded-xl">
-                                        {["Easy", "Medium", "Hard"].map((level) => (
-                                            <button
-                                                key={level}
-                                                type="button"
-                                                onClick={() => setDifficulty(level)}
-                                                className={cn(
-                                                    "py-2.5 text-xs font-bold rounded-lg transition-all",
-                                                    difficulty === level
-                                                        ? "bg-white text-zinc-900 shadow-sm ring-1 ring-black/5"
-                                                        : "text-zinc-500 hover:text-zinc-700 hover:bg-zinc-200/50"
-                                                )}
-                                            >
-                                                {level}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Question Count */}
-                                <div className="space-y-3">
-                                    <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-                                        Question Count
-                                    </label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {[5, 10, 20, 30].map((count) => (
-                                            <button
-                                                key={count}
-                                                type="button"
-                                                onClick={() => handlePresetClick(count)}
-                                                className={cn(
-                                                    "flex-1 h-12 text-sm font-bold rounded-xl border transition-all",
-                                                    questionCount === count && !isCustomCount
-                                                        ? "bg-zinc-900 text-white border-zinc-900"
-                                                        : "bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
-                                                )}
-                                            >
-                                                {count}
-                                            </button>
-                                        ))}
-                                        <button
-                                            type="button"
-                                            onClick={handleCustomClick}
-                                            className={cn(
-                                                "flex-1 h-12 text-sm font-bold rounded-xl border transition-all px-4",
-                                                isCustomCount
-                                                    ? "bg-zinc-900 text-white border-zinc-900"
-                                                    : "bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
-                                            )}
-                                        >
-                                            Custom
-                                        </button>
-                                    </div>
-
-                                    {/* Custom Count Input */}
-                                    {isCustomCount && (
-                                        <div className="animate-in fade-in slide-in-from-top-2">
-                                            <div className="relative group">
-                                                <Input
-                                                    type="number"
-                                                    name="count"
-                                                    min="1"
-                                                    max="50"
-                                                    value={questionCount}
-                                                    onChange={(e) => setQuestionCount(e.target.value)}
-                                                    placeholder="Enter number of questions (1-50)"
-                                                    className="bg-zinc-50 border-transparent hover:bg-zinc-100 focus:bg-white focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/10 h-12 rounded-xl transition-all text-center font-bold"
-                                                />
-                                            </div>
-                                        </div>
+                    <div>
+                        <label className="block text-sm font-medium text-zinc-900 mb-2">Questions</label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {QUESTION_COUNTS.map(count => (
+                                <button
+                                    key={count}
+                                    type="button"
+                                    onClick={() => setQuestionCount(count)}
+                                    className={cn(
+                                        "px-3 py-2 text-sm rounded-lg border transition-all",
+                                        questionCount === count
+                                            ? "bg-zinc-900 text-white border-zinc-900 font-medium"
+                                            : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300"
                                     )}
-
-                                    {/* Hidden input for form submission when not custom */}
-                                    {!isCustomCount && (
-                                        <input type="hidden" name="count" value={questionCount} />
-                                    )}
-                                </div>
-
-                                {/* Timer Configuration */}
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
-                                            <Timer className="w-4 h-4" />
-                                            Exam Timer
-                                        </label>
-                                        <button
-                                            type="button"
-                                            onClick={() => setTimerEnabled(!timerEnabled)}
-                                            className={cn(
-                                                "relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2",
-                                                timerEnabled ? "bg-brand-orange" : "bg-zinc-200"
-                                            )}
-                                        >
-                                            <span
-                                                className={cn(
-                                                    "inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm",
-                                                    timerEnabled ? "translate-x-7" : "translate-x-1"
-                                                )}
-                                            />
-                                        </button>
-                                    </div>
-
-                                    {timerEnabled && (
-                                        <div className="p-4 bg-zinc-50 border border-zinc-200 rounded-xl animate-in fade-in slide-in-from-top-2">
-                                            <div className="flex items-center gap-3">
-                                                <Input
-                                                    type="number"
-                                                    min="1"
-                                                    max="180"
-                                                    value={timerDuration}
-                                                    onChange={(e) => setTimerDuration(e.target.value)}
-                                                    className="w-20 text-center font-bold text-lg bg-white h-12"
-                                                />
-                                                <span className="text-zinc-500 font-medium">minutes</span>
-                                            </div>
-                                            <p className="text-xs text-zinc-400 mt-2">
-                                                The timer will start automatically when you begin the exam.
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Submit Button Area */}
-                            <div className="p-6 border-t border-zinc-50 bg-zinc-50/30">
-                                <div className="relative group">
-                                    <div className="absolute -inset-0.5 bg-gradient-to-r from-brand-orange via-orange-400 to-brand-orange rounded-xl blur opacity-20 group-hover:opacity-50 transition duration-500" />
-                                    <Button
-                                        type="submit"
-                                        disabled={isLoading}
-                                        className="relative w-full h-14 rounded-xl bg-brand-orange hover:bg-orange-400 text-white text-lg font-bold shadow-sm flex items-center justify-center gap-3 overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99]"
-                                    >
-                                        {isLoading ? (
-                                            <>
-                                                <Spinner className="w-5 h-5 animate-spin" />
-                                                Generating...
-                                            </>
-                                        ) : (
-                                            <>
-                                                Generate Simulation
-                                                <Sparkle weight="fill" className="w-5 h-5" />
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
-                            </div>
+                                >
+                                    {count}
+                                </button>
+                            ))}
                         </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-zinc-100">
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={!canProceed || isLoading}
+                            className="w-full h-12 bg-brand-orange hover:bg-emerald-600 text-white rounded-xl font-bold text-base shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+                        >
+                            {isLoading ? (
+                                <Spinner className="w-5 h-5 animate-spin mr-2" />
+                            ) : (
+                                <Sparkle weight="fill" className="w-5 h-5 mr-2" />
+                            )}
+                            Generate Exam
+                        </Button>
+                        <p className="text-xs text-center text-zinc-400 mt-3">
+                            Estimated time: ~30 seconds
+                        </p>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
-

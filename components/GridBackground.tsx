@@ -46,8 +46,8 @@ export function GridBackground({ maskType = "fade" }: { maskType?: "fade" | "ful
       {/* Subtle Glows - Only show on hero (fade mask) to avoid dirty look on auth pages */}
       {maskType === "fade" && (
         <>
-          <div className="absolute top-[60%] right-[10%] w-[400px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full" />
-          <div className="absolute bottom-[10%] left-[10%] w-[600px] h-[600px] bg-orange-500/5 blur-[100px] rounded-full" />
+          <div className="absolute top-[60%] right-[10%] w-[400px] h-[400px] bg-accent-purple/5 blur-[100px] rounded-full" />
+          <div className="absolute bottom-[10%] left-[10%] w-[600px] h-[600px] bg-emerald-500/5 blur-[100px] rounded-full" />
         </>
       )}
     </div>

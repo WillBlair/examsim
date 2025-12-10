@@ -35,7 +35,7 @@ export function EmptyState({
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-orange to-orange-600 flex items-center justify-center shadow-xl shadow-brand-orange/20"
+          className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-orange to-emerald-600 flex items-center justify-center shadow-xl shadow-brand-orange/20"
         >
           {icon || <FileText className="w-10 h-10 text-white" weight="fill" />}
         </motion.div>
@@ -66,7 +66,7 @@ export function EmptyState({
           transition={{ delay: 0.4 }}
         >
           <Link href={actionHref}>
-            <Button className="h-12 px-8 rounded-xl bg-brand-orange hover:bg-orange-600 text-white font-semibold gap-2.5 glow-orange-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <Button className="h-12 px-8 rounded-xl bg-brand-orange hover:bg-emerald-600 text-white font-semibold gap-2.5 glow-orange-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
               <Plus weight="bold" className="w-4 h-4" />
               {actionLabel}
             </Button>

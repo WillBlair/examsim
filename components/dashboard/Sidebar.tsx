@@ -2,106 +2,119 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, PlusCircle, Exam, Gear, SignOut, Terminal } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/actions/auth";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { AppIcon } from "@/components/ui/icon";
 
-const navItems = [
-  { name: "Dashboard", href: "/dashboard", icon: House },
-  { name: "New Exam", href: "/dashboard/new", icon: PlusCircle },
-  { name: "My Exams", href: "/dashboard/exams", icon: Exam },
-  { name: "Settings", href: "/dashboard/settings", icon: Gear },
+const navSections = [
+  {
+    title: null,
+    items: [
+      { name: "Dashboard", href: "/dashboard", icon: "Home" },
+      { name: "My Exams", href: "/dashboard/exams", icon: "Clock" },
+      { name: "Library", href: "/dashboard/library", icon: "Book" },
+    ]
+  },
+  {
+    title: "Practice",
+    items: [
+      { name: "Quick Practice", href: "/dashboard/practice", icon: "Flash" },
+      { name: "Study Goals", href: "/dashboard/goals", icon: "Target" },
+    ]
+  },
+    {
+    title: "Insights",
+    items: [
+      { name: "Analytics", href: "/dashboard/analytics", icon: "GraphUp" },
+      { name: "Achievements", href: "/dashboard/achievements", icon: "Trophy" },
+    ]
+  },
+  {
+    title: "Account",
+    items: [
+      { name: "Settings", href: "/dashboard/settings", icon: "Settings" },
+    ]
+  }
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="h-screen w-[140px] flex flex-col sticky top-0 z-50 shrink-0">
-      {/* Logo - Separated */}
-      <div className="h-24 flex flex-col items-center justify-center shrink-0">
-        <Link href="/" className="group flex flex-col items-center gap-2 transition-opacity hover:opacity-80">
-          <div className="p-2.5 bg-brand-orange rounded-xl shadow-lg shadow-brand-orange/20 group-hover:scale-110 transition-transform duration-200">
-            <Terminal weight="fill" className="w-6 h-6 text-white" />
+    <aside className="h-screen w-64 flex flex-col fixed inset-y-0 left-0 z-[100] shrink-0 border-r-[0.5px] border-zinc-900 shadow-neo-lg bg-white overflow-hidden">
+      {/* Noise Texture */}
+      <div className="absolute inset-0 bg-noise opacity-40 pointer-events-none" />
+
+      {/* Logo */}
+      <div className="h-16 flex items-center px-6 relative z-10">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 bg-brand-orange border border-zinc-900 rounded-sm flex items-center justify-center group-hover:bg-emerald-600 transition-all duration-300 shadow-neo-sm">
+            <AppIcon name="Cube" className="w-4 h-4 text-white" />
           </div>
-          <span className="font-bold text-xs uppercase tracking-wider text-zinc-500 group-hover:text-zinc-900 transition-colors">ExamSim</span>
+          <span className="text-lg font-bold text-zinc-900 tracking-tight">ExamSim</span>
         </Link>
       </div>
 
-      {/* Navigation Panel */}
-      <div className="flex-1 bg-white border-r border-zinc-100 flex flex-col relative isolate">
-        {/* Subtle Grid Pattern */}
-        <div className="absolute inset-0 -z-10 opacity-[0.4] pointer-events-none" 
-               style={{
-                  backgroundImage: `linear-gradient(to right, #f4f4f5 1px, transparent 1px), linear-gradient(to bottom, #f4f4f5 1px, transparent 1px)`,
-                  backgroundSize: '24px 24px'
-               }}
-        />
-
-        <div className="flex-1 flex flex-col gap-4 py-6 items-center overflow-y-auto custom-scrollbar">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "group flex flex-col items-center justify-center w-24 py-3 rounded-xl transition-all duration-200 gap-1.5",
-                  isActive
-                    ? "bg-zinc-900 text-brand-orange shadow-md shadow-brand-orange/10"
-                    : "text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900"
-                )}
-              >
-                <item.icon 
-                  weight={isActive ? "fill" : "duotone"} 
-                  className={cn("w-6 h-6 transition-colors", isActive ? "text-brand-orange" : "text-zinc-400 group-hover:text-zinc-900")} 
-                />
-                <span className="text-[10px] font-bold uppercase tracking-wide text-center leading-tight px-1">
-                  {item.name}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* User / Footer */}
-        <div className="pb-6 flex flex-col items-center gap-4 mt-auto shrink-0">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button 
-                  className="group flex flex-col items-center justify-center w-24 py-3 rounded-xl text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-all gap-1.5"
-              >
-                <SignOut weight="duotone" className="w-6 h-6 transition-colors" />
-                <span className="text-[10px] font-bold uppercase tracking-wide">Sign Out</span>
-              </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  You will be logged out of your account and redirected to the home page.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => logout()} className="bg-red-600 hover:bg-red-700 text-white">Sign Out</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+      {/* Search/Command Shortcut (reduced icon weight) */}
+      <div className="px-4 mb-2 relative z-10">
+        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-500 bg-white border-2 border-zinc-200 rounded-sm hover:border-zinc-900 hover:shadow-neo-sm transition-all focus:outline-none focus:ring-0">
+          <span className="flex-1 text-left font-medium">Search</span>
+          <kbd className="px-1.5 py-0.5 text-[10px] font-bold bg-zinc-100 border border-zinc-200 text-zinc-600 rounded-sm">⌘K</kbd>
+        </button>
       </div>
-    </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 py-4 px-4 relative z-10 overflow-y-auto custom-scrollbar">
+        <div className="space-y-5">
+          {navSections.map((section, sectionIndex) => (
+            <div key={sectionIndex}>
+              {section.title && (
+                <p className="px-3 mb-2 text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+                  {section.title}
+                </p>
+              )}
+              <div className="space-y-0.5">
+                {section.items.map((item) => {
+                  const isActive = pathname === item.href;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "group flex items-center gap-3 px-3 py-2 rounded-sm transition-all duration-200 border border-transparent",
+                        isActive
+                          ? "bg-brand-orange/10 text-brand-orange shadow-neo-brand border-brand-orange"
+                          : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 hover:border-zinc-200"
+                      )}
+                    >
+                      <AppIcon
+                        name={item.icon}
+                        className={cn(
+                          "w-[18px] h-[18px] shrink-0 transition-colors",
+                          isActive ? "text-brand-orange" : "text-zinc-400 group-hover:text-zinc-600"
+                        )}
+                      />
+                      <span className="text-[13px] font-medium tracking-tight">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </nav>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-zinc-200/50 relative z-10">
+        <button 
+          onClick={() => logout()}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-zinc-500 hover:text-red-600 hover:bg-red-50/50 transition-all group"
+        >
+          <AppIcon name="LogOut" className="w-[18px] h-[18px] shrink-0 group-hover:text-red-500 transition-colors" />
+          <span className="text-[13px] font-medium tracking-tight">Sign Out</span>
+        </button>
+      </div>
+    </aside>
   );
 }

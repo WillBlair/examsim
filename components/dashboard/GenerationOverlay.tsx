@@ -6,23 +6,14 @@ import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 const steps = [
-  {
-    id: 1,
-    label: "Analyzing Documents",
-  },
-  {
-    id: 2,
-    label: "Structuring Knowledge",
-  },
-  {
-    id: 3,
-    label: "Generating Questions",
-  },
+  { id: 1, label: "Analyzing Documents" },
+  { id: 2, label: "Structuring Knowledge" },
+  { id: 3, label: "Generating Questions" },
 ];
 
 interface GenerationOverlayProps {
   isOpen: boolean;
-  currentStep?: number; // 0, 1, 2
+  currentStep?: number;
   statusMessage?: string;
 }
 
@@ -35,30 +26,33 @@ export function GenerationOverlay({ isOpen, currentStep = 0, statusMessage }: Ge
   }, []);
 
   if (!isOpen) return null;
-  if (!mounted && typeof document === 'undefined') return null; // SSR Safety
+  if (!mounted && typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/95 backdrop-blur-xl animate-in fade-in duration-300">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pattern-dots opacity-20 pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-purple/10 blur-[150px] rounded-full pointer-events-none" />
 
-      {/* Central Content */}
-      <div className="w-full max-w-lg p-6 flex flex-col items-center space-y-16">
-
-        {/* Spinner & Main Title */}
-        <div className="flex flex-col items-center space-y-8 text-center">
-          {/* Spinning Brand Orange Loader - Large */}
+      {/* Content */}
+      <div className="relative w-full max-w-md p-6 flex flex-col items-center space-y-12">
+        {/* Spinner & Title */}
+        <div className="flex flex-col items-center space-y-6 text-center">
           <div className="relative">
-            <div className="absolute inset-0 bg-brand-orange/20 blur-2xl rounded-full scale-150" />
-            <CircleNotch weight="bold" className="w-16 h-16 text-brand-orange animate-spin relative z-10" />
+            <div className="absolute inset-0 bg-accent-purple/30 blur-2xl rounded-full scale-150 animate-pulse-glow" />
+            <CircleNotch weight="bold" className="w-14 h-14 text-accent-purple animate-spin relative z-10" />
           </div>
 
-          <div className="space-y-3">
-            <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">Generating your Simulation...</h2>
-            <p className="text-zinc-500 font-medium text-lg max-w-[300px] mx-auto leading-relaxed">{statusMessage || "Please wait..."}</p>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold text-foreground">Generating Exam</h2>
+            <p className="text-muted-foreground text-sm max-w-[280px] mx-auto">
+              {statusMessage || "Please wait..."}
+            </p>
           </div>
         </div>
 
-        {/* Pills List */}
-        <div className="w-full flex flex-col gap-4 items-center">
+        {/* Steps */}
+        <div className="w-full flex flex-col gap-3">
           {steps.map((step, index) => {
             const isActive = index === currentStep;
             const isCompleted = index < currentStep;
@@ -67,37 +61,47 @@ export function GenerationOverlay({ isOpen, currentStep = 0, statusMessage }: Ge
               <div
                 key={step.id}
                 className={cn(
-                  "w-full max-w-[380px] py-4 px-8 rounded-full flex items-center justify-between transition-all duration-500",
+                  "w-full py-3.5 px-5 rounded-xl flex items-center justify-between transition-all duration-500",
                   isActive
-                    ? "bg-white border-2 border-brand-orange shadow-lg shadow-brand-orange/10 scale-105 z-10"
+                    ? "bg-card border border-accent-purple/50 shadow-lg shadow-accent-purple/10 scale-[1.02]"
                     : isCompleted
-                      ? "bg-zinc-50 border-2 border-transparent"
-                      : "bg-transparent border-2 border-transparent opacity-50"
+                      ? "bg-secondary/50 border border-transparent"
+                      : "bg-transparent border border-transparent opacity-40"
                 )}
               >
-                <span className={cn(
-                  "font-semibold text-lg transition-colors duration-300",
-                  isActive
-                    ? "text-zinc-900"
-                    : isCompleted
-                      ? "text-zinc-500"
-                      : "text-zinc-400"
-                )}>
-                  {step.label}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className={cn(
+                    "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors",
+                    isActive
+                      ? "bg-accent-purple text-white"
+                      : isCompleted
+                        ? "bg-emerald-500/20 text-emerald-400"
+                        : "bg-secondary text-muted-foreground"
+                  )}>
+                    {isCompleted ? (
+                      <CheckCircle weight="fill" className="w-4 h-4" />
+                    ) : (
+                      step.id
+                    )}
+                  </span>
+                  <span className={cn(
+                    "font-medium text-sm transition-colors",
+                    isActive ? "text-foreground" : isCompleted ? "text-muted-foreground" : "text-muted-foreground"
+                  )}>
+                    {step.label}
+                  </span>
+                </div>
 
-                {/* Right Indicator */}
-                <div className="min-w-[24px] flex justify-end">
+                {/* Indicator */}
+                <div className="flex items-center">
                   {isCompleted ? (
-                    <CheckCircle weight="fill" className="w-7 h-7 text-brand-green" />
+                    <span className="text-xs font-medium text-emerald-400">Done</span>
                   ) : isActive ? (
-                    <div className="w-3 h-3 bg-brand-orange rounded-full animate-pulse" />
-                  ) : (
-                    <div className="w-7 h-7" /> // spacer
-                  )}
+                    <div className="w-2 h-2 bg-accent-purple rounded-full animate-pulse" />
+                  ) : null}
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       </div>

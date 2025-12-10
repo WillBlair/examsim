@@ -41,8 +41,6 @@ export function Sparkline({
       const y = getY(value);
       return `${x},${y}`;
   });
-
-  const linePath = points.join(" ");
   
   // Construct area path
   // Start from bottom-left (first point x, bottom y) -> line points -> bottom-right (last point x, bottom y)
