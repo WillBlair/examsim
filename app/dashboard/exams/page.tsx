@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Clock, CheckCircle, Plus } from "@phosphor-icons/react/dist/ssr";
+import { Clock, CheckCircle, Plus, Play, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { db } from "@/db";
 import { exams, examResults } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
@@ -8,6 +8,26 @@ import { formatDistanceToNow } from "date-fns";
 import { ExamsEmptyState } from "@/components/dashboard/EmptyState";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+// Helper to get grade color config based on percentage
+function getGradeConfig(percentage: number | null) {
+  if (percentage === null) {
+    return {
+      bg: "bg-violet-200",
+      text: "text-violet-900",
+      border: "border-violet-300",
+      iconColor: "text-violet-900",
+      label: "Not Taken"
+    };
+  }
+  
+  if (percentage >= 90) return { bg: "bg-emerald-300", text: "text-emerald-950", border: "border-emerald-400", iconColor: "text-emerald-900", label: "A" };
+  if (percentage >= 80) return { bg: "bg-blue-300", text: "text-blue-950", border: "border-blue-400", iconColor: "text-blue-900", label: "B" };
+  if (percentage >= 70) return { bg: "bg-yellow-300", text: "text-yellow-950", border: "border-yellow-400", iconColor: "text-yellow-900", label: "C" };
+  if (percentage >= 60) return { bg: "bg-orange-300", text: "text-orange-950", border: "border-orange-400", iconColor: "text-orange-900", label: "D" };
+  return { bg: "bg-red-300", text: "text-red-950", border: "border-red-400", iconColor: "text-red-900", label: "F" };
+}
 
 export default async function ExamsPage() {
   const session = await auth();
@@ -26,16 +46,16 @@ export default async function ExamsPage() {
     .where(eq(examResults.userId, session.user.id));
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="max-w-5xl mx-auto space-y-8 pb-12 px-6">
+      <div className="bg-white border-2 border-zinc-900 shadow-neo rounded-lg p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 mt-6">
         <div>
-            <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight">My Exams</h1>
-            <p className="text-zinc-500">Track your progress and performance history.</p>
+            <h1 className="text-3xl font-black text-zinc-900 uppercase tracking-tight">My Exams</h1>
+            <p className="text-zinc-500 font-medium">Track your progress and performance history.</p>
         </div>
         <Link href="/dashboard/new">
-            <Button className="rounded-lg bg-brand-orange hover:bg-emerald-600 text-white font-medium gap-2">
-                <Plus className="w-4 h-4" />
-                New Exam
+            <Button className="h-11 px-6 rounded-sm bg-brand-orange text-white font-bold border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all gap-2">
+                <Plus className="w-5 h-5" weight="bold" />
+                NEW EXAM
             </Button>
         </Link>
       </div>
@@ -44,11 +64,13 @@ export default async function ExamsPage() {
       <div className="space-y-4">
         
         {allExams.length === 0 ? (
-            <div className="bg-white rounded-xl border border-zinc-200">
-                <ExamsEmptyState />
+            <div className="bg-white rounded-lg border-2 border-zinc-900 shadow-neo p-1">
+                <div className="border border-zinc-200 border-dashed rounded-md">
+                    <ExamsEmptyState />
+                </div>
             </div>
         ) : (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-5">
                 {allExams.map(exam => {
                     // Find latest result for this exam
                     const examResult = allResults
@@ -59,59 +81,85 @@ export default async function ExamsPage() {
                         ? Math.round((examResult.score / examResult.totalQuestions) * 100) 
                         : null;
 
+                    const gradeConfig = getGradeConfig(scorePercentage);
+
                     return (
                         <Link key={exam.id} href={`/dashboard/exams/${exam.id}`}>
-                            <div className="bg-white rounded-xl border border-zinc-200 p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-lg hover:shadow-accent-purple/5 hover:-translate-y-0.5 hover:border-accent-purple/30 transition-all cursor-pointer group shadow-sm relative overflow-hidden">
-                                {/* Spine */}
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-purple opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div className="group bg-white rounded-lg border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex flex-col md:flex-row items-stretch overflow-hidden">
+                                
+                                {/* Status Strip / Icon Area */}
+                                <div className={cn(
+                                    "w-full md:w-24 shrink-0 flex items-center justify-center border-b-2 md:border-b-0 md:border-r-2 border-zinc-900 p-4 md:p-0 transition-colors",
+                                    gradeConfig.bg
+                                )}>
+                                    <span className={cn(
+                                        "text-2xl font-black",
+                                        gradeConfig.text
+                                    )}>
+                                        {scorePercentage !== null ? gradeConfig.label : exam.title.charAt(0).toUpperCase()}
+                                    </span>
+                                </div>
 
-                                <div className="flex items-center gap-6 w-full md:w-auto pl-2 md:pl-0 group-hover:pl-4 md:group-hover:pl-0 transition-all">
-                                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-lg font-bold border shrink-0 transition-colors duration-300 ${
-                                        scorePercentage !== null 
-                                            ? scorePercentage >= 70 ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-red-50 text-red-600 border-red-100"
-                                            : "bg-zinc-50 text-zinc-500 border-zinc-100 group-hover:bg-accent-purple group-hover:text-white group-hover:border-accent-purple"
-                                    }`}>
-                                        {exam.title.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div className="min-w-0">
-                                        <h3 className="text-lg font-semibold text-zinc-900 group-hover:text-accent-purple transition-colors truncate">
+                                {/* Content */}
+                                <div className="flex-1 p-5 flex flex-col md:flex-row md:items-center gap-6 justify-between">
+                                    <div className="space-y-2 min-w-0">
+                                        <h3 className="text-lg font-bold text-zinc-900 truncate pr-4">
                                             {exam.title}
                                         </h3>
-                                        <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-500 mt-1">
-                                            <span className="px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 font-medium">
+                                        
+                                        <div className="flex flex-wrap items-center gap-3 text-xs">
+                                            <span className="px-2.5 py-1 rounded-sm bg-zinc-100 border border-zinc-900 font-bold text-zinc-700 uppercase tracking-wide text-[10px]">
                                                 {exam.topic}
                                             </span>
-                                            <div className="flex items-center gap-1">
-                                                <Clock className="w-4 h-4" />
+                                            
+                                            <div className="flex items-center gap-1.5 text-zinc-500 font-medium">
+                                                <Clock className="w-4 h-4" weight="fill" />
                                                 <span>{formatDistanceToNow(exam.createdAt, { addSuffix: true })}</span>
                                             </div>
+
                                             {examResult && (
-                                                <div className="flex items-center gap-1 text-emerald-600 font-medium">
-                                                    <CheckCircle className="w-4 h-4" />
-                                                    <span>Completed</span>
+                                                <div className={cn("flex items-center gap-1.5 font-bold px-2 py-0.5 rounded-sm border", gradeConfig.bg, gradeConfig.text, gradeConfig.border)}>
+                                                    <CheckCircle className="w-3.5 h-3.5" weight="fill" />
+                                                    <span>COMPLETED</span>
                                                 </div>
                                             )}
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end pl-18 md:pl-0">
-                                    {scorePercentage !== null ? (
-                                        <div className="text-right">
-                                            <div className={`text-2xl font-bold ${scorePercentage >= 70 ? "text-emerald-600" : "text-red-500"}`}>
-                                                {scorePercentage}%
+                                    
+                                    {/* Action Area */}
+                                    <div className="flex items-center gap-5 justify-between md:justify-end pt-4 md:pt-0 border-t md:border-t-0 border-zinc-100 md:border-none mt-2 md:mt-0">
+                                        {scorePercentage !== null ? (
+                                            <div className="text-right">
+                                                <div className={cn(
+                                                    "text-2xl font-black leading-none",
+                                                    gradeConfig.text
+                                                )}>
+                                                    {scorePercentage}%
+                                                </div>
+                                                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mt-1">Score</div>
                                             </div>
-                                            <div className="text-xs text-zinc-500 uppercase tracking-wider">Score</div>
-                                        </div>
-                                    ) : (
-                                        <div className="text-right">
-                                            <div className="text-2xl font-bold text-zinc-300">--</div>
-                                            <div className="text-xs text-zinc-500 uppercase tracking-wider">Not Taken</div>
-                                        </div>
-                                    )}
-                                    <Button variant="outline" className="rounded-full hover:bg-zinc-50 whitespace-nowrap">
-                                        {scorePercentage !== null ? "Review / Retake" : "Start Exam"}
-                                    </Button>
+                                        ) : (
+                                            <div className="text-right px-2">
+                                                <div className="text-2xl font-black leading-none text-zinc-200">--</div>
+                                                <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-1">Not Taken</div>
+                                            </div>
+                                        )}
+
+                                        <Button 
+                                            className={cn(
+                                                "h-10 px-5 rounded-sm border-2 border-zinc-900 font-bold shadow-neo-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all",
+                                                scorePercentage !== null
+                                                    ? "bg-white text-zinc-900 hover:bg-zinc-50"
+                                                    : "bg-zinc-900 text-white hover:bg-zinc-800"
+                                            )}
+                                        >
+                                            {scorePercentage !== null ? (
+                                                <span className="flex items-center gap-2">Review <ArrowRight weight="bold" /></span>
+                                            ) : (
+                                                <span className="flex items-center gap-2">Start <Play weight="fill" /></span>
+                                            )}
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </Link>

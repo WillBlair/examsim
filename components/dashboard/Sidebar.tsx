@@ -11,6 +11,7 @@ const navSections = [
     title: null,
     items: [
       { name: "Dashboard", href: "/dashboard", icon: "Home" },
+      { name: "Create New Exam", href: "/dashboard/new", icon: "PlusCircle" },
       { name: "My Exams", href: "/dashboard/exams", icon: "Clock" },
       { name: "Library", href: "/dashboard/library", icon: "Book" },
     ]
@@ -84,7 +85,7 @@ export function Sidebar() {
                       className={cn(
                         "group flex items-center gap-3 px-3 py-2 rounded-sm transition-all duration-200 border border-transparent",
                         isActive
-                          ? "bg-brand-orange/10 text-brand-orange shadow-neo-brand border-brand-orange"
+                          ? "bg-accent-purple/10 text-accent-purple shadow-neo-purple border-accent-purple"
                           : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 hover:border-zinc-200"
                       )}
                     >
@@ -92,7 +93,7 @@ export function Sidebar() {
                         name={item.icon}
                         className={cn(
                           "w-[18px] h-[18px] shrink-0 transition-colors",
-                          isActive ? "text-brand-orange" : "text-zinc-400 group-hover:text-zinc-600"
+                          isActive ? "text-accent-purple" : "text-zinc-400 group-hover:text-zinc-600"
                         )}
                       />
                       <span className="text-[13px] font-medium tracking-tight">{item.name}</span>

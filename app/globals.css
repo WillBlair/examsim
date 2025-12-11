@@ -133,6 +133,11 @@
     border: 1px solid rgba(0,0,0,1);
   }
 
+  .shadow-neo-xl {
+    box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+    border: 1px solid rgba(0,0,0,1);
+  }
+
   .shadow-neo-brand {
     box-shadow: 2px 2px 0px 0px hsl(var(--brand-orange));
     border: 1px solid hsl(var(--brand-orange));

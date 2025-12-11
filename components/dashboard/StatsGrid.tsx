@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Fire } from "@phosphor-icons/react";
 import { AppIcon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
@@ -60,31 +61,31 @@ export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswer
       label: "Total Exams",
       data: totalExams,
       icon: "CheckCircle",
-      iconBg: "bg-blue-500/10",
-      iconColor: "text-blue-400",
+      iconBg: "bg-blue-400",
+      iconColor: "text-white",
     },
     {
       label: "Avg. Score",
       data: averageScore,
       icon: "GraphUp",
       suffix: "%",
-      iconBg: "bg-emerald-500/10",
-      iconColor: "text-emerald-500",
+      iconBg: "bg-emerald-500",
+      iconColor: "text-white",
     },
     {
       label: "Questions",
       data: questionsAnswered,
       icon: "TaskList",
-      iconBg: "bg-accent-purple/10",
-      iconColor: "text-accent-purple",
+      iconBg: "bg-accent-purple",
+      iconColor: "text-white",
     },
     {
       label: "Study Time",
       data: studyTime,
       icon: "Clock",
       suffix: "h",
-      iconBg: "bg-amber-500/10",
-      iconColor: "text-amber-400",
+      iconBg: "bg-amber-400",
+      iconColor: "text-white",
     },
   ];
 
@@ -102,8 +103,8 @@ export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswer
           <div className="p-4 rounded-lg bg-white border-2 border-zinc-900 shadow-neo h-full flex flex-col justify-between group hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200">
             <div>
               {/* Icon */}
-              <div className={cn("w-9 h-9 rounded-md flex items-center justify-center mb-3 border border-zinc-900", stat.iconBg)}>
-                <AppIcon name={stat.icon} className={cn("w-4 h-4", stat.iconColor)} />
+              <div className={cn("w-10 h-10 rounded-sm flex items-center justify-center mb-3 border border-zinc-900 shadow-sm", stat.iconBg)}>
+                <AppIcon name={stat.icon} className={cn("w-5 h-5", stat.iconColor)} />
               </div>
 
               {/* Value */}
@@ -143,8 +144,8 @@ export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswer
           
           <div className="relative z-10">
             {/* Icon */}
-            <div className="w-9 h-9 rounded-md bg-white border border-zinc-900 shadow-sm flex items-center justify-center mb-3">
-              <AppIcon name="Fire" className="w-4 h-4 text-brand-orange" />
+            <div className="w-10 h-10 rounded-sm bg-accent-purple shadow-sm border border-zinc-900 flex items-center justify-center mb-3">
+              <Fire weight="fill" className="w-5 h-5 text-white" />
             </div>
 
             {/* Value */}
@@ -163,7 +164,7 @@ export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswer
           <div className="mt-3 relative z-10">
             {Number(streak.value) > 0 ? (
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-white shadow-sm border border-zinc-900">
-                <AppIcon name="Fire" className="w-3 h-3 text-brand-orange" />
+                <Fire weight="fill" className="w-3 h-3 text-brand-orange" />
                 <span className="text-[10px] font-bold text-zinc-900 uppercase tracking-wider">On fire!</span>
               </div>
             ) : (

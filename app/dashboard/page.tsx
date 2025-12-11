@@ -56,15 +56,23 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8 flex-1">
       {/* Header with Date */}
-      <div className="bg-white border-2 border-zinc-900 shadow-neo rounded-lg p-6">
-        <div className="flex flex-col gap-1">
-          <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">
+      <div className="bg-white border-[3px] border-black shadow-neo-xl rounded-lg p-6 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8B5CF6_1px,transparent_1px),linear-gradient(to_bottom,#8B5CF6_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.07]" />
+        
+        {/* Glow Effects - positioned on the right side away from text */}
+        <div className="absolute -top-20 -right-20 w-96 h-96 bg-accent-purple/30 rounded-full blur-3xl opacity-70 pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-accent-purple/20 rounded-full blur-[100px] opacity-60 pointer-events-none translate-x-1/3 translate-y-1/3" />
+
+        <div className="relative z-10 flex flex-col gap-1">
+          <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-accent-purple animate-pulse" />
               {format(new Date(), 'EEEE, MMMM d')}
           </p>
-          <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight">
+          <h1 className="text-2xl font-black text-zinc-900 tracking-tight mt-1">
               Welcome back, {firstName}!
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-600 font-medium max-w-lg">
               Ready to continue your prep? You&apos;re doing great.
           </p>
         </div>
@@ -124,7 +132,7 @@ export default async function DashboardPage() {
 
                         {/* CTA Button look-alike */}
                         <div className="mt-8 flex items-center gap-3">
-                            <span className="inline-flex items-center justify-center h-11 px-6 rounded-sm bg-zinc-900 text-white font-medium shadow-sm group-hover:bg-brand-orange !group-hover:text-white group-hover:shadow-none group-hover:border group-hover:border-zinc-900 transition-all duration-300">
+                            <span className="inline-flex items-center justify-center h-11 px-8 rounded-sm bg-zinc-900 text-white font-bold shadow-neo-lg group-hover:bg-brand-orange !group-hover:text-white group-hover:shadow-none group-hover:translate-x-[4px] group-hover:translate-y-[4px] group-hover:border group-hover:border-zinc-900 transition-all duration-200">
                                 <span className="text-inherit !group-hover:text-white transition-colors duration-300 flex items-center">
                                     Begin Now
                                     <ArrowRight weight="bold" className="ml-2 w-4 h-4" />
@@ -143,8 +151,8 @@ export default async function DashboardPage() {
                 <div className="relative z-10">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
-                            <Calendar weight="fill" className="w-4 h-4 text-zinc-400 group-hover:text-zinc-900 transition-colors" />
-                            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-900 transition-colors">Weekly Recap</span>
+                            <Calendar weight="fill" className="w-4 h-4 text-zinc-900" />
+                            <span className="text-xs font-bold text-zinc-900 uppercase tracking-wider bg-zinc-100 px-2 py-1 rounded-sm border border-zinc-200 group-hover:bg-white group-hover:border-zinc-900 transition-all">Weekly Recap</span>
                         </div>
                         <span className="text-[10px] font-bold text-zinc-500 border border-zinc-200 px-2 py-1 rounded-sm bg-zinc-50 group-hover:border-zinc-900 group-hover:bg-white transition-colors">
                             Last 7 Days
