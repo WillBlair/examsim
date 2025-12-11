@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/actions/auth";
 import { AppIcon } from "@/components/ui/icon";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navSections = [
   {
@@ -20,7 +21,7 @@ const navSections = [
     title: "Practice",
     items: [
       { name: "Quick Practice", href: "/dashboard/practice", icon: "Flash" },
-      { name: "Study Goals", href: "/dashboard/goals", icon: "Target" },
+      { name: "Study Goals", href: "/dashboard/goals", icon: "Star" },
     ]
   },
     {
@@ -38,11 +39,11 @@ const navSections = [
   }
 ];
 
-export function Sidebar() {
+function SidebarContent() {
   const pathname = usePathname();
 
   return (
-    <aside className="h-screen w-64 flex flex-col fixed inset-y-0 left-0 z-[100] shrink-0 border-r-[0.5px] border-zinc-900 shadow-neo-lg bg-white overflow-hidden">
+    <div className="flex flex-col h-full bg-white relative">
       {/* Noise Texture */}
       <div className="absolute inset-0 bg-noise opacity-40 pointer-events-none" />
 
@@ -116,6 +117,37 @@ export function Sidebar() {
           <span className="text-[13px] font-medium tracking-tight">Sign Out</span>
         </button>
       </div>
+    </div>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <aside className="hidden md:flex h-screen w-64 flex-col fixed inset-y-0 left-0 z-[100] shrink-0 border-r-[0.5px] border-zinc-900 shadow-neo-lg bg-white overflow-hidden">
+        <SidebarContent />
     </aside>
   );
+}
+
+export function MobileHeader() {
+    return (
+        <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 bg-white sticky top-0 z-50">
+            <div className="flex items-center gap-2">
+                 <div className="w-8 h-8 bg-brand-orange border border-zinc-900 rounded-sm flex items-center justify-center shadow-neo-sm">
+                    <AppIcon name="Cube" className="w-4 h-4 text-white" />
+                  </div>
+                 <span className="text-lg font-bold text-zinc-900 tracking-tight">ExamSim</span>
+            </div>
+            <Sheet>
+                <SheetTrigger asChild>
+                    <button className="p-2 border border-zinc-200 rounded-sm hover:bg-zinc-50">
+                        <AppIcon name="Menu" className="w-6 h-6 text-zinc-600" />
+                    </button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-64 border-r border-zinc-900">
+                    <SidebarContent />
+                </SheetContent>
+            </Sheet>
+        </div>
+    )
 }

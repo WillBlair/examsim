@@ -4,6 +4,7 @@ import { User, Bell, Palette, CreditCard, Trash, Warning, Gear, FloppyDisk, Shie
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { NotificationSwitch, ThemeSelector } from "@/components/dashboard/settings-components";
+import { ProfilePictureUpload } from "@/components/dashboard/ProfilePictureUpload";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -26,8 +27,8 @@ export default async function SettingsPage() {
         <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-indigo-500/20 rounded-full blur-[120px] pointer-events-none transition-all duration-700 group-hover:bg-indigo-500/25" />
         
         <div className="relative z-10 flex flex-col items-center text-center gap-3">
-          <div className="p-4 bg-zinc-900 rounded-2xl shadow-neo-sm transform -rotate-3 mb-2 transition-transform duration-300 group-hover:rotate-0 group-hover:scale-110">
-              <Gear weight="fill" className="w-8 h-8 text-white animate-spin-slow" />
+          <div className="p-4 bg-zinc-900 rounded-2xl shadow-neo-sm mb-2">
+              <Gear weight="fill" className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-zinc-900 tracking-tight">Account Settings</h1>
           <p className="text-lg text-zinc-600 font-medium max-w-xl leading-relaxed">
@@ -39,7 +40,7 @@ export default async function SettingsPage() {
       {/* Profile Section */}
       <section className="bg-white rounded-2xl border-[3px] border-zinc-900 shadow-neo transition-all duration-300 hover:shadow-neo-lg group overflow-hidden">
         <div className="flex items-center gap-5 p-6 border-b-[3px] border-zinc-100 bg-gradient-to-r from-blue-50/80 to-white">
-            <div className="w-14 h-14 rounded-2xl bg-blue-500 border-[3px] border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center group-hover:rotate-6 transition-transform duration-300">
+            <div className="w-14 h-14 rounded-2xl bg-blue-500 border-[3px] border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center">
               <User weight="fill" className="w-7 h-7 text-white" />
             </div>
             <div>
@@ -50,14 +51,7 @@ export default async function SettingsPage() {
           
         <div className="p-8 md:p-10 space-y-10">
             <div className="flex flex-col lg:flex-row items-center gap-10">
-              <div className="relative group/avatar cursor-pointer">
-                 <div className="w-32 h-32 rounded-3xl border-[4px] border-zinc-900 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-4xl font-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-transform duration-300 group-hover/avatar:scale-105">
-                    {user.name?.charAt(0) || 'U'}
-                 </div>
-                 <div className="absolute -bottom-3 -right-3 bg-white border-[3px] border-zinc-900 p-2.5 rounded-xl shadow-sm hover:scale-110 transition-transform hover:bg-zinc-50">
-                    <User weight="bold" className="w-5 h-5 text-zinc-900" />
-                 </div>
-              </div>
+              <ProfilePictureUpload currentImage={user.image} userName={user.name} />
               
               <div className="flex-1 w-full space-y-6">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
