@@ -116,10 +116,6 @@ export function Hero() {
                              <AppIcon name="Page" className="w-4 h-4" />
                              <span>Exams</span>
                          </div>
-                         <div className="flex items-center gap-3 px-3 py-2 text-zinc-500 rounded-sm text-sm font-medium">
-                             <AppIcon name="GraphUp" className="w-4 h-4" />
-                             <span>Analytics</span>
-                         </div>
                      </div>
                  </div>
 
