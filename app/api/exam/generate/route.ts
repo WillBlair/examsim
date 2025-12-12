@@ -12,17 +12,17 @@ export const maxDuration = 60; // Allow 1 minute timeout
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_FILE_TYPES = [
-  "application/pdf",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "text/plain",
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "text/plain",
 ] as const;
 
 interface StreamUpdate {
-  step?: number;
-  message?: string;
-  success?: boolean;
-  examId?: number;
-  error?: string;
+    step?: number;
+    message?: string;
+    success?: boolean;
+    examId?: number;
+    error?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
         const formData = await req.formData();
         const topic = formData.get("topic") as string;
         const difficulty = formData.get("difficulty") as string || "Medium";
-        const count = parseInt(formData.get("count") as string || "5");
+        const questionCount = parseInt(formData.get("count") as string || "5");
         const timeLimit = formData.get("timeLimit") ? parseInt(formData.get("timeLimit") as string) : null;
         const files = formData.getAll("files") as File[];
         const pastedText = formData.get("pastedText") as string;
@@ -73,19 +73,19 @@ export async function POST(req: NextRequest) {
         // Validate file uploads
         for (const file of files) {
             console.log(`[Exam Generate] Processing file: ${file.name}, type: ${file.type}, size: ${file.size}`);
-            
+
             if (file.size > MAX_FILE_SIZE) {
                 return NextResponse.json(
                     { error: `File "${file.name}" exceeds the 10MB size limit` },
                     { status: 400 }
                 );
             }
-            
+
             // Check file type - be lenient with PDF detection (some browsers report different types)
             const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
             const isDocx = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.toLowerCase().endsWith(".docx");
             const isTxt = file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
-            
+
             if (!isPdf && !isDocx && !isTxt) {
                 return NextResponse.json(
                     { error: `File type "${file.type}" is not allowed. Supported types: PDF, DOCX, TXT` },
@@ -171,8 +171,18 @@ export async function POST(req: NextRequest) {
                 }
 
                 const prompt = `
-            Generate a ${difficulty} difficulty exam ${topic ? `about "${topic}"` : "based on the provided content"} with ${count} questions.
-            ${contextText ? `Base the questions STRICTLY on the following source material:\n${contextText}` : ""}
+            Generate a ${difficulty} difficulty exam ${topic ? `about "${topic}"` : "based on the provided content"} with ${questionCount} questions.
+            
+            ${contextText ? `
+            <source_material>
+            ${contextText}
+            </source_material>
+
+            Base the questions STRICTLY on the content provided within the <source_material> tags above.
+            Do not include any information from outside the source material.
+            If the source material does not contain enough information to generate ${questionCount} questions, generate as many as possible and then stop.
+            ` : ""}
+
             The questions should be challenging and test deep understanding.
             For each question, identify a specific sub-topic (e.g., 'Cell Biology > Mitosis').
 
@@ -183,7 +193,7 @@ export async function POST(req: NextRequest) {
             4. Select All That Apply: 4+ options, multiple correct answers. Increases difficulty.
         `;
 
-                await sendUpdate({ step: 2, message: `Generating ${count} questions...` });
+                await sendUpdate({ step: 2, message: `Generating ${questionCount} questions...` });
 
                 const { object } = await generateObject({
                     model: google("gemini-2.5-flash"),
@@ -196,7 +206,7 @@ export async function POST(req: NextRequest) {
                             correctAnswer: z.union([z.string(), z.array(z.string())]),
                             explanation: z.string(),
                             subtopic: z.string(),
-                        })).length(count),
+                        })).length(questionCount),
                     }),
                     prompt: prompt,
                 });

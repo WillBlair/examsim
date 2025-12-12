@@ -77,7 +77,18 @@ export default function NewExamPage() {
         body: formData,
       });
 
-      if (!response.ok || !response.body) throw new Error("Failed to start generation");
+      if (!response.ok) {
+        let errorMessage = "Failed to start generation";
+        try {
+          const errorData = await response.json();
+          if (errorData.error) errorMessage = errorData.error;
+        } catch {
+          // If response is not JSON (e.g. 500 HTML), stick to default message
+        }
+        throw new Error(errorMessage);
+      }
+
+      if (!response.body) throw new Error("No response body received");
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
