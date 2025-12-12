@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { User, Camera, Spinner } from "@phosphor-icons/react";
 import { updateProfilePicture } from "@/app/actions/user";
 import { cn } from "@/lib/utils";
@@ -13,9 +13,20 @@ interface ProfilePictureUploadProps {
 
 export function ProfilePictureUpload({ currentImage, userName }: ProfilePictureUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [preview, setPreview] = useState<string | null>(currentImage || null);
+  // If currentImage is null (e.g. from session where base64 was stripped),
+  // we fallback to our API route which reads from DB.
+  // We use a timestamp query param to force refresh the image after upload.
+  const [imageSrc, setImageSrc] = useState<string | null>(currentImage || "/api/user/avatar");
+  const [imgKey, setImgKey] = useState(Date.now());
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  // If the parent passes a new image (e.g. from Google login), update our state
+  useEffect(() => {
+    if (currentImage) {
+      setImageSrc(currentImage);
+    }
+  }, [currentImage]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -30,19 +41,33 @@ export function ProfilePictureUpload({ currentImage, userName }: ProfilePictureU
     setIsUploading(true);
 
     try {
-      // Convert to base64
+      // Convert to base64 for preview and upload
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64String = reader.result as string;
-        setPreview(base64String);
+        // Show immediate preview
+        setImageSrc(base64String);
 
         const result = await updateProfilePicture(base64String);
         
         if (result.error) {
           alert(result.error);
-          setPreview(currentImage || null); // Revert
+          // Revert to original on error
+          setImageSrc(currentImage || "/api/user/avatar");
         } else {
+          // Success!
           router.refresh();
+          
+          // Force reload the API image by updating the key
+          // This ensures that when the user comes back, the browser cache is invalidated
+          // for the API route if they were using it.
+          // Note: If they navigated away and back, the component remounts with 
+          // imageSrc = "/api/user/avatar", which will fetch the new image from DB.
+          setTimeout(() => {
+             setImgKey(Date.now());
+             // Ensure we are using the API route now, as the session won't have the image
+             setImageSrc("/api/user/avatar");
+          }, 500);
         }
         setIsUploading(false);
       };
@@ -50,7 +75,7 @@ export function ProfilePictureUpload({ currentImage, userName }: ProfilePictureU
     } catch (error) {
       console.error("Error uploading image:", error);
       setIsUploading(false);
-      setPreview(currentImage || null);
+      setImageSrc(currentImage || null);
     }
   };
 
@@ -66,11 +91,20 @@ export function ProfilePictureUpload({ currentImage, userName }: ProfilePictureU
       
       <div className={cn(
         "w-32 h-32 rounded-3xl border-[4px] border-zinc-900 flex items-center justify-center text-white text-4xl font-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-transform duration-300 group-hover/avatar:scale-105 overflow-hidden relative",
-        !preview && "bg-gradient-to-br from-blue-400 to-indigo-600"
+        !imageSrc && "bg-gradient-to-br from-blue-400 to-indigo-600"
       )}>
-        {preview ? (
+        {imageSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="Profile" className="w-full h-full object-cover" />
+          <img 
+            // If it's an API route, append timestamp to bust cache
+            src={imageSrc.includes("/api/") ? `${imageSrc}?t=${imgKey}` : imageSrc} 
+            alt="Profile" 
+            className="w-full h-full object-cover" 
+            onError={(e) => {
+                // If API returns 404 or fails, hide the image and show initials
+                setImageSrc(null);
+            }}
+          />
         ) : (
           userName?.charAt(0) || 'U'
         )}

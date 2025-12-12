@@ -4,18 +4,21 @@ import { desc, eq } from "drizzle-orm";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { subDays } from "date-fns";
-import { Trophy, Fire, Exam, Lightning, Star, CheckCircle, Lock } from "@phosphor-icons/react/dist/ssr";
+import { 
+  Trophy, Fire, CheckCircle, Lock, Medal, Crown, Sparkle, Star
+} from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils";
+import { BadgeIcon } from "@/components/dashboard/BadgeIcon";
 
 interface Achievement {
   id: string;
   title: string;
   description: string;
-  icon: React.ReactNode;
   requirement: number;
   current: number;
   unlocked: boolean;
-  tier: "bronze" | "silver" | "gold";
+  tier: "bronze" | "silver" | "gold" | "diamond";
+  category: "creation" | "completion" | "mastery" | "streak" | "dedication";
 }
 
 export default async function AchievementsPage() {
@@ -71,281 +74,414 @@ export default async function AchievementsPage() {
       id: "first-exam",
       title: "Getting Started",
       description: "Create your first exam",
-      icon: <Exam weight="fill" className="w-5 h-5" />,
       requirement: 1,
       current: totalExams,
       unlocked: totalExams >= 1,
-      tier: "bronze"
+      tier: "bronze",
+      category: "creation"
     },
     {
       id: "exam-creator",
       title: "Exam Creator",
       description: "Create 5 exams",
-      icon: <Exam weight="fill" className="w-5 h-5" />,
       requirement: 5,
       current: totalExams,
       unlocked: totalExams >= 5,
-      tier: "silver"
+      tier: "silver",
+      category: "creation"
     },
     {
       id: "exam-master",
       title: "Exam Architect",
       description: "Create 25 exams",
-      icon: <Exam weight="fill" className="w-5 h-5" />,
       requirement: 25,
       current: totalExams,
       unlocked: totalExams >= 25,
-      tier: "gold"
+      tier: "gold",
+      category: "creation"
+    },
+    {
+      id: "exam-legend",
+      title: "Exam Legend",
+      description: "Create 100 exams",
+      requirement: 100,
+      current: totalExams,
+      unlocked: totalExams >= 100,
+      tier: "diamond",
+      category: "creation"
     },
     // Completions
     {
       id: "first-completion",
       title: "Test Taker",
       description: "Complete your first exam",
-      icon: <CheckCircle weight="fill" className="w-5 h-5" />,
       requirement: 1,
       current: completedAttempts,
       unlocked: completedAttempts >= 1,
-      tier: "bronze"
+      tier: "bronze",
+      category: "completion"
     },
     {
       id: "dedicated",
       title: "Dedicated",
       description: "Complete 10 exams",
-      icon: <CheckCircle weight="fill" className="w-5 h-5" />,
       requirement: 10,
       current: completedAttempts,
       unlocked: completedAttempts >= 10,
-      tier: "silver"
+      tier: "silver",
+      category: "completion"
     },
     {
       id: "marathon",
       title: "Marathon Runner",
       description: "Complete 50 exams",
-      icon: <CheckCircle weight="fill" className="w-5 h-5" />,
       requirement: 50,
       current: completedAttempts,
       unlocked: completedAttempts >= 50,
-      tier: "gold"
+      tier: "gold",
+      category: "completion"
+    },
+    {
+      id: "eternal",
+      title: "Eternal Scholar",
+      description: "Complete 200 exams",
+      requirement: 200,
+      current: completedAttempts,
+      unlocked: completedAttempts >= 200,
+      tier: "diamond",
+      category: "completion"
     },
     // Perfect Scores
     {
       id: "perfectionist",
       title: "Perfectionist",
       description: "Get a perfect score",
-      icon: <Star weight="fill" className="w-5 h-5" />,
       requirement: 1,
       current: perfectScores,
       unlocked: perfectScores >= 1,
-      tier: "bronze"
+      tier: "bronze",
+      category: "mastery"
     },
     {
       id: "flawless",
       title: "Flawless",
       description: "Get 5 perfect scores",
-      icon: <Star weight="fill" className="w-5 h-5" />,
       requirement: 5,
       current: perfectScores,
       unlocked: perfectScores >= 5,
-      tier: "gold"
+      tier: "gold",
+      category: "mastery"
+    },
+    {
+      id: "legendary",
+      title: "Legendary",
+      description: "Get 10 perfect scores",
+      requirement: 10,
+      current: perfectScores,
+      unlocked: perfectScores >= 10,
+      tier: "diamond",
+      category: "mastery"
     },
     // Streaks
     {
       id: "streak-3",
       title: "On a Roll",
       description: "Maintain a 3-day streak",
-      icon: <Fire weight="fill" className="w-5 h-5" />,
       requirement: 3,
       current: streak,
       unlocked: streak >= 3,
-      tier: "bronze"
+      tier: "bronze",
+      category: "streak"
     },
     {
       id: "streak-7",
       title: "Week Warrior",
       description: "Maintain a 7-day streak",
-      icon: <Fire weight="fill" className="w-5 h-5" />,
       requirement: 7,
       current: streak,
       unlocked: streak >= 7,
-      tier: "silver"
+      tier: "silver",
+      category: "streak"
     },
     {
       id: "streak-30",
       title: "Unstoppable",
       description: "Maintain a 30-day streak",
-      icon: <Fire weight="fill" className="w-5 h-5" />,
       requirement: 30,
       current: streak,
       unlocked: streak >= 30,
-      tier: "gold"
+      tier: "gold",
+      category: "streak"
+    },
+    {
+      id: "streak-100",
+      title: "Immortal",
+      description: "Maintain a 100-day streak",
+      requirement: 100,
+      current: streak,
+      unlocked: streak >= 100,
+      tier: "diamond",
+      category: "streak"
     },
     // Questions
     {
       id: "100-questions",
       title: "Scholar",
       description: "Answer 100 questions",
-      icon: <Lightning weight="fill" className="w-5 h-5" />,
       requirement: 100,
       current: totalQuestionsAnswered,
       unlocked: totalQuestionsAnswered >= 100,
-      tier: "bronze"
+      tier: "bronze",
+      category: "dedication"
     },
     {
       id: "500-questions",
       title: "Knowledge Seeker",
       description: "Answer 500 questions",
-      icon: <Lightning weight="fill" className="w-5 h-5" />,
       requirement: 500,
       current: totalQuestionsAnswered,
       unlocked: totalQuestionsAnswered >= 500,
-      tier: "silver"
+      tier: "silver",
+      category: "dedication"
     },
     {
       id: "1000-questions",
       title: "Sage",
       description: "Answer 1,000 questions",
-      icon: <Lightning weight="fill" className="w-5 h-5" />,
       requirement: 1000,
       current: totalQuestionsAnswered,
       unlocked: totalQuestionsAnswered >= 1000,
-      tier: "gold"
+      tier: "gold",
+      category: "dedication"
+    },
+    {
+      id: "5000-questions",
+      title: "Omniscient",
+      description: "Answer 5,000 questions",
+      requirement: 5000,
+      current: totalQuestionsAnswered,
+      unlocked: totalQuestionsAnswered >= 5000,
+      tier: "diamond",
+      category: "dedication"
     },
   ];
 
   const unlockedCount = achievements.filter(a => a.unlocked).length;
+  const bronzeUnlocked = achievements.filter(a => a.unlocked && a.tier === "bronze").length;
+  const silverUnlocked = achievements.filter(a => a.unlocked && a.tier === "silver").length;
+  const goldUnlocked = achievements.filter(a => a.unlocked && a.tier === "gold").length;
 
-  const tierStyles = {
+  const tierConfig = {
     bronze: { 
-      badge: "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200", 
-      icon: "text-emerald-600",
-      bg: "from-emerald-50/80 to-white",
-      glow: "bg-emerald-500/10"
+      badgeBg: "bg-gradient-to-br from-amber-400 via-orange-400 to-amber-500",
+      cardGlow: "shadow-[0_0_60px_-5px_rgba(205,127,50,0.9)] shadow-[0_0_35px_-10px_rgba(205,127,50,0.7)_inset] shadow-[0_0_20px_-5px_rgba(205,127,50,0.8)]",
+      shine: "bg-gradient-to-br from-white/70 via-amber-200/40 to-transparent",
+      label: "Bronze",
+      labelStyle: "bg-gradient-to-r from-amber-500/40 to-orange-500/40 text-amber-950 border-amber-600/80 backdrop-blur-sm font-black shadow-[0_0_20px_rgba(205,127,50,0.6)]"
     },
     silver: { 
-      badge: "bg-violet-100 text-violet-700 ring-1 ring-violet-200", 
-      icon: "text-violet-600",
-      bg: "from-violet-50/80 to-white",
-      glow: "bg-violet-500/10"
+      badgeBg: "bg-gradient-to-br from-slate-300 via-zinc-200 to-slate-400",
+      cardGlow: "shadow-[0_0_60px_-5px_rgba(200,200,200,0.9)] shadow-[0_0_35px_-10px_rgba(200,200,200,0.7)_inset] shadow-[0_0_20px_-5px_rgba(200,200,200,0.8)]",
+      shine: "bg-gradient-to-br from-white/80 via-slate-100/50 to-transparent",
+      label: "Silver",
+      labelStyle: "bg-gradient-to-r from-slate-500/40 to-zinc-500/40 text-slate-950 border-slate-600/80 backdrop-blur-sm font-black shadow-[0_0_20px_rgba(200,200,200,0.6)]"
     },
     gold: { 
-      badge: "bg-accent-purple/10 text-accent-purple ring-1 ring-accent-purple/20", 
-      icon: "text-accent-purple",
-      bg: "from-accent-purple/10 to-white",
-      glow: "bg-accent-purple/10"
+      badgeBg: "bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-500",
+      cardGlow: "shadow-[0_0_80px_5px_rgba(255,215,0,1)] shadow-[0_0_50px_-2px_rgba(255,215,0,0.9)_inset] shadow-[0_0_30px_0px_rgba(255,215,0,0.95)] shadow-[0_0_15px_0px_rgba(255,215,0,0.9)]",
+      shine: "bg-gradient-to-br from-white/90 via-yellow-100/60 to-transparent",
+      label: "Gold",
+      labelStyle: "bg-gradient-to-r from-yellow-400/50 to-amber-400/50 text-yellow-950 border-yellow-600/90 backdrop-blur-sm font-black shadow-[0_0_30px_rgba(255,215,0,0.8)]"
+    },
+    diamond: { 
+      badgeBg: "bg-gradient-to-br from-cyan-300 via-blue-300 to-purple-400",
+      cardGlow: "shadow-[0_0_90px_10px_rgba(59,130,246,1)] shadow-[0_0_60px_0px_rgba(168,85,247,0.95)_inset] shadow-[0_0_40px_5px_rgba(59,130,246,1)] shadow-[0_0_20px_5px_rgba(168,85,247,0.95)]",
+      shine: "bg-gradient-to-br from-white/95 via-cyan-100/70 to-transparent",
+      label: "Diamond",
+      labelStyle: "bg-gradient-to-r from-cyan-400/60 to-purple-400/60 text-blue-950 border-blue-600/90 backdrop-blur-sm font-black shadow-[0_0_35px_rgba(59,130,246,0.9)]"
     },
   };
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 pb-16">
       {/* Header */}
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight">Achievements</h1>
-        <p className="text-zinc-500">Track your milestones and unlock badges.</p>
-      </div>
-
-      {/* Summary Cards - Metallic Look */}
-      <div className="flex items-center gap-6">
-        <div className="relative overflow-hidden group bg-white rounded-xl border border-zinc-200 px-6 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent opacity-50" />
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="relative z-10 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
-              <Trophy weight="fill" className="w-6 h-6 text-white" />
+      <div className="bg-white border-[3px] border-zinc-900 shadow-neo-xl rounded-2xl p-8 relative overflow-hidden group">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#EAB308_1px,transparent_1px),linear-gradient(to_bottom,#EAB308_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.05]" />
+        
+        {/* Glow Effects */}
+        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <div className="flex items-center gap-5">
+              <div className="relative">
+                <div className="absolute inset-0 bg-yellow-400 rounded-2xl rotate-6 opacity-20 blur-sm" />
+                <div className="p-4 bg-gradient-to-br from-yellow-400 to-amber-500 border-[3px] border-zinc-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative z-10">
+                  <Trophy weight="fill" className="w-10 h-10 text-white drop-shadow-md" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-black text-zinc-900 tracking-tight">Achievements</h1>
+                <p className="text-base text-zinc-500 font-bold mt-1">Collect badges and showcase your progress</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Unlocked Count Badge */}
+          <div className="flex items-center gap-4 px-6 py-4 bg-white rounded-2xl border-[3px] border-zinc-900 shadow-neo-sm group-hover:scale-105 transition-transform duration-300">
+            <div className="relative w-12 h-12 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center border-2 border-zinc-900 shadow-inner overflow-hidden">
+                {/* Glowing effect background */}
+                <div className="absolute inset-0 bg-white/10 blur-[2px]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent opacity-50" />
+                
+                {/* The Trophy Icon */}
+                <Trophy weight="fill" className="w-7 h-7 text-white relative z-10 drop-shadow-md" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-zinc-900 tracking-tight">{unlockedCount} / {achievements.length}</p>
-              <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">Unlocked</p>
+              <div className="flex items-baseline gap-1">
+                <p className="text-3xl font-black tracking-tighter text-zinc-900 leading-none">{unlockedCount}</p>
+                <span className="text-xs font-bold text-zinc-400 uppercase">/ {achievements.length}</span>
+              </div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-amber-600">Unlocked</p>
             </div>
           </div>
         </div>
-
-        <div className="relative overflow-hidden group bg-white rounded-xl border border-zinc-200 px-6 py-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent-purple/5 to-transparent opacity-50" />
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-accent-purple/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="relative z-10 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-purple to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
-              <Fire weight="fill" className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-zinc-900 tracking-tight">{streak}</p>
-              <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">Day Streak</p>
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* Achievements Grid - Clean Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {achievements.map((achievement) => {
-          const style = tierStyles[achievement.tier];
-          const progress = Math.min((achievement.current / achievement.requirement) * 100, 100);
+      {/* Badge Collection Grid */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between border-b-2 border-zinc-100 pb-4">
+            <h2 className="text-sm font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+            <Sparkle weight="fill" className="w-4 h-4 text-zinc-400" />
+            Badge Collection
+            </h2>
+            <div className="text-xs font-bold text-zinc-400">
+                {Math.round((unlockedCount / achievements.length) * 100)}% Complete
+            </div>
+        </div>
 
-          return (
-            <div
-              key={achievement.id}
-              className={cn(
-                "group relative overflow-hidden bg-white rounded-xl border p-5 transition-all duration-300 shadow-sm",
-                achievement.unlocked
-                  ? "border-zinc-200 hover:border-zinc-300 hover:shadow-lg hover:-translate-y-0.5"
-                  : "border-zinc-100 opacity-60 grayscale-[0.5]"
-              )}
-            >
-              {/* Subtle Gradient Background */}
-              <div className={cn("absolute inset-0 bg-gradient-to-br opacity-50 pointer-events-none", style.bg)} />
-              {/* Glow effect on hover */}
-              <div className={cn("absolute -top-10 -right-10 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none", style.glow)} />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+          {achievements.map((achievement) => {
+            const tier = tierConfig[achievement.tier];
+            const progressPercent = Math.min((achievement.current / achievement.requirement) * 100, 100);
 
-              <div className="relative z-10">
-                <div className="flex justify-between items-start mb-4">
+            return (
+              <div
+                key={achievement.id}
+                className={cn(
+                  "relative flex flex-col items-center text-center p-6 rounded-2xl border-[3px] transition-all duration-500 group overflow-hidden",
+                  achievement.unlocked
+                    ? "bg-white border-zinc-900 shadow-neo hover:-translate-y-2 hover:shadow-neo-lg cursor-pointer"
+                    : "bg-gradient-to-br from-zinc-50 to-zinc-100/50 border-zinc-200 hover:border-zinc-300"
+                )}
+              >
+                {/* Unlocked Card Background Pattern */}
+                {achievement.unlocked && (
+                  <>
+                    <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1)_1px,transparent_1px)] bg-[size:16px_16px]" />
+                    <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10", tier.cardGlow)} />
+                  </>
+                )}
+
+                {/* Premium Badge Container */}
+                <div className="relative mb-5 mt-1">
+                  {/* Badge Background Circle */}
                   <div className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center transition-all group-hover:scale-110 duration-300",
-                    achievement.unlocked ? "bg-white shadow-md ring-1 ring-black/5 group-hover:shadow-lg" : "bg-zinc-100"
-                  )}>
-                    <div className={achievement.unlocked ? style.icon : "text-zinc-400"}>
-                      {achievement.icon}
-                    </div>
-                  </div>
+                    "absolute inset-0 w-28 h-28 rounded-full transition-all duration-500 -left-2",
+                    achievement.unlocked
+                      ? cn(tier.badgeBg, "group-hover:scale-110 opacity-100")
+                      : "bg-zinc-100 opacity-60"
+                  )} />
                   
-                  {achievement.unlocked ? (
-                    <span className={cn(
-                      "text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full",
-                      style.badge
-                    )}>
-                      {achievement.tier}
-                    </span>
-                  ) : (
-                    <Lock weight="fill" className="w-4 h-4 text-zinc-300" />
+                  {/* Shine Effect for Unlocked */}
+                  {achievement.unlocked && (
+                    <div className={cn(
+                      "absolute inset-0 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 -left-2",
+                      tier.shine
+                    )} />
+                  )}
+
+                  {/* Badge Icon Container */}
+                  <div className="relative flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 ease-out">
+                    <BadgeIcon 
+                      tier={achievement.tier}
+                      category={achievement.category}
+                      unlocked={achievement.unlocked}
+                    />
+                    
+                    {/* Lock Overlay for Locked Badges */}
+                    {!achievement.unlocked && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/70 backdrop-blur-sm rounded-full">
+                        <Lock weight="fill" className="w-10 h-10 text-white drop-shadow-lg" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tier Badge Ribbon */}
+                  {achievement.unlocked && (
+                    <div className="absolute -top-2 -right-2 z-20">
+                      <div className={cn(
+                        "px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border-2 shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-3",
+                        tier.labelStyle
+                      )}>
+                        {tier.label}
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                <div className="space-y-1 mb-4">
-                  <h3 className="text-sm font-bold text-zinc-900 tracking-tight">{achievement.title}</h3>
-                  <p className="text-xs text-zinc-500 leading-relaxed">{achievement.description}</p>
-                </div>
+                {/* Text Content */}
+                <div className="space-y-2 w-full relative z-10">
+                  <h3 className={cn(
+                    "text-sm font-black tracking-tight leading-tight",
+                    achievement.unlocked ? "text-zinc-900" : "text-zinc-500"
+                  )}>
+                    {achievement.title}
+                  </h3>
+                  
+                  <p className={cn(
+                    "text-[11px] font-medium leading-relaxed line-clamp-2 min-h-[2.5em]",
+                    achievement.unlocked ? "text-zinc-600" : "text-zinc-400"
+                  )}>
+                    {achievement.description}
+                  </p>
+                  
+                  {/* Progress for Locked Items */}
+                  {!achievement.unlocked && (
+                    <div className="pt-2 space-y-1.5">
+                      <div className="flex justify-between text-[10px] font-bold text-zinc-500">
+                        <span>Progress</span>
+                        <span>{Math.round(progressPercent)}%</span>
+                      </div>
+                      <div className="relative h-2 w-full bg-zinc-200 rounded-full overflow-hidden border border-zinc-300">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-50" />
+                        <div 
+                          className="h-full bg-gradient-to-r from-zinc-400 to-zinc-500 rounded-full transition-all duration-700 relative overflow-hidden" 
+                          style={{ width: `${progressPercent}%` }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-shimmer" />
+                        </div>
+                      </div>
+                      <p className="text-[9px] font-medium text-zinc-400">
+                        {achievement.current} / {achievement.requirement}
+                      </p>
+                    </div>
+                  )}
 
-                {/* Precision Progress Bar */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[10px] font-medium">
-                    <span className="text-zinc-400">{achievement.current} / {achievement.requirement}</span>
-                    <span className={achievement.unlocked ? "text-emerald-600" : "text-zinc-400"}>
-                      {Math.round(progress)}%
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-zinc-100 rounded-[3px] overflow-hidden">
-                    <div 
-                      className={cn(
-                        "h-full rounded-[2px] transition-all duration-1000 ease-out",
-                        achievement.unlocked ? (achievement.tier === 'gold' ? "bg-accent-purple" : "bg-emerald-500") : "bg-zinc-300"
-                      )}
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
+                  {/* Unlock Status */}
+                  {achievement.unlocked && (
+                    <div className="pt-2 flex items-center justify-center gap-1.5">
+                      <CheckCircle weight="fill" className="w-3 h-3 text-emerald-500" />
+                      <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Unlocked</span>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

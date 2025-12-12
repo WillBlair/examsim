@@ -1,8 +1,9 @@
 import { db } from "@/db";
 import { exams, questions } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ExamClient } from "@/components/dashboard/ExamClient";
+import { auth } from "@/auth";
 
 export default async function ExamPage({ 
   params, 
@@ -13,8 +14,15 @@ export default async function ExamPage({
   const id = parseInt(examId);
   if (isNaN(id)) return notFound();
 
+  const session = await auth();
+  if (!session?.user?.id) return redirect("/login");
+
   const exam = await db.select().from(exams).where(eq(exams.id, id)).then(res => res[0]);
   if (!exam) return notFound();
+  
+  if (exam.userId !== session.user.id) {
+    return notFound();
+  }
 
   const examQuestions = await db.select().from(questions).where(eq(questions.examId, id));
 

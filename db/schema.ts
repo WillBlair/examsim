@@ -103,3 +103,13 @@ export const examResults = pgTable("exam_results", {
   examIdIdx: index("exam_results_exam_id_idx").on(table.examId),
   completedAtIdx: index("exam_results_completed_at_idx").on(table.completedAt),
 }));
+
+export const rateLimits = pgTable("rate_limits", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),
+  action: text("action").notNull(), // e.g., 'generate_exam'
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("rate_limits_user_id_idx").on(table.userId),
+  timestampIdx: index("rate_limits_timestamp_idx").on(table.timestamp),
+}));

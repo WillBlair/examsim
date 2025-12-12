@@ -12,6 +12,8 @@ import { format } from "date-fns";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getCachedUserStats } from "@/lib/utils/cache";
+import { cn } from "@/lib/utils";
+import { DashboardAvatar } from "@/components/dashboard/DashboardAvatar";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -47,6 +49,7 @@ export default async function DashboardPage() {
 
   const hasExams = stats.totalExams > 0;
   const firstName = session.user.name?.split(' ')[0] || 'there';
+  const userImage = session.user.image;
 
   const recentExams = allExams.slice(0, 3);
   const recentResults = allResults
@@ -56,7 +59,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8 flex-1">
       {/* Header with Date */}
-      <div className="bg-white border-[3px] border-black shadow-neo-xl rounded-lg p-6 relative overflow-hidden">
+      <div className="bg-white border-[3px] border-black shadow-neo-xl rounded-lg p-6 relative overflow-hidden flex items-center justify-between">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8B5CF6_1px,transparent_1px),linear-gradient(to_bottom,#8B5CF6_1px,transparent_1px)] bg-[size:48px_48px] opacity-[0.07]" />
         
@@ -75,6 +78,13 @@ export default async function DashboardPage() {
           <p className="text-sm text-zinc-600 font-medium max-w-lg">
               Ready to continue your prep? You&apos;re doing great.
           </p>
+        </div>
+
+        {/* Profile Picture Circle */}
+        <div className="relative z-10 hidden md:block">
+           <div className="w-16 h-16 rounded-full border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden bg-white">
+             <DashboardAvatar sessionImage={userImage} name={firstName} />
+           </div>
         </div>
       </div>
 

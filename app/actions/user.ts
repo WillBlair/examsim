@@ -24,8 +24,8 @@ export const updateProfilePicture = async (imageBase64: string) => {
       .set({ image: imageBase64 })
       .where(eq(users.id, session.user.id));
 
-    revalidatePath("/dashboard/settings");
-    revalidatePath("/dashboard"); // Sidebar might need update too
+    // Revalidate all dashboard pages to ensure fresh session data
+    revalidatePath("/dashboard", "layout");
     
     return { success: "Profile picture updated" };
   } catch (error) {

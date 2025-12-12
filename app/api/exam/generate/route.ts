@@ -3,7 +3,8 @@ import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { db } from "@/db";
-import { exams, questions } from "@/db/schema";
+import { exams, questions, rateLimits } from "@/db/schema";
+import { count, and, eq, gte } from "drizzle-orm";
 import * as mammoth from "mammoth";
 import { auth } from "@/auth";
 
@@ -30,6 +31,32 @@ export async function POST(req: NextRequest) {
         if (!session?.user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
+
+        // Rate Limit Check (5 requests per hour)
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        const [requestCount] = await db
+            .select({ count: count() })
+            .from(rateLimits)
+            .where(
+                and(
+                    eq(rateLimits.userId, session.user.id),
+                    eq(rateLimits.action, "generate_exam"),
+                    gte(rateLimits.timestamp, oneHourAgo)
+                )
+            );
+
+        if (requestCount.count >= 5) {
+            return NextResponse.json(
+                { error: "Rate limit exceeded. You can only generate 5 exams per hour." },
+                { status: 429 }
+            );
+        }
+
+        // Record this request
+        await db.insert(rateLimits).values({
+            userId: session.user.id,
+            action: "generate_exam"
+        });
 
         const formData = await req.formData();
         const topic = formData.get("topic") as string;
