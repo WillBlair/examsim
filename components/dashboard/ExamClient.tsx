@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Spinner, Timer, X, Check, CheckCircle, FloppyDisk } from "@phosphor-icons/react";
@@ -27,9 +27,10 @@ interface Exam {
   timeLimit?: number | null;
 }
 
-export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; questions: Question[]; initialTimer?: number }) {
+export function ExamClient({ exam, questions, initialTimer, isGenerating = false }: { exam: Exam; questions: Question[]; initialTimer?: number; isGenerating?: boolean }) {
   const router = useRouter();
   const [answers, setAnswers] = useState<Record<number, string | string[]>>({});
+  const prevQuestionsRef = useRef<Question[]>(questions);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [score, setScore] = useState(0);
@@ -46,11 +47,11 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
   useEffect(() => {
     const storageKey = `exam-${exam.id}-answers`;
     const timerKey = `exam-${exam.id}-timer`;
-    
+
     // Load saved answers
     const savedAnswers = localStorage.getItem(storageKey);
     const savedTimestamp = localStorage.getItem(`${storageKey}-timestamp`);
-    
+
     if (savedAnswers && !isSubmitted) {
       try {
         const parsed = JSON.parse(savedAnswers);
@@ -69,11 +70,11 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
       try {
         const timerData = JSON.parse(savedTimer);
         const { timeLeft: savedTimeLeft, startedAt } = timerData;
-        
+
         if (savedTimeLeft > 0 && startedAt) {
           const elapsed = Math.floor((Date.now() - startedAt) / 1000);
           const remaining = Math.max(0, savedTimeLeft - elapsed);
-          
+
           if (remaining > 0) {
             setTimeLeft(remaining);
             setIsTimerRunning(true);
@@ -89,13 +90,31 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
     }
   }, [exam.id, isSubmitted]);
 
+  // Sync answers when question IDs change (e.g. streaming finished and real IDs loaded)
+  useEffect(() => {
+    const oldQs = prevQuestionsRef.current;
+    if (oldQs.length > 0 && questions.length === oldQs.length && oldQs[0].id !== questions[0].id) {
+      setAnswers(prev => {
+        const newMap: Record<number, string | string[]> = {};
+        questions.forEach((q, i) => {
+          const oldId = oldQs[i].id;
+          if (prev[oldId]) {
+            newMap[q.id] = prev[oldId];
+          }
+        });
+        return newMap;
+      });
+    }
+    prevQuestionsRef.current = questions;
+  }, [questions]);
+
   // Auto-save answers to localStorage
   useEffect(() => {
     if (isSubmitted || Object.keys(answers).length === 0) return;
 
     const storageKey = `exam-${exam.id}-answers`;
     setIsSaving(true);
-    
+
     // Debounce the save
     const timeoutId = setTimeout(() => {
       try {
@@ -128,8 +147,8 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
   useEffect(() => {
     // Auto-start timer if initialTimer provided
     if (initialTimer && !isTimerRunning && timeLeft === null) {
-        setTimeLeft(initialTimer * 60);
-        setIsTimerRunning(true);
+      setTimeLeft(initialTimer * 60);
+      setIsTimerRunning(true);
     }
   }, [initialTimer, isTimerRunning, timeLeft]);
 
@@ -144,7 +163,7 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
             localStorage.removeItem(timerKey);
             return 0;
           }
-          
+
           // Persist timer state
           const timerKey = `exam-${exam.id}-timer`;
           try {
@@ -162,7 +181,7 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
           } catch (e) {
             console.error("Failed to save timer state", e);
           }
-          
+
           return prev - 1;
         });
       }, 1000);
@@ -181,7 +200,7 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
       setTimeLeft(seconds);
       setIsTimerRunning(true);
       setShowTimerConfig(false);
-      
+
       // Persist timer start
       const timerKey = `exam-${exam.id}-timer`;
       try {
@@ -212,15 +231,15 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
         // Parse correct answer if it's a JSON string
         let correctOptions: string[] = [];
         try {
-            correctOptions = JSON.parse(q.correctAnswer);
+          correctOptions = JSON.parse(q.correctAnswer);
         } catch {
-            // Fallback if not JSON (shouldn't happen with new generator, but safety)
-            correctOptions = [q.correctAnswer];
+          // Fallback if not JSON (shouldn't happen with new generator, but safety)
+          correctOptions = [q.correctAnswer];
         }
 
         const userOptions = userAnswer as string[];
         if (!Array.isArray(userOptions)) return false;
-        
+
         // Check if set sizes match
         if (correctOptions.length !== userOptions.length) return false;
         // Check if every correct option is in user options
@@ -229,15 +248,15 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
         return false;
       }
     } else if (q.type === "Fill in the Blank") {
-       return (userAnswer as string).trim().toLowerCase() === q.correctAnswer.trim().toLowerCase();
+      return (userAnswer as string).trim().toLowerCase() === q.correctAnswer.trim().toLowerCase();
     } else {
-       return userAnswer === q.correctAnswer;
+      return userAnswer === q.correctAnswer;
     }
   };
 
   const handleOptionSelect = (questionId: number, option: string, type: string) => {
     if (isSubmitted) return;
-    
+
     if (type === "Select All That Apply") {
       setAnswers(prev => {
         const current = (prev[questionId] as string[]) || [];
@@ -264,10 +283,10 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
     // Only warn if submitting with very few answers (e.g. accidentally clicked immediately)
     // Otherwise just submit without friction
     const answeredCount = Object.keys(answers).length;
-    
+
     if (answeredCount === 0) {
-        toast.error("You haven't answered any questions yet.");
-        return;
+      toast.error("You haven't answered any questions yet.");
+      return;
     }
 
     await submitExam();
@@ -299,13 +318,13 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
 
       setScore(correctCount);
       setIsSubmitted(true);
-      
+
       const percentage = Math.round((correctCount / questions.length) * 100);
       toast.success("Exam Submitted!", {
         description: `You scored ${percentage}% (${correctCount}/${questions.length})`,
         duration: 5000
       });
-      
+
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       toast.error("Failed to submit exam", {
@@ -347,8 +366,8 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
               <>
                 <span>•</span>
                 <span className={cn(
-                  Object.keys(answers).length === questions.length 
-                    ? "text-emerald-600 font-medium" 
+                  Object.keys(answers).length === questions.length
+                    ? "text-emerald-600 font-medium"
                     : "text-amber-600"
                 )}>
                   {Object.keys(answers).length}/{questions.length} answered
@@ -358,9 +377,9 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
                     <span>•</span>
                     <div className={cn(
                       "flex items-center gap-1.5 text-xs font-medium transition-colors",
-                      isSaving 
-                        ? "text-blue-600" 
-                        : lastSaved 
+                      isSaving
+                        ? "text-blue-600"
+                        : lastSaved
                           ? "text-green-600"
                           : ""
                     )}>
@@ -396,10 +415,10 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
               onClick={() => setShowTimerConfig(!showTimerConfig)}
             >
               <Timer className={cn("w-5 h-5", isTimerRunning && "text-brand-orange", !isTimerRunning && timeLeft === 0 && "text-red-600")} />
-              {isTimerRunning && timeLeft !== null 
-                ? formatTime(timeLeft) 
-                : timeLeft === 0 
-                  ? "Time's Up!" 
+              {isTimerRunning && timeLeft !== null
+                ? formatTime(timeLeft)
+                : timeLeft === 0
+                  ? "Time's Up!"
                   : "Set Timer"}
             </Button>
 
@@ -468,14 +487,14 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
         {questions.map((q, i) => {
           const userAnswer = answers[q.id];
           const isCorrect = checkAnswer(q, userAnswer);
-          
+
           return (
             <div
               key={q.id}
               className={cn(
                 "bg-white border-2 rounded-lg p-6 space-y-4 transition-all shadow-sm",
-                isSubmitted 
-                  ? isCorrect 
+                isSubmitted
+                  ? isCorrect
                     ? "border-emerald-500 bg-emerald-50/10"
                     : "border-red-500 bg-red-50/10"
                   : "border-zinc-200 hover:border-zinc-900 hover:shadow-neo"
@@ -497,108 +516,108 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
                 <div className="space-y-4 w-full">
                   <div className="flex justify-between items-start">
                     <h3 className="text-lg font-medium text-zinc-900">
-                        {q.questionText}
+                      {q.questionText}
                     </h3>
                     <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 bg-zinc-100 px-2 py-1 rounded">
-                        {q.type}
+                      {q.type}
                     </span>
                   </div>
 
                   <div className="space-y-2">
                     {q.type === "Fill in the Blank" ? (
-                        <div className="space-y-2">
-                            <Input 
-                                placeholder="Type your answer here..."
-                                value={(answers[q.id] as string) || ""}
-                                onChange={(e) => handleTextChange(q.id, e.target.value)}
-                                disabled={isSubmitted}
-                                className={cn(
-                                    "font-medium text-lg p-6",
-                                    isSubmitted && !isCorrect && "border-red-300 bg-red-50 text-red-900",
-                                    isSubmitted && isCorrect && "border-green-300 bg-green-50 text-green-900"
-                                )}
-                            />
-                            {isSubmitted && !isCorrect && (
-                                <div className="text-sm text-zinc-500">
-                                    Correct Answer: <span className="font-bold text-green-600">{q.correctAnswer}</span>
-                                </div>
-                            )}
-                        </div>
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="Type your answer here..."
+                          value={(answers[q.id] as string) || ""}
+                          onChange={(e) => handleTextChange(q.id, e.target.value)}
+                          disabled={isSubmitted}
+                          className={cn(
+                            "font-medium text-lg p-6",
+                            isSubmitted && !isCorrect && "border-red-300 bg-red-50 text-red-900",
+                            isSubmitted && isCorrect && "border-green-300 bg-green-50 text-green-900"
+                          )}
+                        />
+                        {isSubmitted && !isCorrect && (
+                          <div className="text-sm text-zinc-500">
+                            Correct Answer: <span className="font-bold text-green-600">{q.correctAnswer}</span>
+                          </div>
+                        )}
+                      </div>
                     ) : (
-                        q.options.map((option, idx) => {
-                            let isSelected = false;
-                            let isCorrectOption = false;
+                      q.options.map((option, idx) => {
+                        let isSelected = false;
+                        let isCorrectOption = false;
 
-                            if (q.type === "Select All That Apply") {
-                                const current = (userAnswer as string[]) || [];
-                                isSelected = current.includes(option);
-                                
-                                let correctOptions: string[] = [];
-                                try { correctOptions = JSON.parse(q.correctAnswer); } catch {}
-                                isCorrectOption = correctOptions.includes(option);
-                            } else {
-                                isSelected = userAnswer === option;
-                                isCorrectOption = option === q.correctAnswer;
-                            }
-                            
-                            let optionStyle = "border-2 border-zinc-200 hover:border-zinc-400 hover:bg-zinc-50 shadow-sm";
-                            if (isSubmitted) {
-                                if (isCorrectOption) {
-                                    optionStyle = "border-emerald-600 bg-emerald-50 text-emerald-900 shadow-neo-sm";
-                                } else if (isSelected && !isCorrectOption) {
-                                    optionStyle = "border-red-600 bg-red-50 text-red-900 shadow-neo-sm";
-                                } else {
-                                    optionStyle = "border-zinc-200 opacity-60 bg-zinc-50 border-2";
-                                }
-                            } else if (isSelected) {
-                                // Addictive, bright, polished style - Enhanced
-                                optionStyle = "border-zinc-900 border-2 bg-brand-orange/5 text-zinc-900 shadow-neo-brand";
-                            }
+                        if (q.type === "Select All That Apply") {
+                          const current = (userAnswer as string[]) || [];
+                          isSelected = current.includes(option);
 
-                            return (
-                            <div
-                                key={idx}
-                                onClick={() => handleOptionSelect(q.id, option, q.type)}
-                                className={cn(
-                                "flex items-center gap-4 p-4 rounded-sm cursor-pointer transition-all duration-200 ease-out group relative overflow-hidden",
-                                optionStyle
-                                )}
-                            >
-                                {/* Active selection indicator bar */}
-                                {!isSubmitted && isSelected && (
-                                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-brand-orange border-r border-zinc-900" />
-                                )}
+                          let correctOptions: string[] = [];
+                          try { correctOptions = JSON.parse(q.correctAnswer); } catch { }
+                          isCorrectOption = correctOptions.includes(option);
+                        } else {
+                          isSelected = userAnswer === option;
+                          isCorrectOption = option === q.correctAnswer;
+                        }
 
-                                <div className={cn(
-                                    "w-6 h-6 border-2 flex items-center justify-center transition-all duration-200 shadow-sm shrink-0 z-10",
-                                    q.type === "Select All That Apply" ? "rounded-sm" : "rounded-full",
-                                    isSubmitted 
-                                        ? isCorrectOption 
-                                            ? "border-emerald-600 bg-emerald-600" 
-                                            : isSelected 
-                                                ? "border-red-600 bg-red-600"
-                                                : "border-zinc-300 bg-zinc-100"
-                                        : isSelected 
-                                            ? "border-zinc-900 bg-brand-orange" 
-                                            : "border-zinc-300 bg-white group-hover:border-zinc-900"
-                                )}>
-                                    {(isSubmitted ? (isCorrectOption || isSelected) : isSelected) && (
-                                        q.type === "Select All That Apply" ? (
-                                            <Check className="w-3.5 h-3.5 text-white" weight="bold" />
-                                        ) : (
-                                            <div className="w-2.5 h-2.5 rounded-full bg-white border border-zinc-900" />
-                                        )
-                                    )}
-                                </div>
-                                <span className={cn(
-                                    "font-medium text-base leading-relaxed transition-colors duration-200 z-10",
-                                    !isSubmitted && isSelected ? "text-zinc-900 font-bold" : "text-zinc-600 group-hover:text-zinc-900"
-                                )}>
-                                    {option}
-                                </span>
+                        let optionStyle = "border-2 border-zinc-200 hover:border-zinc-400 hover:bg-zinc-50 shadow-sm";
+                        if (isSubmitted) {
+                          if (isCorrectOption) {
+                            optionStyle = "border-emerald-600 bg-emerald-50 text-emerald-900 shadow-neo-sm";
+                          } else if (isSelected && !isCorrectOption) {
+                            optionStyle = "border-red-600 bg-red-50 text-red-900 shadow-neo-sm";
+                          } else {
+                            optionStyle = "border-zinc-200 opacity-60 bg-zinc-50 border-2";
+                          }
+                        } else if (isSelected) {
+                          // Addictive, bright, polished style - Enhanced
+                          optionStyle = "border-zinc-900 border-2 bg-brand-orange/5 text-zinc-900 shadow-neo-brand";
+                        }
+
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => handleOptionSelect(q.id, option, q.type)}
+                            className={cn(
+                              "flex items-center gap-4 p-4 rounded-sm cursor-pointer transition-all duration-200 ease-out group relative overflow-hidden",
+                              optionStyle
+                            )}
+                          >
+                            {/* Active selection indicator bar */}
+                            {!isSubmitted && isSelected && (
+                              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-brand-orange border-r border-zinc-900" />
+                            )}
+
+                            <div className={cn(
+                              "w-6 h-6 border-2 flex items-center justify-center transition-all duration-200 shadow-sm shrink-0 z-10",
+                              q.type === "Select All That Apply" ? "rounded-sm" : "rounded-full",
+                              isSubmitted
+                                ? isCorrectOption
+                                  ? "border-emerald-600 bg-emerald-600"
+                                  : isSelected
+                                    ? "border-red-600 bg-red-600"
+                                    : "border-zinc-300 bg-zinc-100"
+                                : isSelected
+                                  ? "border-zinc-900 bg-brand-orange"
+                                  : "border-zinc-300 bg-white group-hover:border-zinc-900"
+                            )}>
+                              {(isSubmitted ? (isCorrectOption || isSelected) : isSelected) && (
+                                q.type === "Select All That Apply" ? (
+                                  <Check className="w-3.5 h-3.5 text-white" weight="bold" />
+                                ) : (
+                                  <div className="w-2.5 h-2.5 rounded-full bg-white border border-zinc-900" />
+                                )
+                              )}
                             </div>
-                            );
-                        })
+                            <span className={cn(
+                              "font-medium text-base leading-relaxed transition-colors duration-200 z-10",
+                              !isSubmitted && isSelected ? "text-zinc-900 font-bold" : "text-zinc-600 group-hover:text-zinc-900"
+                            )}>
+                              {option}
+                            </span>
+                          </div>
+                        );
+                      })
                     )}
                   </div>
 
@@ -620,16 +639,21 @@ export function ExamClient({ exam, questions, initialTimer }: { exam: Exam; ques
         <div className="flex justify-end mt-12 pb-8">
           <Button
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isGenerating}
             className="h-14 px-8 rounded-full bg-brand-orange text-white hover:bg-emerald-600 font-bold shadow-xl shadow-emerald-500/20 text-lg transition-transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? (
-                <>
-                    <Spinner className="w-5 h-5 animate-spin mr-2" />
-                    Submitting...
-                </>
+            {isGenerating ? (
+              <>
+                <Spinner className="w-5 h-5 animate-spin mr-2" />
+                Generating Questions...
+              </>
+            ) : isSubmitting ? (
+              <>
+                <Spinner className="w-5 h-5 animate-spin mr-2" />
+                Submitting...
+              </>
             ) : (
-                "Submit Exam"
+              "Submit Exam"
             )}
           </Button>
         </div>

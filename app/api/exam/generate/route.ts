@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "@ai-sdk/google";
-import { generateObject } from "ai";
+import { streamObject } from "ai";
 import { z } from "zod";
 import { db } from "@/db";
 import { exams, questions, rateLimits } from "@/db/schema";
@@ -32,24 +32,28 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Rate Limit Check (5 requests per hour)
-        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-        const [requestCount] = await db
-            .select({ count: count() })
-            .from(rateLimits)
-            .where(
-                and(
-                    eq(rateLimits.userId, session.user.id),
-                    eq(rateLimits.action, "generate_exam"),
-                    gte(rateLimits.timestamp, oneHourAgo)
-                )
-            );
+        // Rate Limit Check
+        // Exempt owner account from limits
+        if (session.user.email !== "willblair47@gmail.com") {
+            const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+            const [requestCount] = await db
+                .select({ count: count() })
+                .from(rateLimits)
+                .where(
+                    and(
+                        eq(rateLimits.userId, session.user.id),
+                        eq(rateLimits.action, "generate_exam"),
+                        gte(rateLimits.timestamp, oneHourAgo)
+                    )
+                );
 
-        if (requestCount.count >= 5) {
-            return NextResponse.json(
-                { error: "Rate limit exceeded. You can only generate 5 exams per hour." },
-                { status: 429 }
-            );
+            // Stricter limit for free users: 1 per hour
+            if (requestCount.count >= 1) {
+                return NextResponse.json(
+                    { error: "Rate limit exceeded. Free tier users can only generate 1 exam per hour. Upgrade for unlimited access." },
+                    { status: 429 }
+                );
+            }
         }
 
         // Record this request
@@ -72,8 +76,6 @@ export async function POST(req: NextRequest) {
 
         // Validate file uploads
         for (const file of files) {
-            console.log(`[Exam Generate] Processing file: ${file.name}, type: ${file.type}, size: ${file.size}`);
-
             if (file.size > MAX_FILE_SIZE) {
                 return NextResponse.json(
                     { error: `File "${file.name}" exceeds the 10MB size limit` },
@@ -94,133 +96,98 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        const { readable, writable } = new TransformStream();
-        const writer = writable.getWriter();
-        const encoder = new TextEncoder();
+        let contextText = "";
 
-        // Helper to send updates
-        const sendUpdate = async (data: StreamUpdate) => {
-            await writer.write(encoder.encode(JSON.stringify(data) + "\n"));
-        };
+        // Process Pasted Content
+        if (pastedText) {
+            contextText += `\n\n--- Pasted Content ---\n${pastedText}`;
+        }
 
-        // Run async processing without awaiting it to allow streaming response immediately
-        (async () => {
-            try {
-                await sendUpdate({ step: 0, message: "Analyzing uploaded documents..." });
+        // Process Files - (Simplified for stream response speed, but ideally would be async too if large)
+        if (files.length > 0) {
+            for (const file of files) {
+                if (file.size === 0) continue;
+                const buffer = Buffer.from(await file.arrayBuffer());
 
-                let contextText = "";
+                const isPdfFile = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+                const isDocxFile = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.toLowerCase().endsWith(".docx");
+                const isTxtFile = file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
 
-                // Process Pasted Content
-                if (pastedText) {
-                    contextText += `\n\n--- Pasted Content ---\n${pastedText}`;
-                }
-
-                // Process Files
-                if (files.length > 0) {
-                    for (const file of files) {
-                        if (file.size === 0) continue;
-
-                        await sendUpdate({ step: 0, message: `Reading ${file.name}...` });
-
-                        const buffer = Buffer.from(await file.arrayBuffer());
-
-                        const isPdfFile = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-                        const isDocxFile = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.toLowerCase().endsWith(".docx");
-                        const isTxtFile = file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
-
-                        if (isPdfFile) {
-                            // eslint-disable-next-line @typescript-eslint/no-require-imports
-                            const pdfLib = require("pdf-parse");
-                            const PDFParseClass = pdfLib.PDFParse || pdfLib.default?.PDFParse;
-
-                            let text = "";
-                            try {
-                                if (PDFParseClass) {
-                                    const parser = new PDFParseClass({ data: buffer });
-                                    const result = await parser.getText();
-                                    text = result.text;
-                                } else {
-                                    const pdf = pdfLib.default || pdfLib;
-                                    const data = await pdf(buffer);
-                                    text = data.text;
-                                }
-                            } catch (pdfError) {
-                                const errorMessage = pdfError instanceof Error ? pdfError.message : "Failed to parse PDF";
-                                console.error(`PDF parse error for ${file.name}:`, pdfError);
-                                await sendUpdate({ error: `Failed to parse PDF "${file.name}": ${errorMessage}` });
-                                continue;
-                            }
-                            contextText += `\n\n--- Content from ${file.name} ---\n${text}`;
-
-                        } else if (isDocxFile) {
-                            const result = await mammoth.extractRawText({ buffer });
-                            contextText += `\n\n--- Content from ${file.name} ---\n${result.value}`;
-                        } else if (isTxtFile) {
-                            const text = buffer.toString("utf-8");
-                            contextText += `\n\n--- Content from ${file.name} ---\n${text}`;
+                if (isPdfFile) {
+                    // eslint-disable-next-line @typescript-eslint/no-require-imports
+                    const pdfLib = require("pdf-parse");
+                    const PDFParseClass = pdfLib.PDFParse || pdfLib.default?.PDFParse;
+                    let text = "";
+                    try {
+                        if (PDFParseClass) {
+                            const parser = new PDFParseClass({ data: buffer });
+                            const result = await parser.getText();
+                            text = result.text;
+                        } else {
+                            const pdf = pdfLib.default || pdfLib;
+                            const data = await pdf(buffer);
+                            text = data.text;
                         }
-                    }
+                    } catch (e) { console.error(e); }
+                    contextText += `\n\n--- Content from ${file.name} ---\n${text}`;
+
+                } else if (isDocxFile) {
+                    const result = await mammoth.extractRawText({ buffer });
+                    contextText += `\n\n--- Content from ${file.name} ---\n${result.value}`;
+                } else if (isTxtFile) {
+                    const text = buffer.toString("utf-8");
+                    contextText += `\n\n--- Content from ${file.name} ---\n${text}`;
                 }
+            }
+        }
 
-                await sendUpdate({ step: 1, message: "Structuring knowledge context..." });
+        // Create the exam record immediately so we have an ID
+        const [newExam] = await db.insert(exams).values({
+            userId: session.user.id,
+            title: topic ? `${topic} Exam` : "Generated Exam", // Placeholder title, could be updated later
+            topic: topic || "Uploaded Content",
+            difficulty: difficulty,
+            timeLimit: timeLimit,
+        }).returning();
 
-                // Debug: Log context length to verify content was extracted
-                console.log(`[Exam Generate] Context text length: ${contextText.length} characters`);
-                if (contextText.length > 0) {
-                    console.log(`[Exam Generate] Context preview: ${contextText.substring(0, 200)}...`);
-                }
-
-                const prompt = `
+        const prompt = `
             Generate a ${difficulty} difficulty exam ${topic ? `about "${topic}"` : "based on the provided content"} with ${questionCount} questions.
             
             ${contextText ? `
             <source_material>
-            ${contextText}
+            ${contextText.substring(0, 100000)} 
             </source_material>
 
             Base the questions STRICTLY on the content provided within the <source_material> tags above.
-            Do not include any information from outside the source material.
-            If the source material does not contain enough information to generate ${questionCount} questions, generate as many as possible and then stop.
             ` : ""}
 
             The questions should be challenging and test deep understanding.
-            For each question, identify a specific sub-topic (e.g., 'Cell Biology > Mitosis').
+            For each question, identify a specific sub-topic.
 
             Mix the following question types:
             1. Multiple Choice: 4 options, 1 correct.
             2. True/False: 2 options (True/False), 1 correct. Rapid fire concept checking.
-            3. Fill in the Blank: No options provided, answer is a specific word/phrase. Tests recall.
-            4. Select All That Apply: 4+ options, multiple correct answers. Increases difficulty.
+            3. Select All That Apply: 4+ options, multiple correct answers. Increases difficulty.
         `;
 
-                await sendUpdate({ step: 2, message: `Generating ${questionCount} questions...` });
+        // Create stream
+        const result = await streamObject({
+            model: google("gemini-2.5-flash"),
+            schema: z.object({
+                questions: z.array(z.object({
+                    text: z.string(),
+                    type: z.enum(["Multiple Choice", "True/False", "Select All That Apply"]),
+                    options: z.array(z.string()),
+                    correctAnswer: z.union([z.string(), z.array(z.string())]),
+                    explanation: z.string(),
+                    subtopic: z.string(),
+                })).length(questionCount),
+            }),
+            prompt: prompt,
+            onFinish: async ({ object }) => {
+                if (!object) return;
 
-                const { object } = await generateObject({
-                    model: google("gemini-2.5-flash"),
-                    schema: z.object({
-                        title: z.string().describe("A creative title for the exam"),
-                        questions: z.array(z.object({
-                            text: z.string(),
-                            type: z.enum(["Multiple Choice", "True/False", "Fill in the Blank", "Select All That Apply"]),
-                            options: z.array(z.string()),
-                            correctAnswer: z.union([z.string(), z.array(z.string())]),
-                            explanation: z.string(),
-                            subtopic: z.string(),
-                        })).length(questionCount),
-                    }),
-                    prompt: prompt,
-                });
-
-                await sendUpdate({ step: 2, message: "Finalizing and saving exam..." });
-
-                const [newExam] = await db.insert(exams).values({
-                    userId: session.user.id,
-                    title: object.title,
-                    topic: topic || "Uploaded Content",
-                    difficulty: difficulty,
-                    timeLimit: timeLimit,
-                }).returning();
-
+                // Save questions to DB
                 await db.insert(questions).values(
                     object.questions.map(q => {
                         let finalCorrectAnswer = q.correctAnswer;
@@ -238,28 +205,19 @@ export async function POST(req: NextRequest) {
                         };
                     })
                 );
-
-                await sendUpdate({ success: true, examId: newExam.id });
-
-            } catch (error: unknown) {
-                console.error("Stream processing error:", error);
-                const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-                await sendUpdate({ error: errorMessage });
-            } finally {
-                writer.close();
             }
-        })();
+        });
 
-        return new NextResponse(readable, {
+        return result.toTextStreamResponse({
             headers: {
-                "Content-Type": "text/event-stream",
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-            },
+                // Send the exam ID in a header so client knows it immediately
+                "X-Exam-Id": newExam.id.toString()
+            }
         });
 
     } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
+        console.error("Exam generation error:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
+
