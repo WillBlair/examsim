@@ -420,7 +420,10 @@ export default function NewExamPage() {
     const showOverlay = status !== "idle" && streamingQuestions.length === 0;
 
     return (
-        <div className="max-w-[1600px] mx-auto py-6 px-6 relative h-[calc(100vh-4rem)] overflow-hidden">
+        <div className={cn(
+            "max-w-[1600px] mx-auto py-6 px-6 relative",
+            !streamingExamId ? "h-[calc(100vh-4rem)] overflow-hidden" : "h-full min-h-[calc(100vh-4rem)]"
+        )}>
             {/* Unified Overlay Instance - Persists across state changes */}
             <EnhancedGenerationOverlay
                 isOpen={showOverlay}
@@ -443,6 +446,8 @@ export default function NewExamPage() {
                         questions={streamingQuestions}
                         initialTimer={timeLimit || undefined}
                         isGenerating={isGenerating}
+                        allowHints={allowHints}
+                        allowExplanations={allowExplanations}
                     />
                 </div>
             ) : (
@@ -500,7 +505,7 @@ export default function NewExamPage() {
                                         value={pastedText}
                                         onChange={(e) => setPastedText(e.target.value)}
                                         placeholder="Paste your notes, syllabus, or lecture transcript here..."
-                                        className="min-h-[350px] h-full resize-none border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 bg-zinc-50/30 text-base rounded-sm"
+                                        className="h-full w-full resize-none border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 bg-zinc-50/30 text-base rounded-sm p-4"
                                     />
                                 )}
                             </div>
