@@ -10,7 +10,11 @@ import {
     Sparkle,
     CaretLeft,
     Files,
-    TextAa
+    TextAa,
+    CheckSquare,
+    ToggleLeft,
+    ToggleRight,
+    CaretDown
 } from "@phosphor-icons/react";
 import { UploadArea } from "@/components/dashboard/UploadArea";
 import { cn } from "@/lib/utils";
@@ -29,7 +33,6 @@ const TIME_LIMITS = [
     { label: "30m", value: 30 },
     { label: "45m", value: 45 },
     { label: "60m", value: 60 },
-    { label: "90m", value: 90 },
 ];
 
 export default function NewExamPage() {
@@ -121,6 +124,11 @@ export default function NewExamPage() {
     const [files, setFiles] = useState<File[]>([]);
     const [pastedText, setPastedText] = useState("");
 
+    // New Advanced Settings
+    const [questionTypes, setQuestionTypes] = useState<string[]>(["Multiple Choice"]);
+    const [allowHints, setAllowHints] = useState(true);
+    const [allowExplanations, setAllowExplanations] = useState(true);
+
     // Step 1 validation
     const canProceed = sourceType === "files" ? files.length > 0 : pastedText.trim().length > 0;
 
@@ -187,6 +195,11 @@ export default function NewExamPage() {
         if (timeLimit > 0) {
             formData.append("timeLimit", timeLimit.toString());
         }
+
+        // Append advanced optional settings
+        formData.append("questionTypes", JSON.stringify(questionTypes));
+        formData.append("allowHints", String(allowHints));
+        formData.append("allowExplanations", String(allowExplanations));
 
         if (sourceType === "files") {
             addLog(`Preparing ${files.length} files for upload...`);
@@ -407,7 +420,7 @@ export default function NewExamPage() {
     const showOverlay = status !== "idle" && streamingQuestions.length === 0;
 
     return (
-        <div className="max-w-5xl mx-auto py-8 px-4 relative min-h-screen">
+        <div className="max-w-[1600px] mx-auto py-6 px-6 relative h-[calc(100vh-4rem)] overflow-hidden">
             {/* Unified Overlay Instance - Persists across state changes */}
             <EnhancedGenerationOverlay
                 isOpen={showOverlay}
@@ -433,9 +446,9 @@ export default function NewExamPage() {
                     />
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-stretch">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_28rem] xl:grid-cols-[1fr_32rem] gap-8 items-start h-full pb-6">
                     {/* Left Column: Header & Input Source */}
-                    <div className="lg:col-span-2 flex flex-col gap-8 h-full">
+                    <div className="flex flex-col gap-6 h-full">
                         {/* Header */}
                         <div className="bg-white border-2 border-zinc-900 shadow-neo rounded-lg p-6 w-full">
                             <Link
@@ -494,35 +507,38 @@ export default function NewExamPage() {
                         </div>
                     </div>
 
-                    {/* Right Column: Configuration & Action */}
-                    <div className="flex flex-col h-full">
-                        <div className="bg-white rounded-lg border-2 border-zinc-900 p-5 shadow-neo flex flex-col h-full">
-                            <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-4 shrink-0">Exam Settings</h3>
+                    {/* Right Column: Compact Configuration */}
+                    <div className="flex flex-col h-full bg-white rounded-lg border-2 border-zinc-900 shadow-neo overflow-hidden">
+                        <div className="p-5 flex flex-col h-full overflow-hidden">
+                            <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-4 shrink-0 flex items-center gap-2">
+                                Exam Settings
+                            </h3>
 
-                            <div className="space-y-5 flex-1 flex flex-col">
+                            <div className="space-y-3.5 flex-1 flex flex-col overflow-y-auto pr-1 pb-1">
+                                {/* Row 1: Topic */}
                                 <div>
-                                    <label className="block text-sm font-medium text-zinc-900 mb-1.5">Topic <span className="text-zinc-400 font-normal">(Optional)</span></label>
+                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Topic</label>
                                     <Input
                                         value={topic}
                                         onChange={(e) => setTopic(e.target.value)}
                                         placeholder="e.g. Biology 101"
-                                        className="bg-white border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 h-10 rounded-sm"
+                                        className="bg-zinc-50 border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 h-10 rounded-sm text-sm font-medium"
                                     />
                                 </div>
 
+                                {/* Row 2: Difficulty */}
                                 <div>
-                                    <label className="block text-sm font-medium text-zinc-900 mb-1.5">Difficulty</label>
+                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Difficulty</label>
                                     <div className="grid grid-cols-3 gap-2">
                                         {DIFFICULTY_OPTIONS.map(opt => (
                                             <button
                                                 key={opt}
-                                                type="button"
                                                 onClick={() => setDifficulty(opt)}
                                                 className={cn(
-                                                    "px-3 py-2 text-sm rounded-sm border-2 transition-all",
+                                                    "h-9 px-2 text-xs font-bold rounded-sm border-2 transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
                                                     difficulty === opt
-                                                        ? "bg-zinc-900 text-white border-zinc-900 font-bold"
-                                                        : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900"
+                                                        ? "bg-zinc-900 text-white border-zinc-900 shadow-neo-sm"
+                                                        : "bg-white text-zinc-700 border-zinc-900 hover:bg-zinc-50 shadow-neo-sm"
                                                 )}
                                             >
                                                 {opt}
@@ -531,40 +547,19 @@ export default function NewExamPage() {
                                     </div>
                                 </div>
 
+                                {/* Row 3: Time Limit */}
                                 <div>
-                                    <label className="block text-sm font-medium text-zinc-900 mb-1.5">Questions</label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {QUESTION_COUNTS.map(count => (
-                                            <button
-                                                key={count}
-                                                type="button"
-                                                onClick={() => setQuestionCount(count)}
-                                                className={cn(
-                                                    "px-3 py-2 text-sm rounded-sm border-2 transition-all",
-                                                    questionCount === count
-                                                        ? "bg-zinc-900 text-white border-zinc-900 font-bold"
-                                                        : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900"
-                                                )}
-                                            >
-                                                {count}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-zinc-900 mb-1.5">Time Limit</label>
-                                    <div className="grid grid-cols-3 gap-2">
+                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Time Limit</label>
+                                    <div className="grid grid-cols-5 gap-2">
                                         {TIME_LIMITS.map(opt => (
                                             <button
                                                 key={opt.value}
-                                                type="button"
                                                 onClick={() => setTimeLimit(opt.value)}
                                                 className={cn(
-                                                    "px-3 py-2 text-sm rounded-sm border-2 transition-all",
+                                                    "h-9 px-1 text-xs font-bold rounded-sm border-2 transition-all truncate active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
                                                     timeLimit === opt.value
-                                                        ? "bg-zinc-900 text-white border-zinc-900 font-bold"
-                                                        : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-900"
+                                                        ? "bg-zinc-900 text-white border-zinc-900 shadow-neo-sm"
+                                                        : "bg-white text-zinc-700 border-zinc-900 hover:bg-zinc-50 shadow-neo-sm"
                                                 )}
                                             >
                                                 {opt.label}
@@ -573,18 +568,108 @@ export default function NewExamPage() {
                                     </div>
                                 </div>
 
-                                <div className="pt-4 border-t border-zinc-100 mt-auto">
+                                {/* Row 4: Question Count */}
+                                <div>
+                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Question Count ({questionCount})</label>
+                                    <div className="flex items-center gap-2 bg-zinc-50 p-1.5 rounded-sm border-2 border-zinc-200">
+                                        {QUESTION_COUNTS.map(count => (
+                                            <button
+                                                key={count}
+                                                onClick={() => setQuestionCount(count)}
+                                                className={cn(
+                                                    "flex-1 h-8 text-xs font-bold rounded-sm transition-all border-2",
+                                                    questionCount === count
+                                                        ? "bg-zinc-900 text-white border-zinc-900 shadow-sm"
+                                                        : "bg-transparent text-zinc-500 border-transparent hover:bg-zinc-200/50"
+                                                )}
+                                            >
+                                                {count}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Row 5: Question Types */}
+                                <div>
+                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Question Types</label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {["Multiple Choice", "True/False"].map((type) => {
+                                            const isSelected = questionTypes.includes(type);
+
+                                            return (
+                                                <button
+                                                    key={type}
+                                                    onClick={() => {
+                                                        setQuestionTypes(prev =>
+                                                            prev.includes(type)
+                                                                ? (prev.length > 1 ? prev.filter(t => t !== type) : prev)
+                                                                : [...prev, type]
+                                                        )
+                                                    }}
+                                                    className={cn(
+                                                        "h-10 px-3 text-xs font-bold rounded-sm border-2 transition-all flex items-center justify-between gap-2 shadow-neo-sm active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+                                                        isSelected
+                                                            ? "bg-zinc-900 text-white border-zinc-900"
+                                                            : "bg-white text-zinc-700 border-zinc-900 hover:bg-zinc-50"
+                                                    )}
+                                                >
+                                                    <span>{type}</span>
+                                                    <div className={cn(
+                                                        "w-4 h-4 border-2 flex items-center justify-center transition-all",
+                                                        isSelected ? "border-white" : "border-zinc-900"
+                                                    )}>
+                                                        {isSelected && <div className="w-2 h-2 bg-white" />}
+                                                    </div>
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Row 6: Toggles (Compact) */}
+                                <div className="grid grid-cols-2 gap-3 pt-1">
+                                    <button
+                                        onClick={() => setAllowHints(!allowHints)}
+                                        className={cn(
+                                            "group flex items-center justify-between px-3 h-12 rounded-sm border-2 border-zinc-900 shadow-neo-sm transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+                                            allowHints ? "bg-violet-100" : "bg-white"
+                                        )}
+                                    >
+                                        <span className={cn("text-xs font-extrabold uppercase tracking-wider", allowHints ? "text-violet-900" : "text-zinc-600")}>Hints</span>
+                                        <div className="w-10 h-5 border-2 border-zinc-900 bg-white rounded-full relative transition-colors">
+                                            <div className={cn(
+                                                "w-3.5 h-3.5 border-2 border-zinc-900 rounded-full transition-all duration-200 absolute top-1/2 -translate-y-1/2",
+                                                allowHints ? "left-[calc(100%-1.1rem)] bg-violet-600" : "left-0.5 bg-zinc-300"
+                                            )} />
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        onClick={() => setAllowExplanations(!allowExplanations)}
+                                        className={cn(
+                                            "group flex items-center justify-between px-3 h-12 rounded-sm border-2 border-zinc-900 shadow-neo-sm transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+                                            allowExplanations ? "bg-violet-100" : "bg-white"
+                                        )}
+                                    >
+                                        <span className={cn("text-xs font-extrabold uppercase tracking-wider", allowExplanations ? "text-violet-900" : "text-zinc-600")}>Explanations</span>
+                                        <div className="w-10 h-5 border-2 border-zinc-900 bg-white rounded-full relative transition-colors">
+                                            <div className={cn(
+                                                "w-3.5 h-3.5 border-2 border-zinc-900 rounded-full transition-all duration-200 absolute top-1/2 -translate-y-1/2",
+                                                allowExplanations ? "left-[calc(100%-1.1rem)] bg-violet-600" : "left-0.5 bg-zinc-300"
+                                            )} />
+                                        </div>
+                                    </button>
+                                </div>
+
+                                <div className="pt-2 mt-auto">
                                     <Button
                                         onClick={handleSubmit}
                                         disabled={!canProceed || isLoading}
-                                        className="w-full h-11 bg-brand-orange hover:bg-emerald-600 text-white rounded-sm font-bold text-base border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none"
+                                        className="w-full h-12 bg-emerald-400 hover:bg-emerald-500 text-zinc-900 rounded-sm font-black text-base border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none"
                                     >
-                                        <Sparkle weight="fill" className="w-5 h-5 mr-2" />
-                                        Generate Exam
+                                        <Sparkle weight="fill" className="w-5 h-5 mr-2 text-zinc-900" />
+                                        Start Generation
                                     </Button>
-                                    <p className="text-xs text-center text-zinc-400 mt-3 font-medium">
-                                        Starts immediately - Answer while generating
-                                    </p>
                                 </div>
                             </div>
                         </div>

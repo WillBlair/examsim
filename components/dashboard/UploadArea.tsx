@@ -107,7 +107,7 @@ export function UploadArea({ onFilesChange }: UploadAreaProps) {
         onClick={() => fileInputRef.current?.click()}
         className={cn(
           "relative group cursor-pointer transition-all duration-300 ease-out flex-1 flex flex-col",
-          "rounded-sm border-2 border-dashed bg-zinc-50/30 overflow-hidden",
+          "rounded-sm border-2 border-dashed bg-zinc-50/30 overflow-hidden min-h-[200px]",
           isDragging
             ? "border-accent-purple bg-accent-purple/5"
             : "border-zinc-300 hover:border-zinc-400"

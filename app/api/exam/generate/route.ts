@@ -67,6 +67,15 @@ export async function POST(req: NextRequest) {
         const difficulty = formData.get("difficulty") as string || "Medium";
         const questionCount = parseInt(formData.get("count") as string || "5");
         const timeLimit = formData.get("timeLimit") ? parseInt(formData.get("timeLimit") as string) : null;
+
+        // Parse new settings
+        const allowHints = formData.get("allowHints") === "true";
+        const allowExplanations = formData.get("allowExplanations") === "true";
+        let questionTypes: string[] = ["Multiple Choice"];
+        try {
+            questionTypes = JSON.parse(formData.get("questionTypes") as string || '["Multiple Choice"]');
+        } catch { }
+
         const files = formData.getAll("files") as File[];
         const pastedText = formData.get("pastedText") as string;
 
@@ -83,7 +92,7 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            // Check file type - be lenient with PDF detection (some browsers report different types)
+            // Check file type - be lenient with PDF detection
             const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
             const isDocx = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.name.toLowerCase().endsWith(".docx");
             const isTxt = file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
@@ -103,7 +112,7 @@ export async function POST(req: NextRequest) {
             contextText += `\n\n--- Pasted Content ---\n${pastedText}`;
         }
 
-        // Process Files - (Simplified for stream response speed, but ideally would be async too if large)
+        // Process Files
         if (files.length > 0) {
             for (const file of files) {
                 if (file.size === 0) continue;
@@ -144,7 +153,7 @@ export async function POST(req: NextRequest) {
         // Create the exam record immediately so we have an ID
         const [newExam] = await db.insert(exams).values({
             userId: session.user.id,
-            title: topic ? `${topic} Exam` : "Generated Exam", // Placeholder title, could be updated later
+            title: topic ? `${topic} Exam` : "Generated Exam",
             topic: topic || "Uploaded Content",
             difficulty: difficulty,
             timeLimit: timeLimit,
@@ -163,11 +172,11 @@ export async function POST(req: NextRequest) {
 
             The questions should be challenging and test deep understanding.
             For each question, identify a specific sub-topic.
+            ${allowHints ? "Provide a helpful hint for each question." : "Do not provide hints."}
+            ${allowExplanations ? "Provide a detailed explanation for the correct answer." : "Provide a brief explanation."}
 
-            Mix the following question types:
-            1. Multiple Choice: 4 options, 1 correct.
-            2. True/False: 2 options (True/False), 1 correct. Rapid fire concept checking.
-            3. Select All That Apply: 4+ options, multiple correct answers. Increases difficulty.
+            Use ONLY the following question types:
+            ${questionTypes.map(t => `- ${t}`).join("\n")}
         `;
 
         // Create stream
@@ -177,9 +186,10 @@ export async function POST(req: NextRequest) {
                 questions: z.array(z.object({
                     text: z.string(),
                     type: z.enum(["Multiple Choice", "True/False", "Select All That Apply"]),
-                    options: z.array(z.string()),
+                    options: z.array(z.string()).optional(),
                     correctAnswer: z.union([z.string(), z.array(z.string())]),
                     explanation: z.string(),
+                    hint: z.string().optional(),
                     subtopic: z.string(),
                 })).length(questionCount),
             }),
@@ -197,7 +207,7 @@ export async function POST(req: NextRequest) {
                         return {
                             examId: newExam.id,
                             questionText: q.text,
-                            options: q.options,
+                            options: q.options || [],
                             correctAnswer: finalCorrectAnswer as string,
                             explanation: q.explanation,
                             type: q.type,
