@@ -27,7 +27,7 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="py-24 bg-transparent">
+    <section id="faq" className="py-24 bg-transparent">
       <div className="container max-w-4xl px-4 md:px-6 mx-auto flex flex-col gap-12">
         <div className="text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4 tracking-tight">
@@ -37,7 +37,7 @@ export function FAQ() {
             Reduce hesitation with smart answers to common concerns.
           </p>
         </div>
-        
+
         <div className="space-y-4">
           {faqs.map((faq, index) => (
             <div key={index} className="border-2 border-zinc-900 shadow-neo rounded-lg overflow-hidden bg-white hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all duration-200">

@@ -5,9 +5,9 @@ import { IngestionVisualization } from "./IngestionVisualization";
 
 export function Features() {
   return (
-    <section className="pt-32 pb-24 bg-transparent">
+    <section id="features" className="pt-32 pb-24 bg-transparent">
       <div className="container max-w-5xl px-4 md:px-6 mx-auto space-y-24">
-        
+
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4 tracking-tight">
             Turn passive consumption into <br />
@@ -22,37 +22,37 @@ export function Features() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           <div>
             <div className="inline-block px-3 py-1 rounded-sm bg-brand-orange/10 text-brand-orange border border-brand-orange/20 text-xs font-bold uppercase tracking-wide mb-6">
-              Ingestion Engine
+              Smart Knowledge Extraction
             </div>
             <h3 className="text-3xl font-bold text-zinc-900 mb-6 tracking-tight">
-              Turn chaos into structure instantly.
+              From raw notes to exam-ready questions.
             </h3>
             <p className="text-zinc-600 text-lg leading-relaxed mb-8 font-medium">
-              Don&apos;t waste time organizing notes. Just dump your PDFs, slides, and docs. 
-              Our engine parses and structures everything into a coherent study graph.
+              Simply upload your PDF lectures or paste your class notes.
+              Our AI analyzes the content to extract the core concepts you need to master.
             </p>
             <ul className="space-y-6">
               {[
                 {
-                  title: "Broad Format Support",
-                  text: "Supports PDF, PPTX, DOCX, and Text",
-                  icon: "Page",
+                  title: "Flexible Input",
+                  text: "Upload PDFs, Slides, or paste text directly",
+                  icon: "Files",
                   color: "text-emerald-600",
                   bg: "bg-emerald-50",
                   border: "border-emerald-200"
                 },
                 {
-                  title: "Semantic Analysis",
-                  text: "Identifies and links key concepts",
+                  title: "Topic Identification",
+                  text: "Automatically extracts key themes",
                   icon: "Brain",
                   color: "text-accent-purple",
                   bg: "bg-accent-purple/10",
                   border: "border-accent-purple/20"
                 },
                 {
-                  title: "Smart Deduplication",
-                  text: "Automatically merges redundant content",
-                  icon: "FilterList",
+                  title: "Intelligent Parsing",
+                  text: "Focuses on content, ignores noise",
+                  icon: "Sparkle",
                   color: "text-blue-600",
                   bg: "bg-blue-50",
                   border: "border-blue-200"
@@ -70,10 +70,10 @@ export function Features() {
               ))}
             </ul>
           </div>
-          
+
           {/* Feature Preview - Enhanced Visualization */}
           <div className="h-full min-h-[450px]">
-             <IngestionVisualization />
+            <IngestionVisualization />
           </div>
         </div>
 
@@ -82,46 +82,46 @@ export function Features() {
           {/* Feature 2 */}
           <div className="bg-white rounded-lg p-8 md:p-12 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
             <div className="h-48 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
-               {/* Abstract UI for Config */}
-               <div className="w-3/4 h-3/4 bg-white rounded-sm border-2 border-zinc-900 shadow-neo-sm p-4 space-y-2">
-                   <div className="h-2 bg-zinc-200 rounded-sm w-1/2" />
-                   <div className="h-8 bg-zinc-50 border border-zinc-200 rounded-sm" />
-                   <div className="h-2 bg-zinc-200 rounded-sm w-1/3 mt-4" />
-                   <div className="flex gap-2">
-                       <div className="h-8 w-8 rounded-sm bg-zinc-100 border border-zinc-200" />
-                       <div className="h-8 w-8 rounded-sm bg-zinc-100 border border-zinc-200" />
-                   </div>
-               </div>
+              {/* Abstract UI for Config */}
+              <div className="w-3/4 h-3/4 bg-white rounded-sm border-2 border-zinc-900 shadow-neo-sm p-4 space-y-2">
+                <div className="h-2 bg-zinc-200 rounded-sm w-1/2" />
+                <div className="h-8 bg-zinc-50 border border-zinc-200 rounded-sm" />
+                <div className="h-2 bg-zinc-200 rounded-sm w-1/3 mt-4" />
+                <div className="flex gap-2">
+                  <div className="h-8 w-8 rounded-sm bg-zinc-100 border border-zinc-200" />
+                  <div className="h-8 w-8 rounded-sm bg-zinc-100 border border-zinc-200" />
+                </div>
+              </div>
             </div>
-            <h3 className="text-2xl font-bold text-zinc-900 mb-4 tracking-tight">Exam Simulation</h3>
+            <h3 className="text-2xl font-bold text-zinc-900 mb-4 tracking-tight">Customizable Practice</h3>
             <p className="text-zinc-600 leading-relaxed font-medium">
-              Configure the exact conditions of your exam. Time limits, question types, and difficulty levels mirrored perfectly.
+              Design your perfect study session. Set time limits, adjust difficulty levels, and choose specific topics to simulate real exam pressure.
             </p>
           </div>
 
           {/* Feature 3 */}
           <div className="bg-white rounded-lg p-8 md:p-12 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
             <div className="h-48 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
-               {/* Abstract UI for Grading */}
-               <div className="w-3/4 h-3/4 flex flex-col gap-3 p-4">
-                   <div className="flex items-start gap-3 bg-emerald-50/50 p-3 rounded-sm border border-emerald-100">
-                       <div className="w-4 h-4 rounded-full bg-emerald-400 shrink-0 mt-0.5" />
-                       <div className="space-y-1.5 w-full">
-                           <div className="h-2 bg-emerald-200/50 rounded-sm w-3/4" />
-                           <div className="h-2 bg-emerald-200/50 rounded-sm w-1/2" />
-                       </div>
-                   </div>
-                   <div className="flex items-start gap-3 bg-red-50/50 p-3 rounded-sm border border-red-100">
-                       <div className="w-4 h-4 rounded-full bg-red-400 shrink-0 mt-0.5" />
-                       <div className="space-y-1.5 w-full">
-                           <div className="h-2 bg-red-200/50 rounded-sm w-full" />
-                       </div>
-                   </div>
-               </div>
+              {/* Abstract UI for Grading */}
+              <div className="w-3/4 h-3/4 flex flex-col gap-3 p-4">
+                <div className="flex items-start gap-3 bg-emerald-50/50 p-3 rounded-sm border border-emerald-100">
+                  <div className="w-4 h-4 rounded-full bg-emerald-400 shrink-0 mt-0.5" />
+                  <div className="space-y-1.5 w-full">
+                    <div className="h-2 bg-emerald-200/50 rounded-sm w-3/4" />
+                    <div className="h-2 bg-emerald-200/50 rounded-sm w-1/2" />
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 bg-red-50/50 p-3 rounded-sm border border-red-100">
+                  <div className="w-4 h-4 rounded-full bg-red-400 shrink-0 mt-0.5" />
+                  <div className="space-y-1.5 w-full">
+                    <div className="h-2 bg-red-200/50 rounded-sm w-full" />
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="text-2xl font-bold text-zinc-900 mb-4 tracking-tight">AI Tutor Grading</h3>
+            <h3 className="text-2xl font-bold text-zinc-900 mb-4 tracking-tight">Instant Step-by-Step Feedback</h3>
             <p className="text-zinc-600 leading-relaxed font-medium">
-              Get instant feedback on your essays. Our AI evaluates your logic and cites the exact source material you missed.
+              Go beyond simple scoring. Receive detailed explanations for every question, understanding exactly why an answer is right or wrong.
             </p>
           </div>
         </div>

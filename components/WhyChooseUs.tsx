@@ -4,12 +4,12 @@ import { UploadSimple, Sliders, Play, ChartBar } from "@phosphor-icons/react";
 
 const benefits = [
   {
-    title: "Smart Ingestion",
+    title: "Smart Knowledge Extraction",
     description: "Upload your syllabus, slides, or notes. We structure the chaos instantly.",
     icon: <UploadSimple weight="duotone" className="w-6 h-6" />
   },
   {
-    title: "Custom Configuration",
+    title: "Customizable Practice",
     description: "Tailor the difficulty, topics, and question types to your exact needs.",
     icon: <Sliders weight="duotone" className="w-6 h-6" />
   },
@@ -19,7 +19,7 @@ const benefits = [
     icon: <Play weight="duotone" className="w-6 h-6" />
   },
   {
-    title: "Instant Feedback",
+    title: "Instant Step-by-Step Feedback",
     description: "Get graded immediately with detailed explanations and source citations.",
     icon: <ChartBar weight="duotone" className="w-6 h-6" />
   }
@@ -27,7 +27,7 @@ const benefits = [
 
 export function WhyChooseUs() {
   return (
-    <section className="py-24 bg-transparent">
+    <section id="why-choose-us" className="py-24 bg-transparent">
       <div className="container max-w-5xl px-4 md:px-6 mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4">

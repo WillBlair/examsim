@@ -3,7 +3,8 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
-import { Testimonials } from "@/components/Testimonials";
+
+import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { FAQ } from "@/components/FAQ";
 import { Footer } from "@/components/Footer";
 
@@ -14,17 +15,19 @@ export default function Home() {
     <main className="min-h-screen bg-white font-sans selection:bg-brand-orange/20 selection:text-brand-orange">
       <GridBackground />
       <Navbar />
-      
+
       <div className="relative z-50">
         <Hero />
       </div>
-      
+
       <div className="relative z-30">
         <Features />
       </div>
-      
-      <div className="relative z-10">
-        <Testimonials />
+
+
+
+      <div className="relative z-0">
+        <WhyChooseUs />
       </div>
 
       <div className="relative z-0">

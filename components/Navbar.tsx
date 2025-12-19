@@ -23,7 +23,7 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-          {["Features", "Why Choose Us", "Reviews", "FAQ"].map((item) => (
+          {["Features", "Why Choose Us", "FAQ"].map((item) => (
             <Link
               key={item}
               href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
