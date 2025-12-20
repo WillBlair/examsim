@@ -26,7 +26,7 @@ export function Hero() {
   const inverseY = useTransform(scrollYProgress, [0.75, 0.9], ["100%", "0%"]);
 
   return (
-    <section ref={containerRef} id="home" className="relative w-full pt-[8.5rem] pb-0 bg-transparent overflow-visible">
+    <section ref={containerRef} id="home" className="relative w-full pt-28 md:pt-[8.5rem] pb-0 bg-transparent overflow-visible">
       <div className="container relative z-10 px-4 md:px-6 mx-auto flex flex-col items-center text-center">
 
         {/* Top Tagline */}
@@ -34,9 +34,9 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6"
+          className="mb-4 md:mb-6"
         >
-          <p className="text-[15px] md:text-[17px] font-medium text-zinc-600">
+          <p className="text-sm md:text-[17px] font-medium text-zinc-600 px-2">
             See how you can save 4+ hours on your next study session below.
           </p>
         </motion.div>
@@ -48,22 +48,22 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="max-w-4xl mx-auto"
         >
-          <h1 className="text-[3.15rem] md:text-[3.9rem] lg:text-[4.75rem] font-bold text-zinc-900 mb-8 tracking-tighter leading-[1.1]">
+          <h1 className="text-[2.5rem] md:text-[3.9rem] lg:text-[4.75rem] font-bold text-zinc-900 mb-6 md:mb-8 tracking-tighter leading-[1.1] px-2">
             Experience the exam <br className="hidden md:block" />
             <span className="text-accent-purple">before it happens.</span>
           </h1>
 
-          <p className="text-[1.2rem] md:text-[1.35rem] text-zinc-600 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="text-base md:text-[1.35rem] text-zinc-600 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed font-medium px-4">
             Turn your course materials into a full-scale dress rehearsal.
             Walk into the exam hall having already passed the test.
           </p>
 
           {/* CTA Button */}
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12 md:mb-16 px-4">
             <Link href={isAuthenticated ? "/dashboard/new" : "/register"}>
-              <Button className="group h-16 px-10 rounded-lg bg-brand-orange text-zinc-900 hover:bg-brand-orange hover:opacity-90 font-black text-xl flex items-center gap-4 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 ease-in-out">
+              <Button className="group h-14 md:h-16 px-6 md:px-10 rounded-lg bg-brand-orange text-zinc-900 hover:bg-brand-orange hover:opacity-90 font-black text-lg md:text-xl flex items-center gap-3 md:gap-4 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 ease-in-out w-full sm:w-auto justify-center">
                 Generate My First Exam
-                <ArrowRight className="w-6 h-6 stroke-[3] group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 md:w-6 md:h-6 stroke-[3] group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
           </div>

@@ -8,14 +8,14 @@ export function Features() {
     <section id="features" className="pt-32 pb-24 bg-transparent">
       <div className="container max-w-5xl px-4 md:px-6 mx-auto space-y-24">
 
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-5xl font-black text-zinc-900 mb-6 tracking-tight leading-loose">
-            Turn passive consumption into <br />
-            <span className="bg-brand-orange text-zinc-900 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-3 py-1 inline-block mt-2">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16 px-2">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-zinc-900 mb-6 tracking-tight leading-relaxed md:leading-loose">
+            Turn passive consumption into <br className="hidden sm:block" />
+            <span className="bg-brand-orange text-zinc-900 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-2 md:px-3 py-1 inline-block mt-2 text-xl md:text-4xl lg:text-5xl">
               active mastery.
             </span>
           </h2>
-          <p className="text-zinc-900 text-xl font-bold max-w-2xl mx-auto">
+          <p className="text-zinc-900 text-base md:text-xl font-bold max-w-2xl mx-auto">
             Don&apos;t just read. Simulate. The only study tool built for retention.
           </p>
         </div>
@@ -26,7 +26,7 @@ export function Features() {
             <div className="inline-block px-3 py-1 rounded-none bg-emerald-300 text-zinc-900 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-xs font-black uppercase tracking-wider mb-6">
               Smart Knowledge Extraction
             </div>
-            <h3 className="text-4xl font-black text-zinc-900 mb-6 tracking-tight">
+            <h3 className="text-2xl md:text-4xl font-black text-zinc-900 mb-6 tracking-tight">
               From raw notes to exam-ready questions.
             </h3>
             <p className="text-zinc-700 text-lg leading-relaxed mb-8 font-bold">
