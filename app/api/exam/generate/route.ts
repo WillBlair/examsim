@@ -124,20 +124,12 @@ export async function POST(req: NextRequest) {
 
                 if (isPdfFile) {
                     // eslint-disable-next-line @typescript-eslint/no-require-imports
-                    const pdfLib = require("pdf-parse");
-                    const PDFParseClass = pdfLib.PDFParse || pdfLib.default?.PDFParse;
+                    const pdfParse = require("pdf-parse-fork");
                     let text = "";
                     try {
-                        if (PDFParseClass) {
-                            const parser = new PDFParseClass({ data: buffer });
-                            const result = await parser.getText();
-                            text = result.text;
-                        } else {
-                            const pdf = pdfLib.default || pdfLib;
-                            const data = await pdf(buffer);
-                            text = data.text;
-                        }
-                    } catch (e) { console.error(e); }
+                        const data = await pdfParse(buffer);
+                        text = data.text;
+                    } catch (e) { console.error("PDF parse error:", e); }
                     contextText += `\n\n--- Content from ${file.name} ---\n${text}`;
 
                 } else if (isDocxFile) {

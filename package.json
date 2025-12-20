@@ -33,7 +33,7 @@
     "mammoth": "^1.11.0",
     "next": "^16.1.0",
     "next-auth": "^5.0.0-beta.30",
-    "pdf-parse": "^2.4.5",
+    "pdf-parse-fork": "^1.2.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-hook-form": "^7.68.0",
