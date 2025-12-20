@@ -85,45 +85,43 @@ export function Features() {
         {/* Highlighted Features 2 & 3 - Side by Side */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Feature 2 */}
-          <div className="bg-white rounded-lg p-8 md:p-12 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
-            <div className="h-56 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
+          <div className="bg-white rounded-lg p-6 md:p-8 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
+            <div className="mb-6 text-center">
+              <h3 className="text-3xl md:text-4xl font-black text-zinc-900 mb-4 tracking-tight">
+                <span className="bg-brand-orange text-zinc-900 px-3 py-1 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] inline-block">Customizable</span> Practice
+              </h3>
+              <p className="text-zinc-700 leading-relaxed font-medium text-lg">
+                Set time limits, adjust difficulty levels, and choose specific topics.
+              </p>
+            </div>
+            <div className="aspect-square bg-zinc-50 rounded-lg border-[3px] border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
               <Image
-                src="/images/examsettings.png"
+                src="/images/examsettingssamewidthandheight.png"
                 alt="Exam Settings Preview"
                 fill
                 className="object-cover"
               />
             </div>
-            <h3 className="text-2xl font-bold text-zinc-900 mb-4 tracking-tight">Customizable Practice</h3>
-            <p className="text-zinc-600 leading-relaxed font-medium">
-              Design your perfect study session. Set time limits, adjust difficulty levels, and choose specific topics to simulate real exam pressure.
-            </p>
           </div>
 
           {/* Feature 3 */}
-          <div className="bg-white rounded-lg p-8 md:p-12 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
-            <div className="h-56 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
-              {/* Abstract UI for Grading */}
-              <div className="w-3/4 h-3/4 flex flex-col gap-3 p-4">
-                <div className="flex items-start gap-3 bg-emerald-50/50 p-3 rounded-sm border border-emerald-100">
-                  <div className="w-4 h-4 rounded-full bg-emerald-400 shrink-0 mt-0.5" />
-                  <div className="space-y-1.5 w-full">
-                    <div className="h-2 bg-emerald-200/50 rounded-sm w-3/4" />
-                    <div className="h-2 bg-emerald-200/50 rounded-sm w-1/2" />
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 bg-red-50/50 p-3 rounded-sm border border-red-100">
-                  <div className="w-4 h-4 rounded-full bg-red-400 shrink-0 mt-0.5" />
-                  <div className="space-y-1.5 w-full">
-                    <div className="h-2 bg-red-200/50 rounded-sm w-full" />
-                  </div>
-                </div>
-              </div>
+          <div className="bg-white rounded-lg p-6 md:p-8 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
+            <div className="mb-6 text-center">
+              <h3 className="text-3xl md:text-4xl font-black text-zinc-900 mb-4 tracking-tight">
+                <span className="bg-accent-purple text-white px-3 py-1 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] inline-block">Instant</span> Feedback
+              </h3>
+              <p className="text-zinc-700 leading-relaxed font-medium text-lg">
+                Get detailed explanations for every question you answer.
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-zinc-900 mb-4 tracking-tight">Instant Step-by-Step Feedback</h3>
-            <p className="text-zinc-600 leading-relaxed font-medium">
-              Go beyond simple scoring. Receive detailed explanations for every question, understanding exactly why an answer is right or wrong.
-            </p>
+            <div className="aspect-square bg-zinc-50 rounded-lg border-[3px] border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
+              <Image
+                src="/images/explanationssamewidthandheight.png"
+                alt="Exam Feedback Preview"
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
 

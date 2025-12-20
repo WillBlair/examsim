@@ -512,8 +512,8 @@ export function ExamClient({
                 "bg-white border-2 rounded-lg p-6 space-y-4 transition-all shadow-sm",
                 isSubmitted
                   ? isCorrect
-                    ? "border-emerald-500 bg-emerald-50/10"
-                    : "border-red-500 bg-red-50/10"
+                    ? "border-emerald-500"
+                    : "border-red-500"
                   : "border-zinc-200 hover:border-zinc-900 hover:shadow-neo"
               )}
             >
@@ -674,8 +674,8 @@ export function ExamClient({
                     <div className={cn(
                       "mt-4 p-4 rounded-lg border-2 animate-in fade-in slide-in-from-top-2",
                       isCorrect
-                        ? "bg-emerald-100/50 border-emerald-200 text-emerald-900"
-                        : "bg-red-50 border-red-200 text-red-900"
+                        ? "bg-emerald-50 border-emerald-300 text-emerald-900"
+                        : "bg-red-50 border-red-300 text-red-900"
                     )}>
                       <h4 className="font-bold text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
                         {isCorrect ? <CheckCircle weight="fill" className="w-4 h-4" /> : <X weight="bold" className="w-4 h-4" />}
