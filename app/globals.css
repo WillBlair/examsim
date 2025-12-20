@@ -50,13 +50,13 @@
   /* Ultra-Premium Theme - High Contrast, Sharp Lines */
   --background: 0 0% 100%;
   --foreground: 0 0% 9%;
-  
+
   --card: 0 0% 100%;
   --card-foreground: 0 0% 9%;
-  
+
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 9%;
-  
+
   --primary: 0 0% 9%;
   --primary-foreground: 0 0% 98%;
 
@@ -75,18 +75,23 @@
   /* Thinner, sharper borders for the "expensive" look, slightly darker for neo-brutalist definition */
   --border: 0 0% 85%;
   --input: 0 0% 85%;
-  --ring: 262 83% 58%; /* Purple-600 for focus rings */
-  
+  --ring: 262 83% 58%;
+  /* Purple-600 for focus rings */
+
   --radius: 0.3rem;
-  
+
   /* Brand Colors - Refined (Emerald Option) */
-  --brand-orange: 158 64% 52%; /* Emerald-500 */
-  --brand-orange-muted: 152 76% 96%; /* Emerald-50 */
-  
+  --brand-orange: 158 64% 52%;
+  /* Emerald-500 */
+  --brand-orange-muted: 152 76% 96%;
+  /* Emerald-50 */
+
   /* Accent Purple */
-  --accent-purple: 262 83% 58%; /* Purple-600 */
-  --accent-purple-muted: 262 83% 96%; /* Purple-50 */
-  
+  --accent-purple: 262 83% 58%;
+  /* Purple-600 */
+  --accent-purple-muted: 262 83% 96%;
+  /* Purple-50 */
+
   /* Chart Colors */
   --chart-1: 173 58% 39%;
   --chart-2: 12 76% 61%;
@@ -101,41 +106,45 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
-  * {
-    @apply border-border outline-ring/50;
-  }
-  
+
+
+
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply tracking-tight font-semibold text-primary font-display;
   }
 }
 
 @layer utilities {
+
   /* Neo-Brutalist Utilities */
   .shadow-neo {
-    box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
-    border: 1px solid rgba(0,0,0,1);
+    box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+    border: 1px solid rgba(0, 0, 0, 1);
   }
-  
+
   .shadow-neo-sm {
-    box-shadow: 1px 1px 0px 0px rgba(0,0,0,1);
-    border: 1px solid rgba(0,0,0,1);
+    box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 1);
+    border: 1px solid rgba(0, 0, 0, 1);
   }
-  
+
   .shadow-neo-lg {
-    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
-    border: 1px solid rgba(0,0,0,1);
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+    border: 1px solid rgba(0, 0, 0, 1);
   }
 
   .shadow-neo-xl {
-    box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
-    border: 1px solid rgba(0,0,0,1);
+    box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+    border: 1px solid rgba(0, 0, 0, 1);
   }
 
   .shadow-neo-brand {
@@ -152,7 +161,7 @@
   .border-thin {
     border-width: 0.5px;
   }
-  
+
   .border-b-thin {
     border-bottom-width: 0.5px;
   }
@@ -160,15 +169,15 @@
   .bg-brand-orange {
     background-color: hsl(var(--brand-orange));
   }
-  
+
   .text-brand-orange {
     color: hsl(var(--brand-orange));
   }
-  
+
   .text-accent-purple {
     color: hsl(var(--accent-purple));
   }
-  
+
   .bg-accent-purple {
     background-color: hsl(var(--accent-purple));
   }
@@ -181,9 +190,9 @@
   .shadow-sharp {
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   }
-  
+
   .shadow-elevated {
-    box-shadow: 
+    box-shadow:
       0 4px 6px -1px rgb(0 0 0 / 0.05),
       0 2px 4px -2px rgb(0 0 0 / 0.05);
   }
@@ -193,7 +202,7 @@
     background-image: radial-gradient(hsl(var(--foreground) / 0.1) 1px, transparent 1px);
     background-size: 20px 20px;
   }
-  
+
   /* Noise Texture */
   .bg-noise {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
@@ -203,16 +212,16 @@
   .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
     border-radius: 10px;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground));
   }
@@ -222,11 +231,12 @@
     0% {
       transform: translateX(-100%);
     }
+
     100% {
       transform: translateX(200%);
     }
   }
-  
+
   .animate-shimmer {
     animation: shimmer 2s infinite;
   }

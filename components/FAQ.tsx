@@ -6,20 +6,28 @@ import { AppIcon } from "@/components/ui/icon";
 
 const faqs = [
   {
-    question: "How does the ingestion engine work?",
-    answer: "We use advanced OCR and NLP to parse your documents (PDF, PPTX, DOCX) and structure them into a knowledge graph. This allows us to generate questions that are contextually accurate."
+    question: "How does ExamSim work?",
+    answer: "ExamSim turns your study materials into an interactive exam experience. Simply upload your notes, slides, or textbooks, and our AI generates realistic practice questions, grades your answers, and provides detailed feedback to help you master the material."
   },
   {
-    question: "Can I upload handwritten notes?",
-    answer: "Yes! Our OCR technology is capable of reading legible handwriting and converting it into digital text for analysis."
+    question: "What types of files can I upload?",
+    answer: "We support a wide range of formats including PDF, PPTX (PowerPoint), DOCX (Word), and even images of handwritten notes. You can also paste text directly into the dashboard."
   },
   {
-    question: "Is my data private?",
-    answer: "Absolutely. Your course materials are encrypted and only accessible to you. We do not use your data to train public models."
+    question: "Can I customize the practice exams?",
+    answer: "Yes! You have full control. You can set specific time limits, choose the number of questions, select difficulty levels, and even focus on specific topics or chapters from your uploaded materials."
+  },
+  {
+    question: "Is my data secure?",
+    answer: "Absolutely. Your uploaded documents and personal data are encrypted and stored deeply securely. We never share your data with third parties or use it to train public AI models without your explicit permission."
   },
   {
     question: "How accurate is the AI grading?",
-    answer: "Our grading engine compares your answers against the source material using semantic similarity. It provides specific feedback on what you missed based on your actual notes."
+    answer: "Our grading engine is highly advanced. It uses semantic analysis to compare your answers against the source material, ensuring that you get credit for understanding concepts, not just matching keywords. It provides granular feedback on exactly what you missed."
+  },
+  {
+    question: "Can I save my progress?",
+    answer: "Yes, all your generated exams, attempts, and performance analytics are automatically saved to your dashboard. You can review past exams and track your improvement over time."
   }
 ];
 

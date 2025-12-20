@@ -1,7 +1,7 @@
 "use client";
 
+import Image from "next/image";
 import { AppIcon } from "@/components/ui/icon";
-import { IngestionVisualization } from "./IngestionVisualization";
 
 export function Features() {
   return (
@@ -72,8 +72,14 @@ export function Features() {
           </div>
 
           {/* Feature Preview - Enhanced Visualization */}
-          <div className="h-full min-h-[450px]">
-            <IngestionVisualization />
+          <div className="relative w-full bg-white rounded-lg border-2 border-zinc-900 shadow-neo overflow-hidden flex items-center justify-center p-6">
+            <Image
+              src="/images/uploadbox.png"
+              alt="Upload Interface Preview"
+              width={800}
+              height={600}
+              className="w-full h-auto object-contain"
+            />
           </div>
         </div>
 
