@@ -86,17 +86,13 @@ export function Features() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Feature 2 */}
           <div className="bg-white rounded-lg p-8 md:p-12 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
-            <div className="h-48 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
-              {/* Abstract UI for Config */}
-              <div className="w-3/4 h-3/4 bg-white rounded-sm border-2 border-zinc-900 shadow-neo-sm p-4 space-y-2">
-                <div className="h-2 bg-zinc-200 rounded-sm w-1/2" />
-                <div className="h-8 bg-zinc-50 border border-zinc-200 rounded-sm" />
-                <div className="h-2 bg-zinc-200 rounded-sm w-1/3 mt-4" />
-                <div className="flex gap-2">
-                  <div className="h-8 w-8 rounded-sm bg-zinc-100 border border-zinc-200" />
-                  <div className="h-8 w-8 rounded-sm bg-zinc-100 border border-zinc-200" />
-                </div>
-              </div>
+            <div className="h-56 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
+              <Image
+                src="/images/examsettings.png"
+                alt="Exam Settings Preview"
+                fill
+                className="object-cover"
+              />
             </div>
             <h3 className="text-2xl font-bold text-zinc-900 mb-4 tracking-tight">Customizable Practice</h3>
             <p className="text-zinc-600 leading-relaxed font-medium">
@@ -106,7 +102,7 @@ export function Features() {
 
           {/* Feature 3 */}
           <div className="bg-white rounded-lg p-8 md:p-12 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-300">
-            <div className="h-48 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
+            <div className="h-56 bg-zinc-50 rounded-lg border border-zinc-200 mb-8 flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
               {/* Abstract UI for Grading */}
               <div className="w-3/4 h-3/4 flex flex-col gap-3 p-4">
                 <div className="flex items-start gap-3 bg-emerald-50/50 p-3 rounded-sm border border-emerald-100">
