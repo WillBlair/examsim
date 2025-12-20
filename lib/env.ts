@@ -12,13 +12,35 @@ const envSchema = z.object({
 
 export type Env = z.infer<typeof envSchema>;
 
+// Cache the parsed env to avoid re-parsing on every access
+let cachedEnv: Env | null = null;
+
 function getEnv(): Env {
+  // Skip validation during Next.js build phase
+  // The build collects page data which imports db modules but doesn't need real DB connection
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return {
+      DATABASE_URL: "postgresql://placeholder:placeholder@placeholder:5432/placeholder",
+      NODE_ENV: "production",
+      NEXTAUTH_SECRET: "build-time-placeholder",
+      NEXTAUTH_URL: "http://localhost:3000",
+      GOOGLE_CLIENT_ID: undefined,
+      GOOGLE_CLIENT_SECRET: undefined,
+      GOOGLE_API_KEY: undefined,
+    } as Env;
+  }
+
+  if (cachedEnv) {
+    return cachedEnv;
+  }
+
   try {
-    return envSchema.parse({
+    cachedEnv = envSchema.parse({
       ...process.env,
       // Provide defaults for development
       NODE_ENV: process.env.NODE_ENV || "development",
     });
+    return cachedEnv;
   } catch (error) {
     if (error instanceof z.ZodError) {
       const missingVars = error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join("\n");
@@ -28,5 +50,11 @@ function getEnv(): Env {
   }
 }
 
-export const env = getEnv();
+// Use a getter to lazily evaluate env vars at runtime
+export const env: Env = new Proxy({} as Env, {
+  get(_target, prop: string) {
+    const envVars = getEnv();
+    return envVars[prop as keyof Env];
+  },
+});
 
