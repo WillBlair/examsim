@@ -20,68 +20,6 @@ export function Features() {
           </p>
         </div>
 
-        {/* Highlighted Feature 1 - Large, Split Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
-          <div>
-            <div className="inline-block px-3 py-1 rounded-none bg-emerald-300 text-zinc-900 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-xs font-black uppercase tracking-wider mb-6">
-              Smart Knowledge Extraction
-            </div>
-            <h3 className="text-2xl md:text-4xl font-black text-zinc-900 mb-6 tracking-tight">
-              From raw notes to exam-ready questions.
-            </h3>
-            <p className="text-zinc-700 text-lg leading-relaxed mb-8 font-bold">
-              Simply upload your PDF lectures or paste your class notes.
-              We analyze the content to extract the core concepts you need to master.
-            </p>
-            <ul className="space-y-6">
-              {[
-                {
-                  title: "Flexible Input",
-                  text: "Upload PDFs, Slides, or paste text directly",
-                  icon: FileUp,
-                  color: "text-zinc-900",
-                  bg: "bg-emerald-300",
-                },
-                {
-                  title: "Topic Identification",
-                  text: "Automatically extracts key themes",
-                  icon: Brain,
-                  color: "text-zinc-900",
-                  bg: "bg-accent-purple",
-                },
-                {
-                  title: "Intelligent Parsing",
-                  text: "Focuses on content, ignores noise",
-                  icon: Sparkles,
-                  color: "text-zinc-900",
-                  bg: "bg-blue-300",
-                }
-              ].map((item, i) => (
-                <li key={i} className="flex items-start gap-4 text-zinc-900">
-                  <div className={`w-12 h-12 rounded-lg ${item.bg} flex items-center justify-center flex-shrink-0 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mt-1 transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none`}>
-                    <item.icon className="w-6 h-6 text-zinc-900" strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-zinc-900 text-lg mb-1">{item.title}</h4>
-                    <p className="text-zinc-600 text-sm leading-relaxed font-medium">{item.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Feature Preview - Enhanced Visualization */}
-          <div className="relative w-full bg-white rounded-lg border-2 border-zinc-900 shadow-neo overflow-hidden flex items-center justify-center p-0">
-            <Image
-              src="/images/uploadbox.png"
-              alt="Upload Interface Preview"
-              width={800}
-              height={600}
-              className="w-full h-auto object-contain"
-            />
-          </div>
-        </div>
-
         {/* Highlighted Features 2 & 3 - Side by Side */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Feature 2 */}
@@ -122,6 +60,61 @@ export function Features() {
                 className="object-cover"
               />
             </div>
+          </div>
+        </div>
+
+        {/* Highlighted Feature 1 - Large, Split Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div className="text-center">
+            <h3 className="text-2xl md:text-4xl lg:text-5xl font-black text-zinc-900 mb-4 tracking-tight">
+              <span className="bg-accent-purple text-white px-2 md:px-3 py-1 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] inline-block text-xl md:text-4xl lg:text-5xl">Upload</span> Your Study Materials
+            </h3>
+            <p className="text-zinc-700 text-base md:text-xl max-w-lg mx-auto mb-6">
+              Drag and drop your course materials and we'll analyze the content to generate practice questions tailored to what you need to learn.
+            </p>
+            <ul className="space-y-6 inline-block text-left mt-4">
+              {[
+                {
+                  title: "Any Format",
+                  text: "Upload PDFs, PowerPoints, Word docs, or paste text directly",
+                  icon: FileUp,
+                  bg: "bg-emerald-300",
+                },
+                {
+                  title: "Smart Parsing",
+                  text: "Automatically extracts and identifies key concepts from your materials",
+                  icon: Brain,
+                  bg: "bg-accent-purple",
+                },
+                {
+                  title: "Auto Analysis",
+                  text: "Filters out irrelevant content and focuses on what matters most",
+                  icon: Sparkles,
+                  bg: "bg-blue-300",
+                }
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-4 text-zinc-900">
+                  <div className={`w-12 h-12 rounded-lg ${item.bg} flex items-center justify-center flex-shrink-0 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mt-1`}>
+                    <item.icon className="w-6 h-6 text-zinc-900" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-black text-zinc-900 text-xl">{item.title}</span>
+                    <span className="text-zinc-600 text-base">{item.text}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Feature Preview - Enhanced Visualization */}
+          <div className="relative w-full bg-white rounded-lg border-2 border-zinc-900 shadow-neo overflow-hidden flex items-center justify-center p-0">
+            <Image
+              src="/images/uploadbox.png"
+              alt="Upload Interface Preview"
+              width={800}
+              height={600}
+              className="w-full h-auto object-contain"
+            />
           </div>
         </div>
 
