@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AppIcon } from "@/components/ui/icon";
+import Image from "next/image";
 
 export function Navbar() {
   return (
@@ -15,8 +15,8 @@ export function Navbar() {
             href="/"
             className="flex items-center gap-2 text-zinc-900 font-bold text-lg tracking-tight group"
           >
-            <div className="w-8 h-8 bg-brand-orange rounded-sm flex items-center justify-center border border-zinc-900 shadow-sm group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-transform">
-              <AppIcon name="Terminal" className="w-4 h-4 text-white" />
+            <div className="w-10 h-10 rounded-sm flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
+              <Image src="/images/examsimlogogreen-removebg-preview.png" alt="ExamSim Logo" width={40} height={40} className="w-full h-full object-contain" />
             </div>
             <span className="font-display">ExamSim</span>
           </Link>
