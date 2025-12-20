@@ -227,7 +227,27 @@ export async function POST(req: NextRequest) {
 
     } catch (error: unknown) {
         console.error("Exam generation error:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+
+        // Return more detailed error for debugging
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorName = error instanceof Error ? error.name : "UnknownError";
+
+        // Check for common issues
+        if (errorMessage.includes("API key")) {
+            return NextResponse.json({
+                error: "API key configuration error. Please check GOOGLE_GENERATIVE_AI_API_KEY."
+            }, { status: 500 });
+        }
+
+        if (errorMessage.includes("database") || errorMessage.includes("connection")) {
+            return NextResponse.json({
+                error: "Database connection error. Please check DATABASE_URL."
+            }, { status: 500 });
+        }
+
+        return NextResponse.json({
+            error: `Generation failed: ${errorName} - ${errorMessage}`
+        }, { status: 500 });
     }
 }
 
