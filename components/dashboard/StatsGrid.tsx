@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Fire } from "@phosphor-icons/react";
 import { AppIcon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +30,7 @@ function TrendBadge({ current, previous }: { current: number; previous: number }
     );
   }
 
-  const percentChange = previous === 0 
+  const percentChange = previous === 0
     ? (current > 0 ? 100 : 0)
     : Math.round(((current - previous) / previous) * 100);
 
@@ -90,8 +89,7 @@ export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswer
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-      {/* Regular Stats */}
+    <div className="grid grid-cols-2 gap-3">
       {stats.map((stat, index) => (
         <motion.div
           key={stat.label}
@@ -100,29 +98,29 @@ export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswer
           transition={{ delay: index * 0.05, duration: 0.3 }}
           className="h-full"
         >
-          <div className="p-4 rounded-lg bg-white border-2 border-zinc-900 shadow-neo h-full flex flex-col justify-between group hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200">
+          <div className="p-3 rounded-lg bg-white border-2 border-zinc-900 shadow-neo h-full flex flex-col justify-between group hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200">
             <div>
-              {/* Icon */}
-              <div className={cn("w-10 h-10 rounded-sm flex items-center justify-center mb-3 border border-zinc-900 shadow-sm", stat.iconBg)}>
-                <AppIcon name={stat.icon} className={cn("w-5 h-5", stat.iconColor)} />
+              {/* Icon - Smaller */}
+              <div className={cn("w-8 h-8 rounded-sm flex items-center justify-center mb-2 border border-zinc-900 shadow-sm", stat.iconBg)}>
+                <AppIcon name={stat.icon} className={cn("w-4 h-4", stat.iconColor)} />
               </div>
 
               {/* Value */}
-              <div className="flex items-baseline gap-0.5 mb-1">
-                <span className="text-2xl font-semibold text-foreground tabular-nums">
+              <div className="flex items-baseline gap-0.5 mb-0.5">
+                <span className="text-xl font-semibold text-foreground tabular-nums">
                   {stat.data.value}
                 </span>
                 {stat.suffix && (
-                  <span className="text-sm font-medium text-muted-foreground">{stat.suffix}</span>
+                  <span className="text-xs font-medium text-muted-foreground">{stat.suffix}</span>
                 )}
               </div>
 
               {/* Label */}
-              <p className="text-xs text-muted-foreground">{stat.label}</p>
+              <p className="text-[10px] text-muted-foreground">{stat.label}</p>
             </div>
 
-            {/* Trend */}
-            <div className="mt-3">
+            {/* Trend - Compact */}
+            <div className="mt-2">
               {stat.data.trend && (
                 <TrendBadge current={stat.data.trend.current} previous={stat.data.trend.previous} />
               )}
@@ -130,51 +128,6 @@ export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswer
           </div>
         </motion.div>
       ))}
-
-      {/* Streak Card - Special Styling */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.3 }}
-        className="h-full"
-      >
-        <div className="p-4 rounded-lg bg-brand-orange border-2 border-zinc-900 shadow-neo h-full flex flex-col justify-between relative overflow-hidden group">
-          {/* Decorative background pattern */}
-          <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-10 mix-blend-overlay" />
-          
-          <div className="relative z-10">
-            {/* Icon */}
-            <div className="w-10 h-10 rounded-sm bg-accent-purple shadow-sm border border-zinc-900 flex items-center justify-center mb-3">
-              <Fire weight="fill" className="w-5 h-5 text-white" />
-            </div>
-
-            {/* Value */}
-            <div className="flex items-baseline gap-1 mb-1">
-              <span className="text-2xl font-bold text-white tabular-nums text-shadow-sm">
-                {streak.value}
-              </span>
-              <span className="text-sm font-bold text-white/90">days</span>
-            </div>
-
-            {/* Label */}
-            <p className="text-xs text-white/80 font-medium">Current Streak</p>
-          </div>
-          
-          {/* Status */}
-          <div className="mt-3 relative z-10">
-            {Number(streak.value) > 0 ? (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-white shadow-sm border border-zinc-900">
-                <Fire weight="fill" className="w-3 h-3 text-brand-orange" />
-                <span className="text-[10px] font-bold text-zinc-900 uppercase tracking-wider">On fire!</span>
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-white shadow-sm border border-zinc-900">
-                <span className="text-[10px] font-bold text-zinc-900">Start today!</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </motion.div>
     </div>
   );
 }
