@@ -24,6 +24,7 @@ export async function getExamQuestions(examId: number) {
         options: q.options as string[],
         correctAnswer: q.correctAnswer,
         explanation: q.explanation,
+        hint: q.hint,
         type: q.type
     }));
 }

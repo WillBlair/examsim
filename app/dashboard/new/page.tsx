@@ -349,16 +349,26 @@ export default function NewExamPage() {
                     addLog(`Generated question ${count}/${questionCount}...`);
                 }
 
-                // If we have questions, update state
+                // If we have questions, update state - but only include questions with valid options
                 if (count > 0) {
-                    setStreamingQuestions(currentQuestions.map((q: any, i: number) => ({
-                        id: i,
-                        questionText: q.text || "",
-                        options: q.options || [],
-                        correctAnswer: q.correctAnswer || "",
-                        explanation: q.explanation || "",
-                        type: q.type || "Multiple Choice"
-                    })));
+                    const validQuestions = currentQuestions
+                        .map((q: any, i: number) => ({
+                            id: i,
+                            questionText: q.text || "",
+                            options: q.options || [],
+                            correctAnswer: q.correctAnswer || "",
+                            explanation: q.explanation || "",
+                            hint: q.hint || null,
+                            type: q.type || "Multiple Choice"
+                        }))
+                        .filter((q: any) =>
+                            q.type === "Fill in the Blank" ||
+                            (q.options && q.options.length > 0 && q.options.some((opt: string) => opt && opt.trim()))
+                        );
+
+                    if (validQuestions.length > 0) {
+                        setStreamingQuestions(validQuestions);
+                    }
                 }
             }
 
@@ -368,11 +378,41 @@ export default function NewExamPage() {
             if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
             setEstimatedTime(0);
 
-            // Fetch final
+            // Fetch final questions with retry logic
+            // (onFinish callback may still be saving to DB)
             if (examId) {
-                const finalQuestions = await getExamQuestions(examId);
-                setStreamingQuestions(finalQuestions);
-                addLog("Exam ready.");
+                let retries = 0;
+                const maxRetries = 5;
+
+                while (retries < maxRetries) {
+                    await new Promise(resolve => setTimeout(resolve, 500 + retries * 300));
+                    const finalQuestions = await getExamQuestions(examId);
+
+                    // Check if questions have valid options
+                    const hasValidOptions = finalQuestions.length > 0 &&
+                        finalQuestions.every((q: any) =>
+                            q.type === "Fill in the Blank" ||
+                            (q.options && q.options.length > 0 && q.options.some((opt: string) => opt && opt.trim()))
+                        );
+
+                    if (hasValidOptions) {
+                        setStreamingQuestions(finalQuestions);
+                        addLog("Exam ready.");
+                        break;
+                    }
+
+                    retries++;
+                    if (retries < maxRetries) {
+                        addLog(`Loading options... (attempt ${retries + 1})`);
+                    }
+                }
+
+                // Final fallback - use whatever we got
+                if (retries >= maxRetries) {
+                    const finalQuestions = await getExamQuestions(examId);
+                    setStreamingQuestions(finalQuestions);
+                    addLog("Exam ready.");
+                }
             }
 
         } catch (error) {

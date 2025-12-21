@@ -164,7 +164,7 @@ export async function POST(req: NextRequest) {
 
             The questions should be challenging and test deep understanding.
             For each question, identify a specific sub-topic.
-            ${allowHints ? "Provide a helpful hint for each question." : "Do not provide hints."}
+            ${allowHints ? "Provide a helpful hint for each question. The hint should either: (1) provide a clue that points toward the correct answer, (2) eliminate one incorrect option, or (3) give a memorable fact or mnemonic. NEVER tell the user to 'refer to' or 'review' any material - the hint must be self-contained and actionable." : "Do not provide hints."}
             ${allowExplanations ? "Provide a detailed explanation for the correct answer." : "Provide a brief explanation."}
 
             Use ONLY the following question types:
@@ -202,6 +202,7 @@ export async function POST(req: NextRequest) {
                             options: q.options || [],
                             correctAnswer: finalCorrectAnswer as string,
                             explanation: q.explanation,
+                            hint: q.hint || null,
                             type: q.type,
                             subtopic: q.subtopic,
                         };

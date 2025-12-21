@@ -83,6 +83,7 @@ export const questions = pgTable("questions", {
   options: jsonb("options").notNull(), // Array of strings
   correctAnswer: text("correct_answer").notNull(),
   explanation: text("explanation"),
+  hint: text("hint"), // Optional hint for the question
   type: text("type").notNull(), // 'Multiple Choice', 'True/False', etc.
   subtopic: text("subtopic"), // e.g., "Biology > Mitosis"
 }, (table) => ({
