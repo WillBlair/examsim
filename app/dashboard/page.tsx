@@ -72,10 +72,10 @@ export default async function DashboardPage() {
             <span className="w-2 h-2 rounded-full bg-accent-purple animate-pulse" />
             {format(new Date(), 'EEEE, MMMM d')}
           </p>
-          <h1 className="text-2xl font-black text-zinc-900 tracking-tight mt-1">
+          <h1 className="text-3xl font-black text-zinc-900 tracking-tight mt-1">
             Welcome back, {firstName}!
           </h1>
-          <p className="text-sm text-zinc-600 font-medium max-w-lg">
+          <p className="text-base text-zinc-500 font-medium max-w-lg leading-relaxed">
             Ready to continue your prep? You&apos;re doing great.
           </p>
         </div>
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
         <div className="relative z-10 hidden md:flex items-center gap-4">
           {/* Streak Badge */}
           {hasExams && (
-            <div className="relative flex items-center justify-between gap-5 px-5 py-3 rounded-lg bg-brand-orange border-2 border-zinc-900 shadow-neo min-w-[380px] overflow-hidden group hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200">
+            <div className="relative flex items-center justify-between gap-5 px-5 h-16 rounded-lg bg-brand-orange border-2 border-zinc-900 shadow-neo min-w-[340px] overflow-hidden group hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200">
               {/* Background effects */}
               <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.08] mix-blend-overlay pointer-events-none" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,rgba(255,255,255,0.15)_0%,transparent_50%)] pointer-events-none" />
@@ -92,24 +92,24 @@ export default async function DashboardPage() {
               <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/20 pointer-events-none" />
 
               <div className="relative z-10 flex items-center gap-3">
-                <div className="w-11 h-11 rounded-lg bg-accent-purple border-2 border-zinc-900 flex items-center justify-center shadow-md relative overflow-hidden">
+                <div className="w-10 h-10 flex-shrink-0 rounded-lg bg-accent-purple border-2 border-zinc-900 flex items-center justify-center shadow-md relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-accent-purple to-purple-700" />
-                  <Fire weight="fill" className="w-6 h-6 text-white relative z-10" />
+                  <Fire weight="fill" className="w-5 h-5 text-white relative z-10" />
                 </div>
                 <div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black text-zinc-900 tracking-tight">{stats.streak}</span>
-                    <span className="text-sm font-bold text-zinc-900/80">days</span>
+                  <div className="flex items-baseline gap-1 leading-none">
+                    <span className="text-2xl font-black text-zinc-900 tracking-tight leading-none">{stats.streak}</span>
+                    <span className="text-xs font-bold text-zinc-900/80 leading-none">days</span>
                   </div>
-                  <p className="text-xs text-zinc-900/70 font-semibold tracking-wide">Current Streak</p>
+                  <p className="text-[10px] text-zinc-900/70 font-semibold tracking-wide mt-0.5 leading-none">Current Streak</p>
                 </div>
               </div>
 
               {stats.streak > 0 && (
-                <div className="relative z-10 px-3 py-1.5 rounded-md bg-accent-purple border-2 border-zinc-900 shadow-neo flex items-center gap-1.5 group-hover:shadow-none transition-all overflow-hidden">
+                <div className="relative z-10 px-2.5 py-1 rounded-md bg-accent-purple border-2 border-zinc-900 shadow-neo flex items-center gap-1 group-hover:shadow-none transition-all overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-accent-purple to-purple-700" />
-                  <Fire weight="fill" className="w-4 h-4 text-white relative z-10" />
-                  <span className="text-xs font-black text-white uppercase tracking-wide relative z-10">On fire!</span>
+                  <Fire weight="fill" className="w-3.5 h-3.5 text-white relative z-10 flex-shrink-0" />
+                  <span className="text-[10px] font-black text-white uppercase tracking-wide relative z-10 leading-none">On fire!</span>
                 </div>
               )}
             </div>
@@ -163,9 +163,9 @@ export default async function DashboardPage() {
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div className="space-y-4">
                       {/* Badge */}
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm bg-accent-purple/10 text-accent-purple text-xs font-bold tracking-wide uppercase border border-accent-purple/20 w-fit group-hover:bg-accent-purple group-hover:text-white group-hover:border-zinc-900 transition-colors duration-300">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm bg-accent-purple/10 text-accent-purple text-xs font-bold tracking-wide uppercase border border-accent-purple/20 w-fit">
                         <Plus weight="bold" className="w-3.5 h-3.5" />
-                        <span className="transition-colors duration-300">Create New</span>
+                        <span>Create New</span>
                       </div>
 
                       {/* Content */}
