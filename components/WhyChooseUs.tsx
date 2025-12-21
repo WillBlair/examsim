@@ -5,7 +5,7 @@ import Image from "next/image";
 const benefits = [
   {
     title: "Smart Extraction",
-    description: "Upload any syllabus, slides, or notes — we instantly identify the concepts that matter.",
+    description: "Upload any syllabus, slides, or notes and we instantly identify the concepts that matter.",
   },
   {
     title: "Tailored Practice",
@@ -26,11 +26,17 @@ export function WhyChooseUs() {
     <section id="why-choose-us" className="py-16 bg-transparent">
       <div className="container max-w-5xl px-4 md:px-6 mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4 tracking-tight">
-            Why Choose <span className="text-accent-purple">ExamSim</span>
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-zinc-900 mb-6 tracking-tight leading-relaxed md:leading-loose">
+            Why Choose{" "}
+            <span className="bg-accent-purple text-white px-2 md:px-3 py-0.5 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] inline-block">
+              ExamSim
+            </span>
           </h2>
-          <p className="text-zinc-600 max-w-2xl mx-auto font-medium">
-            Practice smarter with tools designed to make learning stick.
+          <p className="text-zinc-900 text-base md:text-[1.35rem] font-bold max-w-2xl mx-auto">
+            Practice smarter with tools designed to{" "}
+            <span className="bg-emerald-300 text-zinc-900 px-2 py-0.5 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] inline-block">
+              make learning stick.
+            </span>
           </p>
         </div>
 
@@ -51,7 +57,7 @@ export function WhyChooseUs() {
                 />
               </div>
 
-              <h3 className="font-bold text-zinc-900 mb-2 text-base group-hover:text-zinc-700 transition-colors">
+              <h3 className="font-bold text-zinc-900 mb-2 text-xl group-hover:text-zinc-700 transition-colors">
                 {benefit.title}
               </h3>
               <p className="text-zinc-500 text-sm leading-relaxed">
