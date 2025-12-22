@@ -1,4 +1,4 @@
-import { CheckCircle, ArrowRight, Target } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircle, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -12,76 +12,87 @@ interface WeakAreasProps {
   weakAreas: WeakArea[];
 }
 
+function getSimpleTopic(subtopic: string): string {
+  const parts = subtopic.split(/\s*[>\/\-]\s*/);
+  return parts[parts.length - 1].trim();
+}
+
 export function WeakAreas({ weakAreas }: WeakAreasProps) {
+  const previewAreas = weakAreas.slice(0, 3);
+
   return (
-    <div className="h-full animate-fade-in-up">
-      <div className="h-full p-6 rounded-lg bg-white border-2 border-zinc-900 shadow-neo flex flex-col relative overflow-hidden transition-all duration-300">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
-        {/* Content */}
-        <div className="relative z-10 flex flex-col h-full">
-          {weakAreas.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
-              <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mb-3">
-                <CheckCircle weight="fill" className="w-6 h-6 text-emerald-500" />
-              </div>
-              <p className="text-sm font-semibold text-zinc-900">All Systems Go</p>
-              <p className="text-xs text-zinc-500 mt-1">No major weak areas detected in your recent performance.</p>
+    <div className="animate-fade-in-up">
+      <div className="p-4 rounded-lg bg-white border-2 border-zinc-900 shadow-neo relative overflow-hidden">
+        {/* Subtle accent */}
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-100/50 to-transparent rounded-full blur-xl pointer-events-none" />
+
+        {weakAreas.length === 0 ? (
+          <div className="flex items-center gap-3 py-2 relative z-10">
+            <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+              <CheckCircle weight="fill" className="w-4 h-4 text-emerald-500" />
             </div>
-          ) : (
-            <div className="flex-1 space-y-3">
-              {weakAreas.slice(0, 4).map((area) => {
-                // Simplified logic: red for really bad, amber for warning
+            <div>
+              <p className="text-xs font-bold text-zinc-900">All Systems Go</p>
+              <p className="text-[10px] text-zinc-500">No weak areas detected.</p>
+            </div>
+          </div>
+        ) : (
+          <div className="relative z-10">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-black text-zinc-800 tracking-tight">
+                Focus Areas
+              </span>
+              <Link
+                href="/dashboard/practice"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-900 text-white text-[11px] font-bold border-2 border-zinc-900 shadow-neo-sm hover:bg-brand-orange hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+              >
+                Review Topics <ArrowRight weight="bold" className="w-3 h-3" />
+              </Link>
+            </div>
+
+            {/* Topic List */}
+            <div className="space-y-1">
+              {previewAreas.map((area) => {
                 const isCritical = area.score < 40;
+                const simpleTopic = getSimpleTopic(area.subtopic);
 
                 return (
-                  <div key={area.subtopic}>
-                    <div className="group flex items-center justify-between p-3 rounded-sm border border-zinc-200 bg-white hover:bg-red-50/10 hover:border-zinc-900 hover:shadow-neo-sm transition-all">
-                      <div className="flex-1 min-w-0 pr-4">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <p className="text-xs font-semibold text-zinc-700 truncate pr-2">
-                            {area.subtopic}
-                          </p>
-                          <span className={cn(
-                            "text-[10px] font-bold px-1.5 py-0.5 rounded",
-                            isCritical ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-600"
-                          )}>
-                            {Math.round(area.score)}%
-                          </span>
-                        </div>
-
-                        {/* Clean Progress Bar */}
-                        <div className="h-1.5 w-full bg-zinc-100 rounded-[3px] overflow-hidden">
-                          <div
-                            className={cn(
-                              "h-full rounded-[2px] transition-all duration-500",
-                              isCritical ? "bg-red-500" : "bg-amber-500"
-                            )}
-                            style={{ width: `${area.score}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Action Button */}
-                      <Link href="/dashboard/practice">
-                        <button className="p-2 rounded-md text-zinc-400 hover:text-brand-orange hover:bg-emerald-50 transition-colors">
-                          <Target weight="duotone" className="w-4 h-4" />
-                        </button>
-                      </Link>
+                  <div
+                    key={area.subtopic}
+                    className="flex items-center gap-3 p-2 -mx-1 rounded-md hover:bg-amber-50/50 transition-colors group cursor-pointer"
+                  >
+                    {/* Score Badge */}
+                    <div className={cn(
+                      "w-10 h-6 rounded flex items-center justify-center text-[10px] font-black shrink-0 border",
+                      isCritical
+                        ? "bg-red-50 text-red-600 border-red-300"
+                        : "bg-amber-50 text-amber-600 border-amber-300"
+                    )}>
+                      {Math.round(area.score)}%
                     </div>
+
+                    {/* Topic */}
+                    <span className="text-xs font-bold text-zinc-800 truncate flex-1 group-hover:text-zinc-900">
+                      {simpleTopic}
+                    </span>
+
+                    {/* Missed Count */}
+                    <span className="text-[10px] text-zinc-500 shrink-0 font-medium">
+                      {area.totalQuestions} missed
+                    </span>
+
+                    {/* Arrow on hover */}
+                    <ArrowRight
+                      weight="bold"
+                      className="w-3 h-3 text-zinc-400 group-hover:text-brand-orange transition-colors shrink-0"
+                    />
                   </div>
                 );
               })}
             </div>
-          )}
-
-          {weakAreas.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-zinc-100 text-center">
-              <Link href="/dashboard/practice" className="inline-flex items-center text-xs font-medium text-brand-orange hover:text-emerald-600 transition-colors">
-                Practice these topics <ArrowRight className="w-3 h-3 ml-1" />
-              </Link>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

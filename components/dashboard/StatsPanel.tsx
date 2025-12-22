@@ -36,7 +36,7 @@ export function StatsPanel({ stats }: StatsPanelProps) {
     return (
         <div className="bg-white rounded-lg border-2 border-zinc-900 shadow-neo overflow-hidden flex flex-col">
             {/* Header & Toggle */}
-            <div className="p-4 border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white">
+            <div className="p-4 pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white">
                 <div className="flex items-center">
                     <h2 className="relative font-black text-zinc-900 text-xl tracking-tight z-0">
                         <span className="relative z-10">Performance</span>
@@ -70,7 +70,7 @@ export function StatsPanel({ stats }: StatsPanelProps) {
                 </div>
             </div>
 
-            <div className="p-4 flex flex-col gap-4">
+            <div className="px-4 pb-4 flex flex-col gap-3">
                 {/* Goal / Summary Section - Fixed height for consistency */}
                 <div className="h-[120px]">
                     <AnimatePresence mode="wait">

@@ -144,13 +144,13 @@ export default async function DashboardPage() {
       ) : (
         <>
           {/* Two-Column Command Center Layout */}
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
             {/* LEFT COLUMN - Action Zone */}
-            <div className="lg:col-span-7 space-y-6">
+            <div className="lg:col-span-7 flex flex-col gap-4">
               {/* Start New Simulation - Featured Card */}
-              <Link href="/dashboard/new" className="group block">
-                <div className="min-h-[280px] bg-white rounded-lg p-8 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
+              <Link href="/dashboard/new" className="group block flex-1">
+                <div className="h-full min-h-[280px] bg-white rounded-lg p-8 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
                   {/* Background Effects */}
                   <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-25 pointer-events-none" />
 
@@ -196,12 +196,11 @@ export default async function DashboardPage() {
             </div>
 
             {/* RIGHT COLUMN - Insights Zone */}
-            <div className="lg:col-span-5 space-y-4">
+            <div className="lg:col-span-5 flex flex-col gap-4">
               <StatsPanel stats={stats} />
 
-              {/* Focus Areas */}
-              <div className="space-y-3">
-                <h2 className="text-sm font-black text-zinc-900 uppercase tracking-tight">Focus Areas</h2>
+              {/* Focus Areas - flex-1 to fill remaining space */}
+              <div className="flex-1 flex flex-col">
                 <WeakAreas weakAreas={stats.weakAreas} />
               </div>
             </div>
