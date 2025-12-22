@@ -189,9 +189,12 @@ export default async function DashboardPage() {
             <div className="lg:col-span-7 flex flex-col gap-4">
               {/* Start New Simulation Card */}
               <Link href="/dashboard/new" className="group block">
-                <div className="bg-white rounded-lg p-5 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none h-full">
+                <div className="bg-white rounded-lg p-5 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none h-full group">
+                  {/* Decorative Top Border - Animated */}
+                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-accent-purple origin-left transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                  
                   <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-25 pointer-events-none" />
-                  <div className="absolute -bottom-6 -right-6 text-zinc-950/[0.03] transform rotate-12 group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+                  <div className="absolute -bottom-6 -right-6 text-accent-purple opacity-5 transform rotate-12 group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
                     <Scroll weight="fill" className="w-40 h-40" />
                   </div>
 
@@ -222,30 +225,38 @@ export default async function DashboardPage() {
 
               {/* Generate Flashcards Card */}
               <Link href="/dashboard/new?mode=flashcards" className="group block">
-                <div className="bg-white rounded-lg py-9 px-8 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none h-full">
+                <div className="bg-white rounded-lg p-5 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none h-full group">
+                  {/* Decorative Top Border - Animated */}
+                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-brand-orange origin-left transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                  
                   {/* Background pattern */}
                   <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
 
                   {/* Large decorative icon */}
-                  <div className="absolute -bottom-6 -right-6 text-zinc-950/[0.04] transform rotate-12 group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
-                    <Cards weight="fill" className="w-32 h-32" />
+                  <div className="absolute -bottom-6 -right-6 text-brand-orange opacity-5 transform rotate-12 group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+                    <Cards weight="fill" className="w-40 h-40" />
                   </div>
 
-                  {/* Gradient accent bar */}
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-brand-orange to-amber-400" />
-
-                  <div className="relative z-10 flex items-center justify-between w-full">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-orange to-amber-500 border-2 border-zinc-900 shadow-neo flex items-center justify-center group-hover:shadow-none group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all duration-200">
-                        <Cards weight="fill" className="w-5 h-5 text-white" />
+                  <div className="relative z-10">
+                    <div className="space-y-2">
+                       <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-orange/10 text-brand-orange text-xs font-bold tracking-wide uppercase border border-brand-orange/20 w-fit">
+                        <Cards weight="bold" className="w-3 h-3" />
+                        <span>Flashcards</span>
                       </div>
                       <div>
-                        <h3 className="text-base font-black text-zinc-900 tracking-tight group-hover:text-brand-orange transition-colors duration-300">Generate Flashcards</h3>
-                        <p className="text-xs text-zinc-500 font-medium">Turn your study materials into interactive cards</p>
+                        <h3 className="text-xl font-black text-zinc-900 mb-0.5 tracking-tight group-hover:text-brand-orange transition-colors duration-300">Generate Flashcards</h3>
+                        <p className="text-zinc-500 text-sm max-w-md font-medium leading-relaxed group-hover:text-zinc-700 transition-colors duration-300">
+                          Turn your study materials into interactive cards.
+                        </p>
                       </div>
                     </div>
-                    <div className="w-8 h-8 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center group-hover:bg-brand-orange group-hover:border-brand-orange transition-all duration-300">
-                      <ArrowRight weight="bold" className="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors duration-300" />
+                     <div className="mt-4">
+                      <span className="inline-flex items-center justify-center h-9 px-5 rounded-lg bg-zinc-900 text-white font-bold shadow-neo group-hover:bg-brand-orange group-hover:shadow-none group-hover:translate-x-[2px] group-hover:translate-y-[2px] transition-all duration-200">
+                        <span className="flex items-center gap-2 text-sm">
+                          Create Deck
+                          <ArrowRight weight="bold" className="w-4 h-4" />
+                        </span>
+                      </span>
                     </div>
                   </div>
                 </div>

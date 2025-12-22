@@ -11,7 +11,10 @@ export function ActivityStrip({ stats }: ActivityStripProps) {
         <div className="bg-white rounded-lg p-6 border-2 border-zinc-900 shadow-neo relative overflow-hidden h-full flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
-                <span className="text-sm font-black text-zinc-900 uppercase tracking-tight">Activity</span>
+                <h2 className="relative font-black text-zinc-900 text-xl tracking-tight z-0">
+                    <span className="relative z-10">Activity</span>
+                    <span className="absolute bottom-0.5 left-0 w-full h-2 bg-brand-orange/20 -rotate-1 -z-10 rounded-sm"></span>
+                </h2>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-500">
                     <span>Best streak:</span>
                     <span className="bg-zinc-100 text-zinc-900 font-black px-2 py-0.5 rounded-md">{stats.bestStreak || stats.streak} days</span>

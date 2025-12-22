@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/actions/auth";
@@ -25,9 +24,10 @@ const navSections = [
       { name: "Study Goals", href: "/dashboard/goals", icon: "Star" },
     ]
   },
-  {
+    {
     title: "Insights",
     items: [
+      { name: "Analytics", href: "/dashboard/analytics", icon: "GraphUp" },
       { name: "Achievements", href: "/dashboard/achievements", icon: "Trophy" },
     ]
   },
@@ -50,8 +50,8 @@ function SidebarContent() {
       {/* Logo */}
       <div className="h-16 flex items-center px-6 relative z-10">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 border border-zinc-900 rounded-sm overflow-hidden group-hover:scale-105 transition-all duration-300 shadow-neo-sm">
-            <Image src="/images/examsimlogogreen-removebg-preview.png" alt="ExamSim Logo" width={32} height={32} className="w-full h-full object-cover" />
+          <div className="w-8 h-8 bg-brand-orange border border-zinc-900 rounded-sm flex items-center justify-center group-hover:bg-emerald-600 transition-all duration-300 shadow-neo-sm">
+            <AppIcon name="Cube" className="w-4 h-4 text-white" />
           </div>
           <span className="text-lg font-bold text-zinc-900 tracking-tight">ExamSim</span>
         </Link>
@@ -109,7 +109,7 @@ function SidebarContent() {
 
       {/* Footer */}
       <div className="p-4 border-t border-zinc-200/50 relative z-10">
-        <button
+        <button 
           onClick={() => logout()}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-zinc-500 hover:text-red-600 hover:bg-red-50/50 transition-all group"
         >
@@ -124,30 +124,30 @@ function SidebarContent() {
 export function Sidebar() {
   return (
     <aside className="hidden md:flex h-screen w-64 flex-col fixed inset-y-0 left-0 z-[100] shrink-0 border-r-[0.5px] border-zinc-900 shadow-neo-lg bg-white overflow-hidden">
-      <SidebarContent />
+        <SidebarContent />
     </aside>
   );
 }
 
 export function MobileHeader() {
-  return (
-    <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 bg-white sticky top-0 z-50">
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 border border-zinc-900 rounded-sm overflow-hidden shadow-neo-sm">
-          <Image src="/images/examsimlogogreen-removebg-preview.png" alt="ExamSim Logo" width={32} height={32} className="w-full h-full object-cover" />
+    return (
+        <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 bg-white sticky top-0 z-50">
+            <div className="flex items-center gap-2">
+                 <div className="w-8 h-8 bg-brand-orange border border-zinc-900 rounded-sm flex items-center justify-center shadow-neo-sm">
+                    <AppIcon name="Cube" className="w-4 h-4 text-white" />
+                  </div>
+                 <span className="text-lg font-bold text-zinc-900 tracking-tight">ExamSim</span>
+            </div>
+            <Sheet>
+                <SheetTrigger asChild>
+                    <button className="p-2 border border-zinc-200 rounded-sm hover:bg-zinc-50">
+                        <AppIcon name="Menu" className="w-6 h-6 text-zinc-600" />
+                    </button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-64 border-r border-zinc-900">
+                    <SidebarContent />
+                </SheetContent>
+            </Sheet>
         </div>
-        <span className="text-lg font-bold text-zinc-900 tracking-tight">ExamSim</span>
-      </div>
-      <Sheet>
-        <SheetTrigger asChild>
-          <button className="p-2 border border-zinc-200 rounded-sm hover:bg-zinc-50">
-            <AppIcon name="Menu" className="w-6 h-6 text-zinc-600" />
-          </button>
-        </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-64 border-r border-zinc-900">
-          <SidebarContent />
-        </SheetContent>
-      </Sheet>
-    </div>
-  )
+    )
 }
