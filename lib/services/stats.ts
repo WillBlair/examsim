@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { exams, examResults, questions } from "@/db/schema";
 import { eq, inArray, desc, sql, count, avg, sum, and, gte, lte } from "drizzle-orm";
-import { subDays, startOfDay, endOfDay } from "date-fns";
+import { subDays } from "date-fns";
 
 interface SubtopicStats {
   subtopic: string;
@@ -9,7 +9,7 @@ interface SubtopicStats {
   totalQuestions: number;
 }
 
-interface UserStats {
+export interface UserStats {
   totalExams: number;
   completedExams: number;
   averageScore: number;
@@ -25,6 +25,8 @@ interface UserStats {
   questionsLast7Days: number;
   questionsPrev7Days: number;
   streak: number;
+  bestStreak: number;
+  activityDates: string[];
 }
 
 export async function calculateUserStats(userId: string): Promise<UserStats> {
@@ -211,14 +213,21 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
   const prevStats = prevResultStats[0] || {};
 
   // Streak Calculation Logic
-  const uniqueDates = Array.from(
+  // Get unique date strings in YYYY-MM-DD format (local time)
+  const activityDateStrings = Array.from(
     new Set(
-      streakData.map((r) =>
-        new Date(r.completedAt).toISOString().split("T")[0]
-      )
+      streakData.map((r) => {
+        const d = new Date(r.completedAt);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      })
     )
-  )
-    .map((dateStr) => new Date(dateStr))
+  );
+
+  const uniqueDates = activityDateStrings
+    .map((dateStr) => new Date(dateStr + 'T00:00:00'))
     .sort((a, b) => b.getTime() - a.getTime());
 
   let streak = 0;
@@ -260,7 +269,31 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
     questionsLast7Days: Number(recentStats.questionsAnswered || 0),
     questionsPrev7Days: Number(prevStats.questionsAnswered || 0),
     streak,
+    bestStreak: Math.max(calculateBestStreak(uniqueDates), streak),
+    activityDates: activityDateStrings,
   };
 }
 
+// Helper function to calculate the best streak ever
+function calculateBestStreak(uniqueDates: Date[]): number {
+  if (uniqueDates.length === 0) return 0;
 
+  let bestStreak = 1;
+  let currentStreak = 1;
+
+  // uniqueDates is already sorted descending, so we iterate normally
+  for (let i = 1; i < uniqueDates.length; i++) {
+    const dayDiff = Math.round(
+      (uniqueDates[i - 1].getTime() - uniqueDates[i].getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (dayDiff === 1) {
+      currentStreak++;
+      bestStreak = Math.max(bestStreak, currentStreak);
+    } else {
+      currentStreak = 1;
+    }
+  }
+
+  return bestStreak;
+}

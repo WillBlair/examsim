@@ -4,8 +4,8 @@ import { db } from "@/db";
 import { exams, examResults } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
-import { StatsGrid } from "@/components/dashboard/StatsGrid";
-import { ProgressChart } from "@/components/dashboard/ProgressChart";
+import { StatsPanel } from "@/components/dashboard/StatsPanel";
+import { NeoBrutalistChart } from "@/components/dashboard/NeoBrutalistChart";
 import { WeakAreas } from "@/components/dashboard/WeakAreas";
 
 import { format } from "date-fns";
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
       ) : (
         <>
           {/* Two-Column Command Center Layout */}
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
             {/* LEFT COLUMN - Action Zone */}
             <div className="lg:col-span-7 space-y-6">
@@ -162,14 +162,14 @@ export default async function DashboardPage() {
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div className="space-y-4">
                       {/* Badge */}
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm bg-accent-purple/10 text-accent-purple text-xs font-bold tracking-wide uppercase border border-accent-purple/20 w-fit">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-accent-purple/10 text-accent-purple text-xs font-bold tracking-wide uppercase border border-accent-purple/20 w-fit">
                         <Plus weight="bold" className="w-3.5 h-3.5" />
                         <span>Create New</span>
                       </div>
 
                       {/* Content */}
                       <div>
-                        <h2 className="text-3xl font-bold text-zinc-900 mb-2 tracking-tight group-hover:text-accent-purple transition-colors duration-300">Start a New Simulation</h2>
+                        <h2 className="text-3xl font-black text-zinc-900 mb-2 tracking-tight group-hover:text-accent-purple transition-colors duration-300">Start a New Simulation</h2>
                         <p className="text-zinc-500 text-lg max-w-md font-medium leading-relaxed group-hover:text-zinc-700 transition-colors duration-300">
                           Upload materials or paste text to generate a fresh exam instantly.
                         </p>
@@ -178,10 +178,10 @@ export default async function DashboardPage() {
 
                     {/* CTA Button look-alike */}
                     <div className="mt-8 flex items-center gap-3">
-                      <span className="inline-flex items-center justify-center h-11 px-8 rounded-sm bg-zinc-900 text-white font-bold shadow-neo-lg group-hover:bg-brand-orange group-hover:text-white group-hover:shadow-none group-hover:translate-x-[4px] group-hover:translate-y-[4px] group-hover:border group-hover:border-zinc-900 transition-all duration-200">
-                        <span className="flex items-center">
+                      <span className="inline-flex items-center justify-center h-12 px-8 rounded-lg bg-zinc-900 text-white font-bold shadow-neo group-hover:bg-brand-orange group-hover:text-white group-hover:shadow-none group-hover:translate-x-[2px] group-hover:translate-y-[2px] transition-all duration-200">
+                        <span className="flex items-center gap-2">
                           Begin Now
-                          <ArrowRight weight="bold" className="ml-2 w-4 h-4" />
+                          <ArrowRight weight="bold" className="w-4 h-4" />
                         </span>
                       </span>
                     </div>
@@ -189,103 +189,22 @@ export default async function DashboardPage() {
                 </div>
               </Link>
 
-              {/* Focus Areas */}
-              <div className="space-y-4">
-                <h2 className="text-lg font-bold text-zinc-900 tracking-tight">Focus Areas</h2>
-                <WeakAreas weakAreas={stats.weakAreas} />
-              </div>
+              {/* Progress Chart - Neo-Brutalist */}
+              <section className="h-[200px]">
+                <NeoBrutalistChart data={progressData} />
+              </section>
             </div>
 
             {/* RIGHT COLUMN - Insights Zone */}
-            <div className="lg:col-span-5 space-y-6">
-              {/* Weekly Recap Card */}
-              <div className="bg-white rounded-lg border-2 border-zinc-900 shadow-neo p-5 relative overflow-hidden transition-all duration-300 group hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
-                <div className="absolute inset-0 bg-noise opacity-30 pointer-events-none" />
-                <div className="absolute -right-10 -top-10 w-32 h-32 bg-brand-orange/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="lg:col-span-5 space-y-4">
+              <StatsPanel stats={stats} />
 
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar weight="fill" className="w-4 h-4 text-zinc-900" />
-                      <span className="text-xs font-bold text-zinc-900 uppercase tracking-wider bg-zinc-100 px-2 py-1 rounded-sm border border-zinc-200 group-hover:bg-white group-hover:border-zinc-900 transition-all">Weekly Recap</span>
-                    </div>
-                    <span className="text-[10px] font-bold text-zinc-500 border border-zinc-200 px-2 py-1 rounded-sm bg-zinc-50 group-hover:border-zinc-900 group-hover:bg-white transition-colors">
-                      Last 7 Days
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-200 group-hover:border-zinc-900 group-hover:bg-white transition-all">
-                      <div className="flex items-center gap-2 mb-1.5 text-zinc-500">
-                        <Lightning weight="fill" className="w-3.5 h-3.5 text-brand-orange" />
-                        <span className="text-[10px] uppercase font-bold tracking-wide">Exams</span>
-                      </div>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-bold text-zinc-900 tracking-tight">{stats.examsCreatedLast7Days}</span>
-                        <span className="text-xs text-zinc-400 font-medium">taken</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-zinc-50 rounded-lg p-3 border border-zinc-200 group-hover:border-zinc-900 group-hover:bg-white transition-all">
-                      <div className="flex items-center gap-2 mb-1.5 text-zinc-500">
-                        <TrendUp weight="fill" className="w-3.5 h-3.5 text-emerald-500" />
-                        <span className="text-[10px] uppercase font-bold tracking-wide">Avg Score</span>
-                      </div>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-bold text-zinc-900 tracking-tight">{Math.round(stats.avgScoreLast7Days)}%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-dashed border-zinc-200 group-hover:border-zinc-900/20 transition-colors">
-                    <div className="flex items-center justify-between text-xs mb-1.5">
-                      <span className="text-zinc-500 font-medium group-hover:text-zinc-900">Weekly Goal</span>
-                      <span className="text-zinc-900 font-bold">{stats.examsCreatedLast7Days}/5 Exams</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-zinc-100 rounded-sm overflow-hidden border border-transparent group-hover:border-zinc-200">
-                      <div
-                        className="h-full bg-brand-orange transition-all duration-500 rounded-sm"
-                        style={{ width: `${Math.min((stats.examsCreatedLast7Days / 5) * 100, 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-[10px] text-zinc-400 mt-1.5 text-center group-hover:text-zinc-600">
-                      {stats.examsCreatedLast7Days >= 5 ? "Goal reached! Great job!" : `${5 - stats.examsCreatedLast7Days} more to reach your weekly target`}
-                    </p>
-                  </div>
-                </div>
+              {/* Focus Areas */}
+              <div className="space-y-3">
+                <h2 className="text-sm font-black text-zinc-900 uppercase tracking-tight">Focus Areas</h2>
+                <WeakAreas weakAreas={stats.weakAreas} />
               </div>
-
-              {/* Stats Bento Grid - 2x2 compact */}
-              <StatsGrid
-                totalExams={{
-                  value: stats.totalExams,
-                  trend: { current: stats.examsCreatedLast7Days, previous: stats.examsCreatedPrev7Days }
-                }}
-                averageScore={{
-                  value: stats.averageScore,
-                  trend: { current: stats.avgScoreLast7Days, previous: stats.avgScorePrev7Days }
-                }}
-                studyTime={{
-                  value: stats.totalStudyHours.toFixed(1),
-                  trend: { current: stats.studyTimeLast7Days, previous: stats.studyTimePrev7Days }
-                }}
-                questionsAnswered={{
-                  value: stats.totalQuestionsAnswered,
-                  trend: { current: stats.questionsLast7Days, previous: stats.questionsPrev7Days }
-                }}
-                streak={{
-                  value: stats.streak,
-                  trend: { current: 0, previous: 0 }
-                }}
-              />
-
-
             </div>
-          </section>
-
-          {/* Progress Chart - Full Width at Bottom */}
-          <section className="h-[400px] mt-8">
-            <ProgressChart data={progressData} />
           </section>
         </>
       )}

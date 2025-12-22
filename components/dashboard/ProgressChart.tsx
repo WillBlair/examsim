@@ -31,9 +31,9 @@ export function ProgressChart({ data }: ProgressChartProps) {
   }));
 
   const hasData = chartData.length > 0;
-  
+
   // Calculate average
-  const avgScore = hasData 
+  const avgScore = hasData
     ? Math.round(chartData.reduce((acc, item) => acc + item.score, 0) / chartData.length)
     : 0;
 
@@ -42,16 +42,15 @@ export function ProgressChart({ data }: ProgressChartProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1, duration: 0.3 }}
-      className="h-full min-h-[400px]"
+      className="h-full"
     >
-      <div className="h-full p-6 rounded-lg bg-white border-2 border-zinc-900 shadow-neo flex flex-col relative overflow-hidden transition-all duration-300">
+      <div className="h-full p-4 rounded-lg bg-white border-2 border-zinc-900 shadow-neo flex flex-col relative overflow-hidden transition-all duration-300">
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent-purple/5 rounded-full blur-3xl pointer-events-none" />
-        
-        {/* Header */}
-        <div className="relative flex items-center justify-between mb-6 z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-sm bg-accent-purple shadow-sm border border-zinc-900 flex items-center justify-center">
-              <ChartLineUp weight="fill" className="w-5 h-5 text-white" />
+
+        <div className="relative flex items-center justify-between mb-3 z-10">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-sm bg-accent-purple shadow-sm border border-zinc-900 flex items-center justify-center">
+              <ChartLineUp weight="fill" className="w-4 h-4 text-white" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-zinc-900">Performance Trend</h3>
@@ -66,40 +65,27 @@ export function ProgressChart({ data }: ProgressChartProps) {
           )}
         </div>
 
-        {/* Chart */}
         {hasData ? (
-          <div className="flex-1 w-full min-h-[300px] relative z-10">
+          <div className="flex-1 w-full relative z-10">
             <ChartContainer config={chartConfig} className="w-full h-full">
-              <AreaChart accessibilityLayer data={chartData} margin={{ top: 20, right: 0, bottom: 20, left: -20 }}>
+              <AreaChart accessibilityLayer data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
                 <defs>
                   <linearGradient id="fillScore" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--brand-orange))" stopOpacity={0.2} />
+                    <stop offset="5%" stopColor="hsl(var(--brand-orange))" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="hsl(var(--brand-orange))" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
-                <XAxis 
-                  dataKey="date" 
-                  tickLine={false} 
-                  axisLine={false} 
-                  tickMargin={10} 
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
-                />
-                <YAxis 
-                  tickLine={false} 
-                  axisLine={false} 
-                  tickFormatter={(value) => `${value}%`}
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
-                  domain={[0, 100]}
-                />
-                <ChartTooltip 
+                <CartesianGrid vertical={false} horizontal={false} />
+                <XAxis dataKey="date" hide />
+                <YAxis hide domain={[0, 100]} />
+                <ChartTooltip
                   cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1, strokeDasharray: '4 4' }}
                   content={
-                    <ChartTooltipContent 
-                        hideLabel 
-                        className="bg-white border-zinc-200 text-zinc-900 shadow-lg" 
+                    <ChartTooltipContent
+                      hideLabel
+                      className="bg-white border-zinc-200 text-zinc-900 shadow-lg"
                     />
-                  } 
+                  }
                 />
                 <Area
                   dataKey="score"
