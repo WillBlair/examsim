@@ -3,7 +3,10 @@ import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
 
 import { WhyChooseUs } from "@/components/WhyChooseUs";
-import { FAQ } from "@/components/FAQ";
+// Lazy load FAQ to split Framer Motion from main bundle
+import dynamic from "next/dynamic";
+const FAQ = dynamic(() => import("@/components/FAQ").then((mod) => mod.FAQ));
+
 import { Footer } from "@/components/Footer";
 
 import { GridBackground } from "@/components/GridBackground";
