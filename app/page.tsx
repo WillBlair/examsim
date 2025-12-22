@@ -1,6 +1,9 @@
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-import { Features } from "@/components/Features";
+// Lazy load Features to optimize hydration
+const Features = dynamic(() =>
+  import("@/components/Features").then((mod) => mod.Features)
+);
 
 import { WhyChooseUs } from "@/components/WhyChooseUs";
 // Lazy load FAQ to split Framer Motion from main bundle
