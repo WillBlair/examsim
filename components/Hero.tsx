@@ -21,29 +21,6 @@ export function Hero() {
 
   return (
     <section ref={containerRef} id="home" className="relative w-full pt-28 md:pt-[8.5rem] pb-0 bg-transparent overflow-visible">
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in-up {
-          animation: fadeInUp 0.5s ease-out forwards;
-        }
-        .animate-fade-in-up-delay-1 {
-          animation: fadeInUp 0.5s ease-out 0.1s forwards;
-          opacity: 0;
-        }
-        .animate-fade-in-up-delay-2 {
-          animation: fadeInUp 0.8s ease-out 0.2s forwards;
-          opacity: 0;
-        }
-      `}</style>
       <div className="container relative z-10 px-4 md:px-6 mx-auto flex flex-col items-center text-center">
 
         {/* Top Tagline */}
