@@ -102,6 +102,7 @@ export function Hero() {
               height={675}
               className="w-full h-auto block"
               priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
             />
           </div>
         </motion.div>

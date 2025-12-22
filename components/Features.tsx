@@ -37,6 +37,7 @@ export function Features() {
                 src="/images/examsettingssamewidthandheight.png"
                 alt="Exam Settings Preview"
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
               />
             </div>
@@ -57,6 +58,7 @@ export function Features() {
                 src="/images/explanationssamewidthandheight.png"
                 alt="Exam Feedback Preview"
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
               />
             </div>
@@ -121,6 +123,7 @@ export function Features() {
                   alt="Upload Interface Preview"
                   width={450}
                   height={340}
+                  sizes="(max-width: 768px) 100vw, 450px"
                   className="w-full h-auto object-contain"
                 />
               </div>
