@@ -50,8 +50,8 @@ export function WhyChooseUs() {
                   src="/images/staryellow.png"
                   alt=""
                   width={64}
-                  height={64}
-                  className="w-16 h-16"
+                  height={61}
+                  className="w-16 h-auto"
                   loading="lazy"
                 />
               </div>
