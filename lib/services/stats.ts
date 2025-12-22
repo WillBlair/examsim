@@ -22,6 +22,8 @@ interface UserStats {
   studyTimeLast7Days: number;
   studyTimePrev7Days: number;
   totalQuestionsAnswered: number;
+  questionsLast7Days: number;
+  questionsPrev7Days: number;
   streak: number;
 }
 
@@ -43,9 +45,9 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
   const userQuestions =
     userExamIds.length > 0
       ? await db
-          .select()
-          .from(questions)
-          .where(inArray(questions.examId, userExamIds))
+        .select()
+        .from(questions)
+        .where(inArray(questions.examId, userExamIds))
       : [];
 
   const totalExams = userExams.length;
@@ -55,11 +57,11 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
   const averageScore =
     completedExams > 0
       ? Math.round(
-          userResults.reduce(
-            (acc, curr) => acc + (curr.score / curr.totalQuestions) * 100,
-            0
-          ) / completedExams
-        )
+        userResults.reduce(
+          (acc, curr) => acc + (curr.score / curr.totalQuestions) * 100,
+          0
+        ) / completedExams
+      )
       : 0;
 
   // Calculate weak areas (optimized)
@@ -130,17 +132,17 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
   const avgScoreLast7Days =
     resultsLast7Days.length > 0
       ? resultsLast7Days.reduce(
-          (acc, r) => acc + (r.score / r.totalQuestions) * 100,
-          0
-        ) / resultsLast7Days.length
+        (acc, r) => acc + (r.score / r.totalQuestions) * 100,
+        0
+      ) / resultsLast7Days.length
       : 0;
 
   const avgScorePrev7Days =
     resultsPrev7Days.length > 0
       ? resultsPrev7Days.reduce(
-          (acc, r) => acc + (r.score / r.totalQuestions) * 100,
-          0
-        ) / resultsPrev7Days.length
+        (acc, r) => acc + (r.score / r.totalQuestions) * 100,
+        0
+      ) / resultsPrev7Days.length
       : 0;
 
   // Study Time (1.5 mins per question)
@@ -157,13 +159,19 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
   const studyTimePrev7Days = calculateStudyTime(resultsPrev7Days);
 
   // Questions Answered
-  const totalQuestionsAnswered = userResults.reduce((acc, result) => {
-    const answers =
-      typeof result.answers === "string"
-        ? (JSON.parse(result.answers) as Record<string, string>)
-        : (result.answers as Record<string, string>);
-    return acc + Object.keys(answers || {}).length;
-  }, 0);
+  const calculateQuestionsAnswered = (results: typeof userResults) => {
+    return results.reduce((acc, result) => {
+      const answers =
+        typeof result.answers === "string"
+          ? (JSON.parse(result.answers) as Record<string, string>)
+          : (result.answers as Record<string, string>);
+      return acc + Object.keys(answers || {}).length;
+    }, 0);
+  };
+
+  const totalQuestionsAnswered = calculateQuestionsAnswered(userResults);
+  const questionsLast7Days = calculateQuestionsAnswered(resultsLast7Days);
+  const questionsPrev7Days = calculateQuestionsAnswered(resultsPrev7Days);
 
   // Current Streak
   const uniqueDates = Array.from(
@@ -213,6 +221,8 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
     studyTimeLast7Days,
     studyTimePrev7Days,
     totalQuestionsAnswered,
+    questionsLast7Days,
+    questionsPrev7Days,
     streak,
   };
 }

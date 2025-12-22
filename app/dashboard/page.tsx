@@ -272,7 +272,7 @@ export default async function DashboardPage() {
                 }}
                 questionsAnswered={{
                   value: stats.totalQuestionsAnswered,
-                  trend: { current: 0, previous: 0 }
+                  trend: { current: stats.questionsLast7Days, previous: stats.questionsPrev7Days }
                 }}
                 streak={{
                   value: stats.streak,
