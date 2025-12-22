@@ -38,7 +38,7 @@ export function Navbar() {
           <Link href="/login" className="text-xs md:text-sm font-bold text-zinc-900 hover:underline decoration-zinc-900/30 whitespace-nowrap">
             Sign In
           </Link>
-          <Link href="/register" className="px-3 md:px-5 py-1.5 md:py-2 rounded-sm bg-brand-orange text-white text-xs md:text-sm font-bold border border-zinc-900 shadow-neo-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all whitespace-nowrap">
+          <Link href="/register" className="px-3 md:px-5 py-1.5 md:py-2 rounded-sm bg-brand-orange text-zinc-900 text-xs md:text-sm font-bold border border-zinc-900 shadow-neo-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all whitespace-nowrap">
             Get Started
           </Link>
         </div>
