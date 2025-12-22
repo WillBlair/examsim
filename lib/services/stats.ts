@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { exams, examResults, questions } from "@/db/schema";
-import { eq, inArray, desc, sql } from "drizzle-orm";
-import { subDays, isWithinInterval } from "date-fns";
+import { eq, inArray, desc, sql, count, avg, sum, and, gte, lte } from "drizzle-orm";
+import { subDays, startOfDay, endOfDay } from "date-fns";
 
 interface SubtopicStats {
   subtopic: string;
@@ -28,155 +28,192 @@ interface UserStats {
 }
 
 export async function calculateUserStats(userId: string): Promise<UserStats> {
-  // Fetch user's exams and results
-  const userExams = await db
-    .select()
-    .from(exams)
-    .where(eq(exams.userId, userId))
-    .orderBy(desc(exams.createdAt));
-
-  const userResults = await db
-    .select()
-    .from(examResults)
-    .where(eq(examResults.userId, userId));
-
-  // Only fetch questions for user's exams (performance optimization)
-  const userExamIds = userExams.map((e) => e.id);
-  const userQuestions =
-    userExamIds.length > 0
-      ? await db
-        .select()
-        .from(questions)
-        .where(inArray(questions.examId, userExamIds))
-      : [];
-
-  const totalExams = userExams.length;
-  const completedExams = userResults.length;
-
-  // Calculate overall average score
-  const averageScore =
-    completedExams > 0
-      ? Math.round(
-        userResults.reduce(
-          (acc, curr) => acc + (curr.score / curr.totalQuestions) * 100,
-          0
-        ) / completedExams
-      )
-      : 0;
-
-  // Calculate weak areas (optimized)
-  const subtopicStats: Record<string, { correct: number; total: number }> = {};
-
-  userResults.forEach((result) => {
-    const answers =
-      typeof result.answers === "string"
-        ? (JSON.parse(result.answers) as Record<string, string>)
-        : (result.answers as Record<string, string>);
-
-    if (answers) {
-      Object.entries(answers).forEach(([qIdStr, selectedOption]) => {
-        const qId = parseInt(qIdStr);
-        const question = userQuestions.find((q) => q.id === qId);
-
-        if (question && question.subtopic) {
-          if (!subtopicStats[question.subtopic]) {
-            subtopicStats[question.subtopic] = { correct: 0, total: 0 };
-          }
-
-          subtopicStats[question.subtopic].total += 1;
-          if (selectedOption === question.correctAnswer) {
-            subtopicStats[question.subtopic].correct += 1;
-          }
-        }
-      });
-    }
-  });
-
-  const weakAreas: SubtopicStats[] = Object.entries(subtopicStats)
-    .map(([subtopic, stats]) => ({
-      subtopic,
-      score: (stats.correct / stats.total) * 100,
-      totalQuestions: stats.total,
-    }))
-    .filter((area) => area.score < 60)
-    .sort((a, b) => a.score - b.score)
-    .slice(0, 5);
-
-  // Trend calculations
   const now = new Date();
   const sevenDaysAgo = subDays(now, 7);
   const fourteenDaysAgo = subDays(now, 14);
 
-  const examsCreatedLast7Days = userExams.filter((e) =>
-    isWithinInterval(new Date(e.createdAt), { start: sevenDaysAgo, end: now })
-  ).length;
+  // Parallelize independent queries
+  const [
+    examStats,
+    resultStats,
+    recentExamCount,
+    prevExamCount,
+    recentResultStats,
+    prevResultStats,
+    weakAreas,
+    streakData
+  ] = await Promise.all([
+    // 1. Total Exams
+    db
+      .select({ count: count() })
+      .from(exams)
+      .where(eq(exams.userId, userId))
+      .then((res) => res[0]?.count || 0),
 
-  const examsCreatedPrev7Days = userExams.filter((e) =>
-    isWithinInterval(new Date(e.createdAt), {
-      start: fourteenDaysAgo,
-      end: sevenDaysAgo,
-    })
-  ).length;
+    // 2. Completed Exams & Average Score (All Time)
+    db
+      .select({
+        count: count(),
+        averageScore: avg(examResults.score), // Score is raw score (integers usually), check if adjustment needed. 
+        // Note: examResults.score is usually correct answers. We need per-exam percentage.
+        // SQL avg of raw scores isn't percentage if totalQuestions varies.
+        // Let's stick to solving "total completed" here and do avg score carefully or keep approximation?
+        // Actually, let's fetch sum(score) and sum(totalQuestions) to get a weighted average, 
+        // OR simpler: just avg(score/totalQuestions). Drizzle/SQL integer division might be tricky.
+        // Safe approach for specific app logic: Fetch minimal necessary fields for advanced math if SQL is complex,
+        // BUT for simple totals, aggregates are best.
+        // Let's calculate precise weighted average on DB if possible, or fetch just scores.
+        // Let's try: AVG(score::float / total_questions) * 100
+        avgPercentage: sql<number>`AVG(CAST(${examResults.score} AS FLOAT) / ${examResults.totalQuestions}) * 100`,
+        totalStudyMinutes: sum(sql<number>`${examResults.totalQuestions} * 1.5`), // 1.5 mins per question
+        totalQuestionsAnswered: sum(examResults.totalQuestions) // Assuming answered = total questions in completed exam
+      })
+      .from(examResults)
+      .where(eq(examResults.userId, userId)),
 
-  const resultsLast7Days = userResults.filter((r) =>
-    isWithinInterval(new Date(r.completedAt), { start: sevenDaysAgo, end: now })
-  );
+    // 3. Exams Created (Last 7 Days)
+    db
+      .select({ count: count() })
+      .from(exams)
+      .where(
+        and(
+          eq(exams.userId, userId),
+          gte(exams.createdAt, sevenDaysAgo),
+          lte(exams.createdAt, now)
+        )
+      )
+      .then((res) => res[0]?.count || 0),
 
-  const resultsPrev7Days = userResults.filter((r) =>
-    isWithinInterval(new Date(r.completedAt), {
-      start: fourteenDaysAgo,
-      end: sevenDaysAgo,
-    })
-  );
+    // 4. Exams Created (Previous 7 Days)
+    db
+      .select({ count: count() })
+      .from(exams)
+      .where(
+        and(
+          eq(exams.userId, userId),
+          gte(exams.createdAt, fourteenDaysAgo),
+          lte(exams.createdAt, sevenDaysAgo)
+        )
+      )
+      .then((res) => res[0]?.count || 0),
 
-  const avgScoreLast7Days =
-    resultsLast7Days.length > 0
-      ? resultsLast7Days.reduce(
-        (acc, r) => acc + (r.score / r.totalQuestions) * 100,
-        0
-      ) / resultsLast7Days.length
-      : 0;
+    // 5. Results Last 7 Days (Avg Score, Study Time, Questions)
+    db
+      .select({
+        avgPercentage: sql<number>`AVG(CAST(${examResults.score} AS FLOAT) / ${examResults.totalQuestions}) * 100`,
+        studyMinutes: sum(sql<number>`${examResults.totalQuestions} * 1.5`),
+        questionsAnswered: sum(examResults.totalQuestions)
+      })
+      .from(examResults)
+      .where(
+        and(
+          eq(examResults.userId, userId),
+          gte(examResults.completedAt, sevenDaysAgo),
+          lte(examResults.completedAt, now)
+        )
+      ),
 
-  const avgScorePrev7Days =
-    resultsPrev7Days.length > 0
-      ? resultsPrev7Days.reduce(
-        (acc, r) => acc + (r.score / r.totalQuestions) * 100,
-        0
-      ) / resultsPrev7Days.length
-      : 0;
+    // 6. Results Previous 7 Days
+    db
+      .select({
+        avgPercentage: sql<number>`AVG(CAST(${examResults.score} AS FLOAT) / ${examResults.totalQuestions}) * 100`,
+        studyMinutes: sum(sql<number>`${examResults.totalQuestions} * 1.5`),
+        questionsAnswered: sum(examResults.totalQuestions)
+      })
+      .from(examResults)
+      .where(
+        and(
+          eq(examResults.userId, userId),
+          gte(examResults.completedAt, fourteenDaysAgo),
+          lte(examResults.completedAt, sevenDaysAgo)
+        )
+      ),
 
-  // Study Time (1.5 mins per question)
-  const calculateStudyTime = (results: typeof userResults) => {
-    const minutes = results.reduce(
-      (acc, r) => acc + r.totalQuestions * 1.5,
-      0
-    );
-    return minutes / 60;
-  };
+    // 7. Weak Areas Calculation - Optimized Fetch
+    // We still need to parse JSON answers to map to subtopics, but we can fetch drastically less data.
+    // Fetch only results with answers and the minimal question data needed.
+    (async () => {
+      // Get all results for user
+      const results = await db
+        .select({
+          examId: examResults.examId,
+          answers: examResults.answers
+        })
+        .from(examResults)
+        .where(eq(examResults.userId, userId));
 
-  const totalStudyHours = calculateStudyTime(userResults);
-  const studyTimeLast7Days = calculateStudyTime(resultsLast7Days);
-  const studyTimePrev7Days = calculateStudyTime(resultsPrev7Days);
+      if (results.length === 0) return [];
 
-  // Questions Answered
-  const calculateQuestionsAnswered = (results: typeof userResults) => {
-    return results.reduce((acc, result) => {
-      const answers =
-        typeof result.answers === "string"
+      const examIds = [...new Set(results.map(r => r.examId))];
+
+      // Fetch only necessary question fields
+      const relevantQuestions = await db
+        .select({
+          id: questions.id,
+          subtopic: questions.subtopic,
+          correctAnswer: questions.correctAnswer,
+          examId: questions.examId
+        })
+        .from(questions)
+        .where(inArray(questions.examId, examIds));
+
+      // In-memory processing for simplified dataset
+      const subtopicStats: Record<string, { correct: number; total: number }> = {};
+
+      results.forEach(result => {
+        const answers = typeof result.answers === "string"
           ? (JSON.parse(result.answers) as Record<string, string>)
           : (result.answers as Record<string, string>);
-      return acc + Object.keys(answers || {}).length;
-    }, 0);
-  };
 
-  const totalQuestionsAnswered = calculateQuestionsAnswered(userResults);
-  const questionsLast7Days = calculateQuestionsAnswered(resultsLast7Days);
-  const questionsPrev7Days = calculateQuestionsAnswered(resultsPrev7Days);
+        if (!answers) return;
 
-  // Current Streak
+        Object.entries(answers).forEach(([qIdStr, selectedOption]) => {
+          const qId = parseInt(qIdStr);
+          // Optimize find with a Map if dataset was huge, but find is okay for typical user load here
+          // compared to full DB fetch.
+          const question = relevantQuestions.find(q => q.id === qId);
+
+          if (question && question.subtopic) {
+            if (!subtopicStats[question.subtopic]) {
+              subtopicStats[question.subtopic] = { correct: 0, total: 0 };
+            }
+            subtopicStats[question.subtopic].total += 1;
+            if (selectedOption === question.correctAnswer) {
+              subtopicStats[question.subtopic].correct += 1;
+            }
+          }
+        });
+      });
+
+      return Object.entries(subtopicStats)
+        .map(([subtopic, stats]) => ({
+          subtopic,
+          score: (stats.correct / stats.total) * 100,
+          totalQuestions: stats.total,
+        }))
+        .filter((area) => area.score < 60)
+        .sort((a, b) => a.score - b.score)
+        .slice(0, 5);
+    })(),
+
+    // 8. Streak Calculation
+    // We only need the completedAt dates.
+    db
+      .select({ completedAt: examResults.completedAt })
+      .from(examResults)
+      .where(eq(examResults.userId, userId))
+      .orderBy(desc(examResults.completedAt))
+  ]);
+
+  // Process Aggregated Results
+  const totalStats = resultStats[0] || {};
+  const recentStats = recentResultStats[0] || {};
+  const prevStats = prevResultStats[0] || {};
+
+  // Streak Calculation Logic
   const uniqueDates = Array.from(
     new Set(
-      userResults.map((r) =>
+      streakData.map((r) =>
         new Date(r.completedAt).toISOString().split("T")[0]
       )
     )
@@ -185,7 +222,6 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
     .sort((a, b) => b.getTime() - a.getTime());
 
   let streak = 0;
-
   const todayStr = now.toISOString().split("T")[0];
   const yesterdayStr = subDays(now, 1).toISOString().split("T")[0];
 
@@ -209,21 +245,22 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
   }
 
   return {
-    totalExams,
-    completedExams,
-    averageScore,
+    totalExams: examStats,
+    completedExams: Number(totalStats.count || 0),
+    averageScore: Math.round(Number(totalStats.avgPercentage || 0)),
     weakAreas,
-    examsCreatedLast7Days,
-    examsCreatedPrev7Days,
-    avgScoreLast7Days,
-    avgScorePrev7Days,
-    totalStudyHours,
-    studyTimeLast7Days,
-    studyTimePrev7Days,
-    totalQuestionsAnswered,
-    questionsLast7Days,
-    questionsPrev7Days,
+    examsCreatedLast7Days: recentExamCount,
+    examsCreatedPrev7Days: prevExamCount,
+    avgScoreLast7Days: Math.round(Number(recentStats.avgPercentage || 0)),
+    avgScorePrev7Days: Math.round(Number(prevStats.avgPercentage || 0)),
+    totalStudyHours: Number((Number(totalStats.totalStudyMinutes || 0) / 60).toFixed(1)),
+    studyTimeLast7Days: Number((Number(recentStats.studyMinutes || 0) / 60).toFixed(1)),
+    studyTimePrev7Days: Number((Number(prevStats.studyMinutes || 0) / 60).toFixed(1)),
+    totalQuestionsAnswered: Number(totalStats.totalQuestionsAnswered || 0),
+    questionsLast7Days: Number(recentStats.questionsAnswered || 0),
+    questionsPrev7Days: Number(prevStats.questionsAnswered || 0),
     streak,
   };
 }
+
 

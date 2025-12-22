@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   title: "ExamSim - Practice Exams Made Easy",
   description: "Turn your course materials into full-scale practice exams",
   icons: {
-    icon: "/images/examsimlogogreen-removebg-preview.png",
-    apple: "/images/examsimlogogreen-removebg-preview.png",
+    icon: "/images/examsimlogogreen-compressed.png",
+    apple: "/images/examsimlogogreen-compressed.png",
   },
 };
 
