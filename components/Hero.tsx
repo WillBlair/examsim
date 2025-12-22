@@ -1,8 +1,6 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { GridBackground } from "@/components/GridBackground";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -11,43 +9,52 @@ import { checkAuth } from "@/app/actions/auth";
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  // Default to /register for fastest first paint, update if authenticated
+  const [ctaHref, setCtaHref] = useState("/register");
 
+  // Non-blocking auth check - runs after initial render
   useEffect(() => {
-    checkAuth().then(setIsAuthenticated);
+    checkAuth().then((isAuth) => {
+      if (isAuth) setCtaHref("/dashboard/new");
+    });
   }, []);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
-
-  // Simplified Bevel Animation
-  const rotateX = useTransform(scrollYProgress, [0.6, 0.75], [0, 90]);
-  const inverseY = useTransform(scrollYProgress, [0.75, 0.9], ["100%", "0%"]);
 
   return (
     <section ref={containerRef} id="home" className="relative w-full pt-28 md:pt-[8.5rem] pb-0 bg-transparent overflow-visible">
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.5s ease-out forwards;
+        }
+        .animate-fade-in-up-delay-1 {
+          animation: fadeInUp 0.5s ease-out 0.1s forwards;
+          opacity: 0;
+        }
+        .animate-fade-in-up-delay-2 {
+          animation: fadeInUp 0.8s ease-out 0.2s forwards;
+          opacity: 0;
+        }
+      `}</style>
       <div className="container relative z-10 px-4 md:px-6 mx-auto flex flex-col items-center text-center">
 
         {/* Top Tagline */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-4 md:mb-6"
-        >
+        <div className="mb-4 md:mb-6 animate-fade-in-up">
           <p className="text-sm md:text-[17px] font-medium text-zinc-600 px-2">
             See how you can save 4+ hours on your next study session below.
           </p>
-        </motion.div>
+        </div>
 
         {/* Main Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="max-w-4xl mx-auto"
-        >
+        <div className="max-w-4xl mx-auto animate-fade-in-up-delay-1">
           <h1 className="text-[2.5rem] md:text-[3.9rem] lg:text-[4.75rem] font-bold text-zinc-900 mb-6 md:mb-8 tracking-tighter leading-[1.1] px-2">
             Experience the exam <br className="hidden md:block" />
             <span className="text-accent-purple">before it happens.</span>
@@ -60,7 +67,7 @@ export function Hero() {
 
           {/* CTA Button */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12 md:mb-16 px-4">
-            <Link href={isAuthenticated ? "/dashboard/new" : "/register"}>
+            <Link href={ctaHref}>
               <Button className="group h-14 md:h-16 px-6 md:px-10 rounded-lg bg-brand-orange text-zinc-900 hover:bg-brand-orange hover:opacity-90 font-black text-lg md:text-xl flex items-center gap-3 md:gap-4 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 ease-in-out w-full sm:w-auto justify-center">
                 Generate My First Exam
                 <ArrowRight className="w-5 h-5 md:w-6 md:h-6 stroke-[3] group-hover:translate-x-1 transition-transform" />
@@ -69,15 +76,10 @@ export function Hero() {
           </div>
 
 
-        </motion.div>
+        </div>
 
         {/* Browser/Dashboard Mockup (Centered & Large) */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative w-full max-w-5xl perspective-1000 mx-auto px-4 md:px-0 mb-[-50px] z-20"
-        >
+        <div className="relative w-full max-w-5xl perspective-1000 mx-auto px-4 md:px-0 mb-[-50px] z-20 animate-fade-in-up-delay-2">
           {/* Browser Window Mockup Container */}
           <div className="relative rounded-lg border-2 border-zinc-900 shadow-2xl overflow-hidden bg-white">
             {/* Browser Toolbar */}
@@ -105,7 +107,7 @@ export function Hero() {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
             />
           </div>
-        </motion.div>
+        </div>
 
       </div>
 

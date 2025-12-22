@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { FileUp, Brain, Sparkles } from "lucide-react";
 
@@ -39,6 +37,7 @@ export function Features() {
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
+                loading="lazy"
               />
             </div>
           </div>
@@ -60,6 +59,7 @@ export function Features() {
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
+                loading="lazy"
               />
             </div>
           </div>
@@ -125,6 +125,7 @@ export function Features() {
                   height={340}
                   sizes="(max-width: 768px) 100vw, 450px"
                   className="w-full h-auto object-contain"
+                  loading="lazy"
                 />
               </div>
               {/* Subtle gradient fade at bottom for elegant finish */}

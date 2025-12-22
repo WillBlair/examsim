@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 
 const benefits = [
@@ -54,6 +52,7 @@ export function WhyChooseUs() {
                   width={64}
                   height={64}
                   className="w-16 h-16"
+                  loading="lazy"
                 />
               </div>
 
