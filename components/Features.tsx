@@ -55,7 +55,7 @@ export function Features() {
             </div>
             <div className="aspect-square bg-zinc-50 rounded-lg border-[3px] border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
               <Image
-                src="/images/explanationssamewidthandheight.png"
+                src="/images/compressed-explanationssamewidthandheight.png"
                 alt="Exam Feedback Preview"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"

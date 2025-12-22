@@ -96,7 +96,7 @@ export function Hero() {
 
             {/* Screenshot */}
             <Image
-              src="/images/dashboard-preview.png"
+              src="/images/compressed-dashboard-preview.png"
               alt="ExamSim Dashboard Preview"
               width={1200}
               height={675}
