@@ -11,13 +11,13 @@ export default function DashboardLayout({
 
       <div className="flex-1 flex flex-col md:ml-64 h-screen overflow-hidden">
         <MobileHeader />
-        <main className="flex-1 overflow-y-auto custom-scrollbar">
-          <div className="relative min-h-full">
+        <main className="flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+          <div className="relative flex-1 flex flex-col">
             {/* Ambient glow */}
             <div className="fixed top-0 right-1/4 w-[500px] h-[500px] bg-accent-purple/5 blur-[150px] rounded-full pointer-events-none" />
 
             {/* Content */}
-            <div className="relative z-10 px-4 py-6 md:px-8">
+            <div className="relative z-10 px-4 py-6 md:px-8 flex-1 flex flex-col">
               {children}
             </div>
           </div>
