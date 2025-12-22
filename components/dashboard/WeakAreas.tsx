@@ -21,8 +21,8 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
   const previewAreas = weakAreas.slice(0, 3);
 
   return (
-    <div className="animate-fade-in-up">
-      <div className="p-4 rounded-lg bg-white border-2 border-zinc-900 shadow-neo relative overflow-hidden">
+    <div className="animate-fade-in-up h-full flex flex-col">
+      <div className="p-4 rounded-lg bg-white border-2 border-zinc-900 shadow-neo relative overflow-hidden flex-1 flex flex-col">
         {/* Subtle accent */}
         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-100/50 to-transparent rounded-full blur-xl pointer-events-none" />
 

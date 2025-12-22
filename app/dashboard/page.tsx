@@ -56,7 +56,7 @@ export default async function DashboardPage() {
     .slice(0, 10);
 
   return (
-    <div className="space-y-8 flex-1">
+    <div className="flex flex-col flex-1 gap-8">
       {/* Header with Date */}
       <div className="bg-white border-[3px] border-black shadow-neo-xl rounded-lg p-6 relative overflow-hidden flex items-center justify-between">
         {/* Background Pattern */}
@@ -144,10 +144,10 @@ export default async function DashboardPage() {
       ) : (
         <>
           {/* Two-Column Command Center Layout */}
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0">
 
             {/* LEFT COLUMN - Action Zone */}
-            <div className="lg:col-span-7 flex flex-col gap-4">
+            <div className="lg:col-span-7 flex flex-col gap-4 min-h-0">
               {/* Start New Simulation - Featured Card */}
               <Link href="/dashboard/new" className="group block flex-1">
                 <div className="h-full min-h-[280px] bg-white rounded-lg p-8 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
@@ -196,7 +196,7 @@ export default async function DashboardPage() {
             </div>
 
             {/* RIGHT COLUMN - Insights Zone */}
-            <div className="lg:col-span-5 flex flex-col gap-4">
+            <div className="lg:col-span-5 flex flex-col gap-4 min-h-0">
               <StatsPanel stats={stats} />
 
               {/* Focus Areas - flex-1 to fill remaining space */}
