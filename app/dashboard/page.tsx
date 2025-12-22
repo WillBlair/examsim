@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowRight, TrendUp, Lightning, Calendar, Scroll, Fire } from "@phosphor-icons/react/dist/ssr";
+import { Plus, ArrowRight, TrendUp, Lightning, Calendar, Scroll, Fire, Cards, Trophy } from "@phosphor-icons/react/dist/ssr";
 import { db } from "@/db";
 import { exams, examResults } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
@@ -7,8 +7,10 @@ import Link from "next/link";
 import { StatsPanel } from "@/components/dashboard/StatsPanel";
 import { NeoBrutalistChart } from "@/components/dashboard/NeoBrutalistChart";
 import { WeakAreas } from "@/components/dashboard/WeakAreas";
+import { RecentAchievements } from "@/components/dashboard/RecentAchievements";
+import { ActivityStrip } from "@/components/dashboard/ActivityStrip";
 
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getCachedUserStats } from "@/lib/utils/cache";
@@ -54,6 +56,44 @@ export default async function DashboardPage() {
   const recentResults = allResults
     .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
     .slice(0, 10);
+
+  // Achievements calculation
+  const totalExams = allExams.length;
+  const completedAttempts = allResults.length;
+  const perfectScores = allResults.filter(r => r.score === r.totalQuestions).length;
+
+  // Calculate current streak
+  const now = new Date();
+  const uniqueDates = Array.from(new Set(allResults.map(r => new Date(r.completedAt).toISOString().split('T')[0])))
+    .map(dateStr => new Date(dateStr))
+    .sort((a, b) => b.getTime() - a.getTime());
+
+  let streak = 0;
+  const todayStr = now.toISOString().split('T')[0];
+  const yesterdayStr = subDays(now, 1).toISOString().split('T')[0];
+  const hasActivityToday = uniqueDates.some(d => d.toISOString().split('T')[0] === todayStr);
+  const hasActivityYesterday = uniqueDates.some(d => d.toISOString().split('T')[0] === yesterdayStr);
+
+  if (hasActivityToday || hasActivityYesterday) {
+    let checkDate = hasActivityToday ? now : subDays(now, 1);
+    while (uniqueDates.some(d => d.toISOString().split('T')[0] === checkDate.toISOString().split('T')[0])) {
+      streak++;
+      checkDate = subDays(checkDate, 1);
+    }
+  }
+
+  // Define unlocked achievements
+  const unlockedAchievements = [
+    { id: "first-exam", title: "Getting Started", tier: "bronze" as const, category: "creation" as const, unlocked: totalExams >= 1 },
+    { id: "exam-creator", title: "Exam Creator", tier: "silver" as const, category: "creation" as const, unlocked: totalExams >= 5 },
+    { id: "exam-master", title: "Exam Architect", tier: "gold" as const, category: "creation" as const, unlocked: totalExams >= 25 },
+    { id: "first-completion", title: "Test Taker", tier: "bronze" as const, category: "completion" as const, unlocked: completedAttempts >= 1 },
+    { id: "dedicated", title: "Dedicated", tier: "silver" as const, category: "completion" as const, unlocked: completedAttempts >= 10 },
+    { id: "perfectionist", title: "Perfectionist", tier: "bronze" as const, category: "mastery" as const, unlocked: perfectScores >= 1 },
+    { id: "flawless", title: "Flawless", tier: "gold" as const, category: "mastery" as const, unlocked: perfectScores >= 5 },
+    { id: "streak-3", title: "On a Roll", tier: "bronze" as const, category: "streak" as const, unlocked: streak >= 3 },
+    { id: "streak-7", title: "Week Warrior", tier: "silver" as const, category: "streak" as const, unlocked: streak >= 7 },
+  ].filter(a => a.unlocked).slice(0, 3);
 
   return (
     <div className="flex flex-col flex-1 gap-8">
@@ -143,43 +183,35 @@ export default async function DashboardPage() {
         </div>
       ) : (
         <>
-          {/* Two-Column Command Center Layout */}
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0">
+          {/* Two-Column Layout - fills remaining space, columns aligned */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 lg:items-stretch">
 
-            {/* LEFT COLUMN - Action Zone */}
-            <div className="lg:col-span-7 flex flex-col gap-4 min-h-0">
-              {/* Start New Simulation - Featured Card */}
-              <Link href="/dashboard/new" className="group block flex-1">
-                <div className="h-full min-h-[280px] bg-white rounded-lg p-8 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
-                  {/* Background Effects */}
+            {/* LEFT COLUMN */}
+            <div className="lg:col-span-7 flex flex-col gap-4">
+              {/* Start New Simulation Card */}
+              <Link href="/dashboard/new" className="group block">
+                <div className="bg-white rounded-lg p-5 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
                   <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-25 pointer-events-none" />
-
-                  {/* Decorative Icon Background */}
                   <div className="absolute -bottom-6 -right-6 text-zinc-950/[0.03] transform rotate-12 group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
-                    <Scroll weight="fill" className="w-56 h-56" />
+                    <Scroll weight="fill" className="w-40 h-40" />
                   </div>
 
-                  <div className="relative z-10 flex flex-col justify-between h-full">
-                    <div className="space-y-4">
-                      {/* Badge */}
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-accent-purple/10 text-accent-purple text-xs font-bold tracking-wide uppercase border border-accent-purple/20 w-fit">
-                        <Plus weight="bold" className="w-3.5 h-3.5" />
+                  <div className="relative z-10">
+                    <div className="space-y-2">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent-purple/10 text-accent-purple text-xs font-bold tracking-wide uppercase border border-accent-purple/20 w-fit">
+                        <Plus weight="bold" className="w-3 h-3" />
                         <span>Create New</span>
                       </div>
-
-                      {/* Content */}
                       <div>
-                        <h2 className="text-3xl font-black text-zinc-900 mb-2 tracking-tight group-hover:text-accent-purple transition-colors duration-300">Start a New Simulation</h2>
-                        <p className="text-zinc-500 text-lg max-w-md font-medium leading-relaxed group-hover:text-zinc-700 transition-colors duration-300">
+                        <h2 className="text-xl font-black text-zinc-900 mb-0.5 tracking-tight group-hover:text-accent-purple transition-colors duration-300">Start a New Simulation</h2>
+                        <p className="text-zinc-500 text-sm max-w-md font-medium leading-relaxed group-hover:text-zinc-700 transition-colors duration-300">
                           Upload materials or paste text to generate a fresh exam instantly.
                         </p>
                       </div>
                     </div>
-
-                    {/* CTA Button look-alike */}
-                    <div className="mt-8 flex items-center gap-3">
-                      <span className="inline-flex items-center justify-center h-12 px-8 rounded-lg bg-zinc-900 text-white font-bold shadow-neo group-hover:bg-brand-orange group-hover:text-white group-hover:shadow-none group-hover:translate-x-[2px] group-hover:translate-y-[2px] transition-all duration-200">
-                        <span className="flex items-center gap-2">
+                    <div className="mt-4">
+                      <span className="inline-flex items-center justify-center h-9 px-5 rounded-lg bg-zinc-900 text-white font-bold shadow-neo group-hover:bg-brand-orange group-hover:shadow-none group-hover:translate-x-[2px] group-hover:translate-y-[2px] transition-all duration-200">
+                        <span className="flex items-center gap-2 text-sm">
                           Begin Now
                           <ArrowRight weight="bold" className="w-4 h-4" />
                         </span>
@@ -189,19 +221,64 @@ export default async function DashboardPage() {
                 </div>
               </Link>
 
-              {/* Progress Chart - Neo-Brutalist */}
-              <section className="h-[200px]">
+              {/* Generate Flashcards Card */}
+              <Link href="/dashboard/new?mode=flashcards" className="group block">
+                <div className="bg-white rounded-lg py-9 px-8 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
+                  {/* Background pattern */}
+                  <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
+
+                  {/* Large decorative icon */}
+                  <div className="absolute -bottom-6 -right-6 text-zinc-950/[0.04] transform rotate-12 group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+                    <Cards weight="fill" className="w-32 h-32" />
+                  </div>
+
+                  {/* Gradient accent bar */}
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-brand-orange to-amber-400" />
+
+                  <div className="relative z-10 flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-orange to-amber-500 border-2 border-zinc-900 shadow-neo flex items-center justify-center group-hover:shadow-none group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all duration-200">
+                        <Cards weight="fill" className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-black text-zinc-900 tracking-tight group-hover:text-brand-orange transition-colors duration-300">Generate Flashcards</h3>
+                        <p className="text-xs text-zinc-500 font-medium">Turn your study materials into interactive cards</p>
+                      </div>
+                    </div>
+                    <div className="w-8 h-8 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center group-hover:bg-brand-orange group-hover:border-brand-orange transition-all duration-300">
+                      <ArrowRight weight="bold" className="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors duration-300" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Performance Chart */}
+              <div className="h-[220px]">
                 <NeoBrutalistChart data={progressData} />
-              </section>
+              </div>
+
+              {/* Activity Strip - fixed height */}
+              <div className="h-[150px]">
+                <div className="h-full [&>div]:h-full">
+                  <ActivityStrip stats={stats} />
+                </div>
+              </div>
             </div>
 
-            {/* RIGHT COLUMN - Insights Zone */}
-            <div className="lg:col-span-5 flex flex-col gap-4 min-h-0">
+            {/* RIGHT COLUMN */}
+            <div className="lg:col-span-5 flex flex-col gap-4">
               <StatsPanel stats={stats} />
-
-              {/* Focus Areas - flex-1 to fill remaining space */}
-              <div className="flex-1 flex flex-col">
-                <WeakAreas weakAreas={stats.weakAreas} />
+              {/* Match Performance Chart height (220px) */}
+              <div className="h-[220px]">
+                <div className="h-full">
+                  <WeakAreas weakAreas={stats.weakAreas} />
+                </div>
+              </div>
+              {/* Match Activity strip height (150px) */}
+              <div className="h-[150px]">
+                <div className="h-full [&>div]:h-full">
+                  <RecentAchievements achievements={unlockedAchievements} />
+                </div>
               </div>
             </div>
           </section>
