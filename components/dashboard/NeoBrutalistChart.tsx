@@ -28,28 +28,11 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
-    // Transform data for the chart - deduplicate dates by averaging scores for same day
-    const rawData = data.slice(-10).map(item => ({
+    // Transform data for the chart - keep ALL individual data points
+    const chartData = data.slice(-10).map((item, index) => ({
         date: format(new Date(item.date), 'MMM d'),
-        fullDate: new Date(item.date),
         score: Math.round((item.score / item.total) * 100),
-    }));
-
-    // Group by date and average scores for duplicate dates
-    const groupedData = rawData.reduce((acc, item) => {
-        const existingIndex = acc.findIndex(d => d.date === item.date);
-        if (existingIndex >= 0) {
-            // Average the scores for duplicate dates
-            acc[existingIndex].scores.push(item.score);
-        } else {
-            acc.push({ date: item.date, fullDate: item.fullDate, scores: [item.score] });
-        }
-        return acc;
-    }, [] as { date: string; fullDate: Date; scores: number[] }[]);
-
-    const chartData = groupedData.map(item => ({
-        date: item.date,
-        score: Math.round(item.scores.reduce((a, b) => a + b, 0) / item.scores.length),
+        index: index, // Keep track of index for unique key
     }));
 
     const hasData = chartData.length > 0;
@@ -62,13 +45,11 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
     // Colors
     const chartColor = "#8b5cf6"; // violet-500
 
-    // Custom tick formatter for X-axis - only show first and last if many points
-    const getXAxisTicks = () => {
-        if (chartData.length <= 3) {
-            return undefined; // Show all ticks
-        }
-        // Show first and last date only
-        return [chartData[0].date, chartData[chartData.length - 1].date];
+    // Calculate appropriate X-axis interval based on data length
+    const getXAxisInterval = () => {
+        if (chartData.length <= 4) return 0; // Show all labels
+        if (chartData.length <= 7) return 1; // Show every other label
+        return 2; // Show every 3rd label
     };
 
     return (
@@ -94,7 +75,7 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                         <AreaChart
                             accessibilityLayer
                             data={chartData}
-                            margin={{ left: 0, right: 8, top: 10, bottom: 0 }}
+                            margin={{ left: 0, right: 40, top: 10, bottom: 0 }}
                         >
                             {/* Horizontal grid lines at key percentages */}
                             <CartesianGrid
@@ -109,13 +90,13 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                             <ReferenceLine y={75} stroke="#f4f4f5" strokeDasharray="3 3" />
 
                             <XAxis
-                                dataKey="date"
+                                dataKey="index"
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
                                 tick={{ fontSize: 10, fill: '#71717a', fontWeight: 500 }}
-                                ticks={getXAxisTicks()}
-                                interval={chartData.length <= 3 ? 0 : "preserveStartEnd"}
+                                interval={getXAxisInterval()}
+                                tickFormatter={(value) => chartData[value]?.date || ''}
                             />
                             <YAxis
                                 tickLine={false}
@@ -128,6 +109,7 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                                 tick={{ fontSize: 9, fill: '#a1a1aa' }}
                             />
                             <ChartTooltip
+                                trigger="hover"
                                 cursor={{ stroke: '#8b5cf6', strokeWidth: 1, strokeDasharray: '4 4' }}
                                 content={
                                     <ChartTooltipContent
@@ -154,18 +136,19 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                                 fill="url(#scoreGradient)"
                                 stroke={chartColor}
                                 strokeWidth={2.5}
+                                isAnimationActive={false}
                                 dot={{
                                     fill: chartColor,
                                     stroke: '#fff',
                                     strokeWidth: 2,
-                                    r: 4
+                                    r: 6
                                 }}
                                 activeDot={{
                                     fill: chartColor,
                                     stroke: '#fff',
-                                    strokeWidth: 2,
-                                    r: 6,
-                                    className: "drop-shadow-md"
+                                    strokeWidth: 3,
+                                    r: 8,
+                                    className: "drop-shadow-md cursor-pointer"
                                 }}
                             />
                         </AreaChart>
