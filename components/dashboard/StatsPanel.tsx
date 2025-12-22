@@ -39,7 +39,7 @@ export function StatsPanel({ stats }: StatsPanelProps) {
             <div className="p-4 pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white">
                 <div className="flex items-center">
                     <h2 className="relative font-black text-zinc-900 text-xl tracking-tight z-0">
-                        <span className="relative z-10">Performance</span>
+                        <span className="relative z-10">Your Stats</span>
                         <span className="absolute bottom-0.5 left-0 w-full h-2 bg-brand-orange/20 -rotate-1 -z-10 rounded-sm"></span>
                     </h2>
                 </div>

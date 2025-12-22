@@ -48,12 +48,10 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
         <div className="h-full p-3 rounded-lg bg-white border-2 border-zinc-900 shadow-neo flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between mb-2 shrink-0">
-                <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-md bg-violet-500 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] flex items-center justify-center">
-                        <ChartLineUp weight="fill" className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <h3 className="text-sm font-black text-zinc-900 uppercase tracking-tight">Performance</h3>
-                </div>
+                <h2 className="relative font-black text-zinc-900 text-xl tracking-tight">
+                    <span className="relative z-10">Performance Trends</span>
+                    <span className="absolute bottom-0.5 left-0 w-full h-2 bg-brand-orange/20 -rotate-1 -z-10 rounded-sm"></span>
+                </h2>
                 {hasData && (
                     <div className="flex items-center gap-1.5">
                         <span className="text-xl font-black text-zinc-900 tracking-tight leading-none">{avgScore}%</span>

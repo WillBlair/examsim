@@ -40,9 +40,10 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
           <div className="relative z-10">
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-black text-zinc-800 tracking-tight">
-                Focus Areas
-              </span>
+              <h2 className="relative font-black text-zinc-900 text-xl tracking-tight">
+                <span className="relative z-10">Focus Areas</span>
+                <span className="absolute bottom-0.5 left-0 w-full h-2 bg-brand-orange/20 -rotate-1 -z-10 rounded-sm"></span>
+              </h2>
               <Link
                 href="/dashboard/practice"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-900 text-white text-[11px] font-bold border-2 border-zinc-900 shadow-neo-sm hover:bg-brand-orange hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
@@ -60,7 +61,7 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
                 return (
                   <div
                     key={area.subtopic}
-                    className="flex items-center gap-3 p-2 -mx-1 rounded-md hover:bg-amber-50/50 transition-colors group cursor-pointer"
+                    className="flex items-center gap-3 p-2 -mx-1 rounded-md hover:bg-zinc-100/50 transition-colors group cursor-pointer"
                   >
                     {/* Score Badge */}
                     <div className={cn(
