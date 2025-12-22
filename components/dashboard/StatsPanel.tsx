@@ -7,11 +7,12 @@ import { motion } from "framer-motion";
 
 interface StatsPanelProps {
     stats: UserStats;
+    className?: string;
 }
 
-export function StatsPanel({ stats }: StatsPanelProps) {
+export function StatsPanel({ stats, className }: StatsPanelProps) {
     return (
-        <div className="bg-white rounded-lg border-2 border-zinc-900 shadow-neo overflow-hidden">
+        <div className={cn("bg-white rounded-lg border-2 border-zinc-900 shadow-neo overflow-hidden", className)}>
             {/* Header */}
             <div className="p-4 pb-3 bg-white">
                 <div className="flex items-center">

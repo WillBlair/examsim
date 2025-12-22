@@ -182,15 +182,14 @@ export default async function DashboardPage() {
           </div>
         </div>
       ) : (
-        <>
-          {/* Two-Column Layout - fills remaining space, columns aligned */}
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 lg:items-stretch">
-
-            {/* LEFT COLUMN */}
+        <div className="flex flex-col gap-4">
+          {/* Top Section */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:items-stretch">
+            {/* LEFT COLUMN: Actions */}
             <div className="lg:col-span-7 flex flex-col gap-4">
               {/* Start New Simulation Card */}
               <Link href="/dashboard/new" className="group block">
-                <div className="bg-white rounded-lg p-5 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
+                <div className="bg-white rounded-lg p-5 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none h-full">
                   <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-25 pointer-events-none" />
                   <div className="absolute -bottom-6 -right-6 text-zinc-950/[0.03] transform rotate-12 group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
                     <Scroll weight="fill" className="w-40 h-40" />
@@ -223,7 +222,7 @@ export default async function DashboardPage() {
 
               {/* Generate Flashcards Card */}
               <Link href="/dashboard/new?mode=flashcards" className="group block">
-                <div className="bg-white rounded-lg py-9 px-8 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
+                <div className="bg-white rounded-lg py-9 px-8 relative overflow-hidden transition-all duration-300 border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none h-full">
                   {/* Background pattern */}
                   <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
 
@@ -251,38 +250,46 @@ export default async function DashboardPage() {
                   </div>
                 </div>
               </Link>
-
-              {/* Performance Chart */}
-              <div className="h-[220px]">
-                <NeoBrutalistChart data={progressData} />
-              </div>
-
-              {/* Activity Strip - fixed height */}
-              <div className="h-[150px]">
-                <div className="h-full [&>div]:h-full">
-                  <ActivityStrip stats={stats} />
-                </div>
-              </div>
             </div>
 
-            {/* RIGHT COLUMN */}
-            <div className="lg:col-span-5 flex flex-col gap-4">
-              <StatsPanel stats={stats} />
-              {/* Match Performance Chart height (220px) */}
-              <div className="h-[220px]">
-                <div className="h-full">
-                  <WeakAreas weakAreas={stats.weakAreas} />
-                </div>
-              </div>
-              {/* Match Activity strip height (150px) */}
-              <div className="h-[150px]">
-                <div className="h-full [&>div]:h-full">
-                  <RecentAchievements achievements={unlockedAchievements} />
-                </div>
+            {/* RIGHT COLUMN: Stats Panel */}
+            <div className="lg:col-span-5">
+              <StatsPanel stats={stats} className="h-full" />
+            </div>
+          </section>
+
+          {/* Middle Section: Trends & Weak Areas */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            {/* Performance Chart */}
+            <div className="lg:col-span-7 h-[220px]">
+              <NeoBrutalistChart data={progressData} />
+            </div>
+
+            {/* Weak Areas */}
+            <div className="lg:col-span-5 h-[220px]">
+              <div className="h-full">
+                <WeakAreas weakAreas={stats.weakAreas} />
               </div>
             </div>
           </section>
-        </>
+
+          {/* Bottom Section: Activity & Achievements */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            {/* Activity Strip */}
+            <div className="lg:col-span-7 h-[150px]">
+              <div className="h-full [&>div]:h-full">
+                <ActivityStrip stats={stats} />
+              </div>
+            </div>
+
+            {/* Recent Achievements */}
+            <div className="lg:col-span-5 h-[150px]">
+              <div className="h-full [&>div]:h-full">
+                <RecentAchievements achievements={unlockedAchievements} />
+              </div>
+            </div>
+          </section>
+        </div>
       )}
     </div>
   );
