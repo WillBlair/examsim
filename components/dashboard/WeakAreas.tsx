@@ -1,7 +1,4 @@
-"use client";
-
-import { motion } from "framer-motion";
-import { CheckCircle, ArrowRight, Target } from "@phosphor-icons/react";
+import { CheckCircle, ArrowRight, Target } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -17,12 +14,7 @@ interface WeakAreasProps {
 
 export function WeakAreas({ weakAreas }: WeakAreasProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15, duration: 0.3 }}
-      className="h-full"
-    >
+    <div className="h-full animate-fade-in-up">
       <div className="h-full p-6 rounded-lg bg-white border-2 border-zinc-900 shadow-neo flex flex-col relative overflow-hidden transition-all duration-300">
         <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
         {/* Content */}
@@ -37,17 +29,12 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
             </div>
           ) : (
             <div className="flex-1 space-y-3">
-              {weakAreas.slice(0, 4).map((area, index) => {
+              {weakAreas.slice(0, 4).map((area) => {
                 // Simplified logic: red for really bad, amber for warning
                 const isCritical = area.score < 40;
-                
+
                 return (
-                  <motion.div
-                    key={area.subtopic}
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + index * 0.05 }}
-                  >
+                  <div key={area.subtopic}>
                     <div className="group flex items-center justify-between p-3 rounded-sm border border-zinc-200 bg-white hover:bg-red-50/10 hover:border-zinc-900 hover:shadow-neo-sm transition-all">
                       <div className="flex-1 min-w-0 pr-4">
                         <div className="flex items-center justify-between mb-1.5">
@@ -61,10 +48,10 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
                             {Math.round(area.score)}%
                           </span>
                         </div>
-                        
+
                         {/* Clean Progress Bar */}
                         <div className="h-1.5 w-full bg-zinc-100 rounded-[3px] overflow-hidden">
-                          <div 
+                          <div
                             className={cn(
                               "h-full rounded-[2px] transition-all duration-500",
                               isCritical ? "bg-red-500" : "bg-amber-500"
@@ -81,12 +68,12 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
                         </button>
                       </Link>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
           )}
-          
+
           {weakAreas.length > 0 && (
             <div className="mt-4 pt-3 border-t border-zinc-100 text-center">
               <Link href="/dashboard/practice" className="inline-flex items-center text-xs font-medium text-brand-orange hover:text-emerald-600 transition-colors">
@@ -96,6 +83,6 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

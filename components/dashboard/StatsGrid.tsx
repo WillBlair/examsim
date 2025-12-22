@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { AppIcon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
@@ -54,7 +51,7 @@ function TrendBadge({ current, previous }: { current: number; previous: number }
   );
 }
 
-export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswered, streak }: StatsGridProps) {
+export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswered }: StatsGridProps) {
   const stats = [
     {
       label: "Total Exams",
@@ -90,14 +87,8 @@ export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswer
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {stats.map((stat, index) => (
-        <motion.div
-          key={stat.label}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05, duration: 0.3 }}
-          className="h-full"
-        >
+      {stats.map((stat) => (
+        <div key={stat.label} className="h-full animate-fade-in-up">
           <div className="p-3 rounded-lg bg-white border-2 border-zinc-900 shadow-neo h-full flex flex-col justify-between group hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200">
             <div>
               {/* Icon - Smaller */}
@@ -126,7 +117,7 @@ export function StatsGrid({ totalExams, averageScore, studyTime, questionsAnswer
               )}
             </div>
           </div>
-        </motion.div>
+        </div>
       ))}
     </div>
   );

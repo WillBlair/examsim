@@ -22,17 +22,16 @@ export default async function DashboardPage() {
     return redirect("/login");
   }
 
-  // Use cached and optimized stats service
-  const stats = await getCachedUserStats(session.user.id);
-
-  // Fetch exams and results for display
-  const allExams = await db.select().from(exams)
-    .where(eq(exams.userId, session.user.id))
-    .orderBy(desc(exams.createdAt));
-
-  const allResults = await db.select().from(examResults)
-    .where(eq(examResults.userId, session.user.id))
-    .orderBy(desc(examResults.completedAt));
+  // Fetch all data in parallel for faster load
+  const [stats, allExams, allResults] = await Promise.all([
+    getCachedUserStats(session.user.id),
+    db.select().from(exams)
+      .where(eq(exams.userId, session.user.id))
+      .orderBy(desc(exams.createdAt)),
+    db.select().from(examResults)
+      .where(eq(examResults.userId, session.user.id))
+      .orderBy(desc(examResults.completedAt))
+  ]);
 
   // Progress Chart Data
   const progressData = allResults
