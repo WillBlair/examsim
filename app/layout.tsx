@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   title: "ExamSim - Practice Exams Made Easy",
   description: "Turn your course materials into full-scale practice exams",
   icons: {
-    icon: "/images/examsimlogogreen-compressed.png",
-    apple: "/images/examsimlogogreen-compressed.png",
+    icon: "/images/examsimlogogreen-compressed.webp",
+    apple: "/images/examsimlogogreen-compressed.webp",
   },
 };
 
@@ -39,6 +39,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Preload LCP image for faster rendering */}
+        <link
+          rel="preload"
+          href="/images/compressed-dashboard-preview.webp"
+          as="image"
+          type="image/webp"
+        />
+        {/* Preconnect to Google Fonts for faster font loading */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body
         className={`${spaceGrotesk.variable} ${jakarta.variable} ${jetbrainsMono.variable} antialiased`}
       >

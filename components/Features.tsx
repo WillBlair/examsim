@@ -32,7 +32,7 @@ export function Features() {
             </div>
             <div className="aspect-square bg-zinc-50 rounded-lg border-[3px] border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
               <Image
-                src="/images/examsettingssamewidthandheight.png"
+                src="/images/examsettingssamewidthandheight.webp"
                 alt="Exam Settings Preview"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -54,7 +54,7 @@ export function Features() {
             </div>
             <div className="aspect-square bg-zinc-50 rounded-lg border-[3px] border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center text-zinc-400 text-sm relative overflow-hidden">
               <Image
-                src="/images/compressed-explanationssamewidthandheight.png"
+                src="/images/compressed-explanationssamewidthandheight.webp"
                 alt="Exam Feedback Preview"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -119,7 +119,7 @@ export function Features() {
             <div className="relative w-full max-w-md mx-auto lg:mx-0">
               <div className="bg-white rounded-lg border-2 border-zinc-900 shadow-neo overflow-hidden">
                 <Image
-                  src="/images/uploadbox.png"
+                  src="/images/uploadbox.webp"
                   alt="Upload Interface Preview"
                   width={450}
                   height={340}

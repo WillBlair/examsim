@@ -1,6 +1,3 @@
-"use client";
-
-import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -16,7 +13,7 @@ export function Navbar() {
             className="flex items-center gap-1.5 md:gap-2 text-zinc-900 font-bold text-base md:text-lg tracking-tight group"
           >
             <div className="w-8 h-8 md:w-10 md:h-10 rounded-sm flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
-              <Image src="/images/examsimlogogreen-compressed.png" alt="ExamSim Logo" width={40} height={40} className="w-full h-full object-contain" priority />
+              <Image src="/images/examsimlogogreen-compressed.webp" alt="ExamSim Logo" width={40} height={40} className="w-full h-full object-contain" priority />
             </div>
             <span className="font-display">ExamSim</span>
           </Link>

@@ -47,7 +47,7 @@ export function WhyChooseUs() {
               {/* Star Image */}
               <div className="mb-5 group-hover:scale-110 transition-transform duration-300">
                 <Image
-                  src="/images/staryellow.png"
+                  src="/images/staryellow.webp"
                   alt=""
                   width={64}
                   height={61}

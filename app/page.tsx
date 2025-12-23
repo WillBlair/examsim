@@ -1,18 +1,43 @@
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-// Lazy load Features to optimize hydration
+import { WhyChooseUs } from "@/components/WhyChooseUs";
+import { Footer } from "@/components/Footer";
+import { GridBackground } from "@/components/GridBackground";
+
+// Lazy load below-the-fold components to reduce initial JS bundle
 const Features = dynamic(() =>
-  import("@/components/Features").then((mod) => mod.Features)
+  import("@/components/Features").then((mod) => mod.Features),
+  { loading: () => <FeaturesSkeleton /> }
 );
 
-import { WhyChooseUs } from "@/components/WhyChooseUs";
-// Lazy load FAQ to split Framer Motion from main bundle
-import dynamic from "next/dynamic";
-const FAQ = dynamic(() => import("@/components/FAQ").then((mod) => mod.FAQ));
+// Lazy load FAQ to split Framer Motion from main bundle  
+const FAQ = dynamic(
+  () => import("@/components/FAQ").then((mod) => mod.FAQ),
+  { loading: () => <FAQSkeleton /> }
+);
 
-import { Footer } from "@/components/Footer";
+// Minimal skeleton placeholders to prevent layout shift
+function FeaturesSkeleton() {
+  return (
+    <section className="pt-32 pb-24 bg-transparent">
+      <div className="container max-w-5xl px-4 md:px-6 mx-auto">
+        <div className="h-32 bg-zinc-100 rounded-lg animate-pulse" />
+      </div>
+    </section>
+  );
+}
 
-import { GridBackground } from "@/components/GridBackground";
+function FAQSkeleton() {
+  return (
+    <section className="py-24 bg-transparent">
+      <div className="container max-w-4xl px-4 md:px-6 mx-auto">
+        <div className="h-96 bg-zinc-100 rounded-lg animate-pulse" />
+      </div>
+    </section>
+  );
+}
 
 export default function Home() {
   return (

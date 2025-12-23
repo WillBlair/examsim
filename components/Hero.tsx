@@ -1,26 +1,9 @@
-"use client";
-
-import { useRef, useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
-import { checkAuth } from "@/app/actions/auth";
+import { HeroCTAButton } from "@/components/HeroCTAButton";
 
 export function Hero() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  // Default to /register for fastest first paint, update if authenticated
-  const [ctaHref, setCtaHref] = useState("/register");
-
-  // Non-blocking auth check - runs after initial render
-  useEffect(() => {
-    checkAuth().then((isAuth) => {
-      if (isAuth) setCtaHref("/dashboard/new");
-    });
-  }, []);
-
   return (
-    <section ref={containerRef} id="home" className="relative w-full pt-28 md:pt-[8.5rem] pb-0 bg-transparent overflow-visible">
+    <section id="home" className="relative w-full pt-28 md:pt-[8.5rem] pb-0 bg-transparent overflow-visible">
       <div className="container relative z-10 px-4 md:px-6 mx-auto flex flex-col items-center text-center">
 
         {/* Top Tagline */}
@@ -44,12 +27,7 @@ export function Hero() {
 
           {/* CTA Button */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12 md:mb-16 px-4">
-            <Link href={ctaHref}>
-              <Button className="group h-14 md:h-16 px-6 md:px-10 rounded-lg bg-brand-orange text-zinc-900 hover:bg-brand-orange hover:opacity-90 font-black text-lg md:text-xl flex items-center gap-3 md:gap-4 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all duration-200 ease-in-out w-full sm:w-auto justify-center">
-                Generate My First Exam
-                <ArrowRight className="w-5 h-5 md:w-6 md:h-6 stroke-[3] group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
+            <HeroCTAButton />
           </div>
 
 
@@ -73,9 +51,9 @@ export function Hero() {
               </div>
             </div>
 
-            {/* Screenshot */}
+            {/* Screenshot - LCP Element */}
             <Image
-              src="/images/compressed-dashboard-preview.png"
+              src="/images/compressed-dashboard-preview.webp"
               alt="ExamSim Dashboard Preview"
               width={1200}
               height={675}
@@ -87,8 +65,6 @@ export function Hero() {
         </div>
 
       </div>
-
-      {/* Removed Bevel Container */}
     </section>
   );
 }

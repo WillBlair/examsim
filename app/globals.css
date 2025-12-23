@@ -257,13 +257,13 @@
     animation: fadeInUp 0.5s ease-out forwards;
   }
 
+  /* LCP-safe animations - no initial opacity:0 to avoid blocking LCP measurement */
   .animate-fade-in-up-delay-1 {
-    animation: fadeInUp 0.5s ease-out 0.1s forwards;
-    opacity: 0;
+    animation: fadeInUp 0.4s ease-out forwards;
   }
 
   .animate-fade-in-up-delay-2 {
-    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    animation: fadeInUp 0.6s ease-out 0.1s forwards;
     opacity: 0;
   }
 }
