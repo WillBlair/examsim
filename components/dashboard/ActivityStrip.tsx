@@ -16,8 +16,8 @@ export function ActivityStrip({ stats }: ActivityStripProps) {
             ".day-block-container",
             { scale: [1, 1.2, 1] },
             { 
-                duration: 0.4, 
-                delay: stagger(0.03),
+                duration: 0.2, 
+                delay: stagger(0.015),
                 ease: "easeInOut" 
             }
         );

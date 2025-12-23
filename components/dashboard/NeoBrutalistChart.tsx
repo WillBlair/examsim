@@ -36,7 +36,7 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
         setIsAnimating(true);
         const timer = setTimeout(() => {
             setIsAnimating(false);
-        }, 1500);
+        }, 500);
         return () => clearTimeout(timer);
     }, [key]);
 
@@ -157,7 +157,7 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                                 stroke={chartColor}
                                 strokeWidth={2.5}
                                 isAnimationActive={true}
-                                animationDuration={1500}
+                                animationDuration={500}
                                 animationEasing="ease-out"
                                 dot={{
                                     fill: chartColor,
