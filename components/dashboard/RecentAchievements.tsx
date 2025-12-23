@@ -49,11 +49,11 @@ export function RecentAchievements({ achievements }: RecentAchievementsProps) {
     }
 
     return (
-        <div className="bg-white rounded-xl border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 p-4 h-full flex flex-col group">
-            <div className="flex items-center justify-between mb-2 pb-2 border-b border-zinc-100">
+        <div className="bg-violet-50 rounded-xl border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 p-4 h-full flex flex-col group">
+            <div className="flex items-center justify-between mb-2 pb-2 border-b border-violet-200/50">
                  <div>
                      <h2 className="font-black text-zinc-900 text-lg tracking-tight">Achievements</h2>
-                     <p className="text-xs text-zinc-500 font-bold mt-0.5">Recent unlocks</p>
+                     <p className="text-xs text-violet-900/60 font-bold mt-0.5">Recent unlocks</p>
                 </div>
                 <Link
                     href="/dashboard/achievements"

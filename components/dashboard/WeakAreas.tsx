@@ -21,29 +21,29 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
   // Use all weak areas, not just top 3, now that it's scrollable
   const previewAreas = weakAreas;
 
-  return (
+    return (
     <div className="animate-fade-in-up h-full">
-      <div className="p-6 rounded-xl bg-white border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative overflow-hidden h-full flex flex-col group">
+      <div className="p-6 rounded-xl bg-rose-50 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative overflow-hidden h-full flex flex-col group">
         {/* Subtle accent */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100/50 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-rose-200/50 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
 
         {weakAreas.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center relative z-10 gap-3">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 border-2 border-zinc-900 flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+            <div className="w-12 h-12 rounded-xl bg-white border-2 border-zinc-900 flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
               <CheckCircle weight="fill" className="w-6 h-6 text-zinc-900" />
             </div>
             <div>
               <p className="font-black text-zinc-900">All Systems Go</p>
-              <p className="text-xs font-bold text-zinc-500 mt-1">No weak areas detected yet.</p>
+              <p className="text-xs font-bold text-rose-900/60 mt-1">No weak areas detected yet.</p>
             </div>
           </div>
         ) : (
           <div className="relative z-10 flex flex-col h-full min-h-0">
             {/* Header */}
-            <div className="flex items-center justify-between mb-3 pb-3 border-b border-zinc-100 shrink-0">
+            <div className="flex items-center justify-between mb-3 pb-3 border-b border-rose-200/50 shrink-0">
                <div>
                     <h2 className="font-black text-zinc-900 text-lg tracking-tight">Focus Areas</h2>
-                    <p className="text-xs text-zinc-500 font-bold mt-0.5">Topics needing attention</p>
+                    <p className="text-xs text-rose-900/60 font-bold mt-0.5">Topics needing attention</p>
                 </div>
               <Link
                 href="/dashboard/practice"

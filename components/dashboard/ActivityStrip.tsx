@@ -9,12 +9,12 @@ interface ActivityStripProps {
 
 export function ActivityStrip({ stats }: ActivityStripProps) {
     return (
-        <div className="bg-white rounded-xl p-4 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative h-full flex flex-col justify-center group">
+        <div className="bg-slate-50 rounded-xl p-4 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative h-full flex flex-col justify-center group">
             {/* Header */}
-            <div className="flex items-center justify-between mb-3 pb-3 border-b border-zinc-100">
+            <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-200/50">
                 <div>
                      <h2 className="font-black text-zinc-900 text-lg tracking-tight">Activity</h2>
-                     <p className="text-xs text-zinc-500 font-bold mt-0.5">Last 21 days of study</p>
+                     <p className="text-xs text-slate-500 font-bold mt-0.5">Last 21 days of study</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Best Streak</span>

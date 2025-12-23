@@ -53,15 +53,13 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
     };
 
     return (
-        <div className="h-full p-6 rounded-xl bg-white border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col relative overflow-hidden group">
-            {/* Background Pattern */}
-             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-25 pointer-events-none" />
-
+        <div className="h-full p-6 rounded-xl bg-sky-50 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col relative overflow-hidden group">
+            
             {/* Header */}
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-zinc-100 shrink-0 relative z-10">
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-sky-200/50 shrink-0 relative z-10">
                 <div>
                     <h2 className="font-black text-zinc-900 text-lg tracking-tight">Performance Trends</h2>
-                    <p className="text-xs text-zinc-500 font-bold mt-0.5">Your score history over time</p>
+                    <p className="text-xs text-sky-900/60 font-bold mt-0.5">Your score history over time</p>
                 </div>
                 {hasData && (
                     <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-zinc-900 shadow-none transition-all duration-200 hover:shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-0.5">

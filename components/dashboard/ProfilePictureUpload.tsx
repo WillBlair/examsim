@@ -17,7 +17,7 @@ export function ProfilePictureUpload({ currentImage, userName }: ProfilePictureU
   // we fallback to our API route which reads from DB.
   // We use a timestamp query param to force refresh the image after upload.
   const [imageSrc, setImageSrc] = useState<string | null>(currentImage || "/api/user/avatar");
-  const [imgKey, setImgKey] = useState(Date.now());
+  const [imgKey, setImgKey] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 

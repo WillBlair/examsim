@@ -16,7 +16,7 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
     return (
         <div className={cn("flex flex-col gap-3", className)}>
             {/* Weekly Goal Section */}
-            <div className="bg-emerald-50/50 rounded-xl border-2 border-zinc-900 p-2.5 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col justify-between min-h-[90px] relative overflow-hidden group">
+            <div className="bg-emerald-50 rounded-xl border-2 border-zinc-900 p-2.5 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col justify-between min-h-[90px] relative overflow-hidden group">
                 <div className="flex items-center justify-between relative z-10 border-b border-emerald-900/5 pb-1.5 mb-1.5">
                     <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-lg bg-emerald-500 border-2 border-zinc-900 flex items-center justify-center text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
@@ -65,7 +65,9 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
                     value={stats.examsCreatedLast7Days}
                     previousValue={stats.examsCreatedPrev7Days}
                     icon="CheckCircle"
-                    color="bg-zinc-900"
+                    color="bg-[#e8fbc4]"
+                    textColor="text-lime-950"
+                    iconColor="text-lime-800"
                     pattern="circles"
                 />
                 <StatCard
@@ -74,7 +76,9 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
                     previousValue={stats.avgScorePrev7Days}
                     suffix="%"
                     icon="GraphUp"
-                    color="bg-emerald-600"
+                    color="bg-[#caf8e3]"
+                    textColor="text-emerald-950"
+                    iconColor="text-emerald-800"
                     pattern="lines"
                 />
                 <StatCard
@@ -82,7 +86,9 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
                     value={stats.questionsLast7Days}
                     previousValue={stats.questionsPrev7Days}
                     icon="TaskList"
-                    color="bg-violet-600"
+                    color="bg-[#eae6fe]"
+                    textColor="text-violet-950"
+                    iconColor="text-violet-800"
                     pattern="dots"
                 />
                 <StatCard
@@ -91,7 +97,9 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
                     previousValue={stats.studyTimePrev7Days}
                     suffix="h"
                     icon="Clock"
-                    color="bg-orange-500"
+                    color="bg-[#fee7cc]"
+                    textColor="text-orange-950"
+                    iconColor="text-orange-800"
                     pattern="waves"
                 />
             </div>
@@ -106,6 +114,8 @@ function StatCard({
     suffix,
     icon,
     color,
+    textColor = "text-zinc-900",
+    iconColor = "text-zinc-900",
     pattern
 }: {
     label: string;
@@ -114,55 +124,59 @@ function StatCard({
     suffix?: string;
     icon: string;
     color: string;
+    textColor?: string;
+    iconColor?: string;
     pattern?: 'circles' | 'lines' | 'dots' | 'waves';
 }) {
     const trend = calculateTrend(value, previousValue);
     const isPositive = trend >= 0;
 
     return (
-        <div className={cn("relative overflow-hidden rounded-xl p-3 shadow-sm transition-all hover:shadow-md hover:-translate-y-1", color)}>
+        <div className={cn("relative overflow-hidden rounded-xl p-3 shadow-sm transition-all hover:shadow-md hover:-translate-y-1 border border-zinc-200/50", color)}>
             {/* Background Patterns */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply">
                 {pattern === 'circles' && (
                     <svg className="absolute right-0 top-0 h-full w-2/3" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <circle cx="100" cy="0" r="50" fill="white" />
-                        <circle cx="100" cy="100" r="30" fill="white" />
+                        <circle cx="100" cy="0" r="50" fill="currentColor" className={textColor} />
+                        <circle cx="100" cy="100" r="30" fill="currentColor" className={textColor} />
                     </svg>
                 )}
                 {pattern === 'lines' && (
                     <svg className="absolute right-0 top-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M0 100 L100 0" stroke="white" strokeWidth="20" />
+                        <path d="M0 100 L100 0" stroke="currentColor" strokeWidth="20" className={textColor} />
                     </svg>
                 )}
                 {pattern === 'dots' && (
-                     <div className="absolute inset-0 bg-[radial-gradient(circle,white_2px,transparent_2px)] [background-size:16px_16px]" />
+                     <div className={cn("absolute inset-0 bg-[radial-gradient(circle,currentColor_2px,transparent_2px)] [background-size:16px_16px]", textColor)} />
                 )}
                 {pattern === 'waves' && (
-                     <svg className="absolute bottom-0 left-0 w-full h-1/2" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M0 100 C 30 50 70 50 100 100 Z" fill="white" />
+                     <svg className="absolute right-0 bottom-0 h-full w-full opacity-60" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <circle cx="100" cy="100" r="70" stroke="currentColor" strokeWidth="8" fill="none" className={textColor} />
+                        <circle cx="100" cy="100" r="45" stroke="currentColor" strokeWidth="8" fill="none" className={textColor} />
+                        <circle cx="100" cy="100" r="20" stroke="currentColor" strokeWidth="8" fill="none" className={textColor} />
                      </svg>
                 )}
             </div>
 
             <div className="relative z-10 flex flex-col h-full justify-between gap-2">
                 <div className="flex items-start justify-between">
-                    <div className="p-1 bg-white/20 rounded-md backdrop-blur-sm">
-                        <AppIcon name={icon as any} className="w-3.5 h-3.5 text-white" />
+                    <div className={cn("p-1.5 rounded-md bg-white/60 backdrop-blur-sm border border-black/5", iconColor)}>
+                        <AppIcon name={icon as any} className="w-3.5 h-3.5" />
                     </div>
                     {trend !== 0 && (
-                        <div className="flex items-center gap-1 text-[9px] font-bold text-white/90 bg-white/10 px-1.5 py-0.5 rounded-full backdrop-blur-md">
+                        <div className={cn("flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full backdrop-blur-md border border-black/5", isPositive ? "bg-emerald-100/50 text-emerald-700" : "bg-red-100/50 text-red-700")}>
                             <span>{isPositive ? '↑' : '↓'} {Math.abs(trend)}%</span>
                         </div>
                     )}
                 </div>
                 
                 <div>
-                    <h3 className="text-white/80 text-[10px] font-medium tracking-wide mb-0.5">{label}</h3>
+                    <h3 className={cn("text-[10px] font-bold uppercase tracking-wide mb-0.5 opacity-70", textColor)}>{label}</h3>
                     <div className="flex items-baseline gap-1">
-                        <span className="text-xl font-black text-white tracking-tight">{value}</span>
-                        {suffix && <span className="text-xs font-medium text-white/60">{suffix}</span>}
+                        <span className={cn("text-2xl font-black tracking-tight", textColor)}>{value}</span>
+                        {suffix && <span className={cn("text-xs font-bold opacity-60", textColor)}>{suffix}</span>}
                     </div>
-                    <p className="text-white/50 text-[9px] mt-0.5 font-medium">vs last 7 days</p>
+                    <p className={cn("text-[9px] mt-0.5 font-bold opacity-50", textColor)}>vs last 7 days</p>
                 </div>
             </div>
         </div>
