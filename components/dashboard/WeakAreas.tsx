@@ -1,4 +1,6 @@
-import { CheckCircle, ArrowRight } from "@phosphor-icons/react/dist/ssr";
+"use client";
+
+import { CheckCircle, ArrowRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -22,7 +24,7 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
   const previewAreas = weakAreas;
 
     return (
-    <div className="animate-fade-in-up h-full">
+    <div className="h-full">
       <div className="p-6 rounded-xl bg-rose-50 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative overflow-hidden h-full flex flex-col group">
         {/* Subtle accent */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-rose-200/50 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />

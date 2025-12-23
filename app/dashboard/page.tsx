@@ -15,6 +15,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getCachedUserStats } from "@/lib/utils/cache";
 import { cn } from "@/lib/utils";
+// import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/motion-wrapper";
 import { DashboardAvatar } from "@/components/dashboard/DashboardAvatar";
 
 export default async function DashboardPage() {
@@ -98,55 +99,57 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col flex-1 gap-6">
       {/* Header with Date - Updated to Clean Neobrutalist */}
-      <div className="bg-indigo-50 border border-indigo-100 shadow-sm rounded-2xl p-5 relative overflow-hidden flex items-center justify-between group">
-        {/* Subtle Noise Texture */}
-        <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03] pointer-events-none mix-blend-multiply" />
-        
-        {/* Abstract Shapes */}
-        <div className="absolute right-0 top-0 w-64 h-64 bg-violet-200/50 rounded-full blur-3xl opacity-60 pointer-events-none translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute right-20 bottom-0 w-48 h-48 bg-blue-200/50 rounded-full blur-3xl opacity-60 pointer-events-none translate-y-1/2" />
+      <div>
+        <div className="bg-indigo-50 border border-indigo-100 shadow-sm rounded-2xl p-5 relative overflow-hidden flex items-center justify-between group">
+          {/* Subtle Noise Texture */}
+          <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03] pointer-events-none mix-blend-multiply" />
+          
+          {/* Abstract Shapes */}
+          <div className="absolute right-0 top-0 w-64 h-64 bg-violet-200/50 rounded-full blur-3xl opacity-60 pointer-events-none translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute right-20 bottom-0 w-48 h-48 bg-blue-200/50 rounded-full blur-3xl opacity-60 pointer-events-none translate-y-1/2" />
 
-        <div className="relative z-10 flex flex-col gap-1.5">
-          <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/60 border border-indigo-200/50 w-fit backdrop-blur-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-            <p className="text-[10px] font-bold text-indigo-900 uppercase tracking-wide">
-              {format(new Date(), 'EEEE, MMMM d')}
+          <div className="relative z-10 flex flex-col gap-1.5">
+            <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/60 border border-indigo-200/50 w-fit backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+              <p className="text-[10px] font-bold text-indigo-900 uppercase tracking-wide">
+                {format(new Date(), 'EEEE, MMMM d')}
+              </p>
+            </div>
+            <h1 className="text-3xl font-black text-indigo-950 tracking-tight">
+              Welcome back, {firstName}!
+            </h1>
+            <p className="text-sm text-indigo-900/60 font-medium max-w-lg">
+              Ready to continue your prep? You&apos;re doing great.
             </p>
           </div>
-          <h1 className="text-3xl font-black text-indigo-950 tracking-tight">
-            Welcome back, {firstName}!
-          </h1>
-          <p className="text-sm text-indigo-900/60 font-medium max-w-lg">
-            Ready to continue your prep? You&apos;re doing great.
-          </p>
-        </div>
 
-        {/* Profile Picture Circle */}
-        <div className="relative z-10 hidden md:flex items-center gap-6">
-          {/* Streak Badge - Redesigned */}
-          {hasExams && (
-            <div className="relative flex items-center gap-4 px-4 h-16 rounded-2xl bg-white border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] overflow-hidden group/streak transition-transform hover:-translate-y-1">
-               <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.03)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%] animate-[shimmer_3s_infinite]" />
-              
-              <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center">
-                <Fire weight="fill" className="w-5 h-5 text-orange-500" />
-              </div>
-              
-              <div className="flex flex-col">
-                <span className="text-2xl font-black text-zinc-900 leading-none tracking-tight">{stats.streak}</span>
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Day Streak</span>
-              </div>
+          {/* Profile Picture Circle */}
+          <div className="relative z-10 hidden md:flex items-center gap-6">
+            {/* Streak Badge - Redesigned */}
+            {hasExams && (
+              <div className="relative flex items-center gap-4 px-4 h-16 rounded-2xl bg-white border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] overflow-hidden group/streak transition-transform hover:-translate-y-1">
+                 <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.03)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%] animate-[shimmer_3s_infinite]" />
+                
+                <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center">
+                  <Fire weight="fill" className="w-5 h-5 text-orange-500" />
+                </div>
+                
+                <div className="flex flex-col">
+                  <span className="text-2xl font-black text-zinc-900 leading-none tracking-tight">{stats.streak}</span>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mt-0.5">Day Streak</span>
+                </div>
 
-               {stats.streak > 0 && (
-                 <div className="absolute top-2 right-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                 </div>
-               )}
+                 {stats.streak > 0 && (
+                   <div className="absolute top-2 right-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                   </div>
+                 )}
+              </div>
+            )}
+
+            <div className="w-16 h-16 rounded-2xl border-2 border-white shadow-lg overflow-hidden relative">
+              <DashboardAvatar sessionImage={userImage} name={firstName} />
             </div>
-          )}
-
-          <div className="w-16 h-16 rounded-2xl border-2 border-white shadow-lg overflow-hidden relative">
-            <DashboardAvatar sessionImage={userImage} name={firstName} />
           </div>
         </div>
       </div>

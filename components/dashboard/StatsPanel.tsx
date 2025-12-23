@@ -16,43 +16,45 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
     return (
         <div className={cn("flex flex-col gap-3", className)}>
             {/* Weekly Goal Section */}
-            <div className="bg-emerald-50 rounded-xl border-2 border-zinc-900 p-2.5 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col justify-between min-h-[90px] relative overflow-hidden group">
-                <div className="flex items-center justify-between relative z-10 border-b border-emerald-900/5 pb-1.5 mb-1.5">
-                    <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-emerald-500 border-2 border-zinc-900 flex items-center justify-center text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
-                            <AppIcon name="Rocket" className="w-3.5 h-3.5" />
+            <div>
+                <div className="bg-emerald-50 rounded-xl border-2 border-zinc-900 p-2.5 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col justify-between min-h-[90px] relative overflow-hidden group">
+                    <div className="flex items-center justify-between relative z-10 border-b border-emerald-900/5 pb-1.5 mb-1.5">
+                        <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-emerald-500 border-2 border-zinc-900 flex items-center justify-center text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                                <AppIcon name="Rocket" className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-[10px] font-black text-emerald-900 uppercase tracking-widest">Weekly Goal</span>
                         </div>
-                        <span className="text-[10px] font-black text-emerald-900 uppercase tracking-widest">Weekly Goal</span>
-                    </div>
-                    {stats.examsCreatedLast7Days >= 5 && (
-                        <div className="px-1.5 py-0.5 rounded border-2 border-zinc-900 bg-white text-[9px] font-black uppercase text-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transform rotate-2">
-                            Hit!
-                        </div>
-                    )}
-                </div>
-
-                <div className="relative z-10 mt-1">
-                    <div className="flex items-baseline gap-2 mb-2">
-                        <span className="text-3xl font-black text-zinc-900 tracking-tighter">
-                            {Math.min(stats.examsCreatedLast7Days, 5)}
-                        </span>
-                        <span className="text-xs font-bold text-zinc-500/80">/ 5 Exams</span>
+                        {stats.examsCreatedLast7Days >= 5 && (
+                            <div className="px-1.5 py-0.5 rounded border-2 border-zinc-900 bg-white text-[9px] font-black uppercase text-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transform rotate-2">
+                                Hit!
+                            </div>
+                        )}
                     </div>
 
-                    <div className="space-y-1">
-                        <div className="flex justify-between text-[9px] font-bold text-emerald-900 uppercase tracking-wider">
-                            <span>Progress</span>
-                            <span>{Math.round((Math.min(stats.examsCreatedLast7Days, 5) / 5) * 100)}%</span>
+                    <div className="relative z-10 mt-1">
+                        <div className="flex items-baseline gap-2 mb-2">
+                            <span className="text-3xl font-black text-zinc-900 tracking-tighter">
+                                {Math.min(stats.examsCreatedLast7Days, 5)}
+                            </span>
+                            <span className="text-xs font-bold text-zinc-500/80">/ 5 Exams</span>
                         </div>
-                        <div className="h-3 w-full bg-white rounded-full border-2 border-zinc-900 overflow-hidden p-0.5">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${Math.min((stats.examsCreatedLast7Days / 5) * 100, 100)}%` }}
-                                transition={{ duration: 1, ease: "easeOut" }}
-                                className="h-full bg-emerald-500 rounded-full border border-zinc-900 relative shadow-sm"
-                            >
-                                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:6px_6px]" />
-                            </motion.div>
+
+                        <div className="space-y-1">
+                            <div className="flex justify-between text-[9px] font-bold text-emerald-900 uppercase tracking-wider">
+                                <span>Progress</span>
+                                <span>{Math.round((Math.min(stats.examsCreatedLast7Days, 5) / 5) * 100)}%</span>
+                            </div>
+                            <div className="h-3 w-full bg-white rounded-full border-2 border-zinc-900 overflow-hidden p-0.5">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${Math.min((stats.examsCreatedLast7Days / 5) * 100, 100)}%` }}
+                                    transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
+                                    className="h-full bg-emerald-500 rounded-full border border-zinc-900 relative shadow-sm"
+                                >
+                                    <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:6px_6px]" />
+                                </motion.div>
+                            </div>
                         </div>
                     </div>
                 </div>

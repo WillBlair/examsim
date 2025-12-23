@@ -2,14 +2,33 @@
 
 import { UserStats } from "@/lib/services/stats";
 import { cn } from "@/lib/utils";
+import { motion, useAnimate, stagger } from "framer-motion";
 
 interface ActivityStripProps {
     stats: UserStats;
 }
 
 export function ActivityStrip({ stats }: ActivityStripProps) {
+    const [scope, animate] = useAnimate();
+
+    const handleHover = () => {
+        animate(
+            ".day-block-container",
+            { scale: [1, 1.2, 1] },
+            { 
+                duration: 0.4, 
+                delay: stagger(0.03),
+                ease: "easeInOut" 
+            }
+        );
+    };
+
     return (
-        <div className="bg-slate-50 rounded-xl p-4 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative h-full flex flex-col justify-center group">
+        <div 
+            ref={scope}
+            className="bg-slate-50 rounded-xl p-4 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative h-full flex flex-col justify-center group"
+            onMouseEnter={handleHover}
+        >
             {/* Header */}
             <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-200/50">
                 <div>
@@ -43,13 +62,16 @@ export function ActivityStrip({ stats }: ActivityStripProps) {
                         const displayDate = isToday ? 'Today' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
                         return (
-                            <div
+                            <motion.div
                                 key={idx}
-                                className="group/day relative flex-1"
+                                initial={{ opacity: 0, scale: 0.5 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: idx * 0.03, type: "spring" }}
+                                className="group/day relative flex-1 day-block-container"
                             >
                                 <div
                                     className={cn(
-                                        "w-full h-full rounded-sm transition-all duration-300 border-2",
+                                        "w-full h-full rounded-sm transition-colors duration-300 border-2",
                                         hasActivity 
                                             ? "bg-emerald-500 border-zinc-900" 
                                             : "bg-white border-zinc-200 hover:border-zinc-400",
@@ -64,7 +86,7 @@ export function ActivityStrip({ stats }: ActivityStripProps) {
                                     {/* Arrow */}
                                     <div className="w-2 h-2 bg-zinc-900 rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1.5"></div>
                                 </div>
-                            </div>
+                            </motion.div>
                         );
                     })}
                 </div>
