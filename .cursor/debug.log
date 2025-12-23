@@ -1,0 +1,67 @@
+{"location":"FlashcardStudy.tsx:handleFlip","message":"Flip triggered","data":{"currentIsFlipped":true,"willBeFlipped":false},"timestamp":1766527581903,"sessionId":"debug-session","hypothesisId":"A,B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527581910,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527581914,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":false,"targetRotation":0},"timestamp":1766527582053,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":false,"cardIndex":0},"timestamp":1766527582057,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:handleFlip","message":"Flip triggered","data":{"currentIsFlipped":false,"willBeFlipped":true},"timestamp":1766527582573,"sessionId":"debug-session","hypothesisId":"A,B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":true,"cardId":1},"timestamp":1766527582574,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":true,"cardId":1},"timestamp":1766527582575,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":true,"targetRotation":180},"timestamp":1766527582584,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":true,"cardIndex":0},"timestamp":1766527582585,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":true,"finalRotation":180},"timestamp":1766527582586,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:handleFlip","message":"Flip triggered","data":{"currentIsFlipped":true,"willBeFlipped":false},"timestamp":1766527583074,"sessionId":"debug-session","hypothesisId":"A,B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527583074,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527583075,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":false,"targetRotation":0},"timestamp":1766527583082,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":false,"cardIndex":0},"timestamp":1766527583082,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":false,"finalRotation":0},"timestamp":1766527583092,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":false,"finalRotation":0},"timestamp":1766527583592,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:handleFlip","message":"Flip triggered","data":{"currentIsFlipped":false,"willBeFlipped":true},"timestamp":1766527584845,"sessionId":"debug-session","hypothesisId":"A,B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":true,"cardId":1},"timestamp":1766527584847,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":true,"cardId":1},"timestamp":1766527584848,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":true,"targetRotation":180},"timestamp":1766527584854,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":true,"cardIndex":0},"timestamp":1766527584854,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":true,"finalRotation":180},"timestamp":1766527585358,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527587402,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527587403,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":false,"targetRotation":0},"timestamp":1766527587410,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":false,"cardIndex":0},"timestamp":1766527587410,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":2},"timestamp":1766527587552,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":2},"timestamp":1766527587553,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":false,"cardIndex":1},"timestamp":1766527587557,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":false,"finalRotation":0},"timestamp":1766527587909,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":2},"timestamp":1766527588690,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":2},"timestamp":1766527588691,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":2},"timestamp":1766527588702,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":2},"timestamp":1766527588703,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:handleFlip","message":"Flip triggered","data":{"currentIsFlipped":false,"willBeFlipped":true},"timestamp":1766527589240,"sessionId":"debug-session","hypothesisId":"A,B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":true,"cardId":2},"timestamp":1766527589242,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":true,"cardId":2},"timestamp":1766527589244,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":true,"targetRotation":180},"timestamp":1766527589255,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":true,"cardIndex":1},"timestamp":1766527589256,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":true,"finalRotation":180},"timestamp":1766527589759,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:handleFlip","message":"Flip triggered","data":{"currentIsFlipped":true,"willBeFlipped":false},"timestamp":1766527590524,"sessionId":"debug-session","hypothesisId":"A,B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":2},"timestamp":1766527590526,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":2},"timestamp":1766527590527,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":false,"targetRotation":0},"timestamp":1766527590539,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":false,"cardIndex":1},"timestamp":1766527590540,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":false,"finalRotation":0},"timestamp":1766527591042,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527606955,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527606957,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":false,"targetRotation":0},"timestamp":1766527606982,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":false,"cardIndex":0},"timestamp":1766527606982,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:mount","message":"Component mounted","data":{"browser":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:146.0) Gecko/20100101 Firefox/146.0","cardsCount":5},"timestamp":1766527606983,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":false,"targetRotation":0},"timestamp":1766527606985,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":false,"cardIndex":0},"timestamp":1766527606985,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:mount","message":"Component mounted","data":{"browser":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:146.0) Gecko/20100101 Firefox/146.0","cardsCount":5},"timestamp":1766527606985,"sessionId":"debug-session","hypothesisId":"E"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":false,"finalRotation":0},"timestamp":1766527606993,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":true,"cardId":1},"timestamp":1766527608038,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":true,"cardId":1},"timestamp":1766527608039,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":true,"targetRotation":180},"timestamp":1766527608061,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":true,"cardIndex":0},"timestamp":1766527608066,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":true,"finalRotation":180},"timestamp":1766527608569,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527609546,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:render","message":"Card rendering","data":{"isFlipped":false,"cardId":1},"timestamp":1766527609547,"sessionId":"debug-session","hypothesisId":"B,C"}
+{"location":"FlashcardStudy.tsx:animStart","message":"Animation started","data":{"isFlipped":false,"targetRotation":0},"timestamp":1766527609553,"sessionId":"debug-session","hypothesisId":"B"}
+{"location":"FlashcardStudy.tsx:useEffect","message":"isFlipped state changed","data":{"isFlipped":false,"cardIndex":0},"timestamp":1766527609554,"sessionId":"debug-session","hypothesisId":"A,B,C"}
+{"location":"FlashcardStudy.tsx:animComplete","message":"Animation completed","data":{"isFlipped":false,"finalRotation":0},"timestamp":1766527610078,"sessionId":"debug-session","hypothesisId":"B"}

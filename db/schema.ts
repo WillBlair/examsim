@@ -114,3 +114,50 @@ export const rateLimits = pgTable("rate_limits", {
   userIdIdx: index("rate_limits_user_id_idx").on(table.userId),
   timestampIdx: index("rate_limits_timestamp_idx").on(table.timestamp),
 }));
+
+// Flashcard-related tables
+export const flashcardDecks = pgTable("flashcard_decks", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  topic: text("topic"),
+  cardCount: integer("card_count").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("flashcard_decks_user_id_idx").on(table.userId),
+  createdAtIdx: index("flashcard_decks_created_at_idx").on(table.createdAt),
+}));
+
+export const flashcards = pgTable("flashcards", {
+  id: serial("id").primaryKey(),
+  deckId: integer("deck_id").references(() => flashcardDecks.id, { onDelete: "cascade" }).notNull(),
+  front: text("front").notNull(), // Question/term side
+  back: text("back").notNull(), // Answer/definition side
+  hint: text("hint"), // Optional hint
+  order: integer("order").default(0), // Card order in deck
+  // Spaced repetition fields
+  easeFactor: integer("ease_factor").default(250), // Stored as 250 = 2.5
+  interval: integer("interval").default(0), // Days until next review
+  repetitions: integer("repetitions").default(0), // Number of successful reviews
+  nextReviewAt: timestamp("next_review_at"),
+  lastReviewedAt: timestamp("last_reviewed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  deckIdIdx: index("flashcards_deck_id_idx").on(table.deckId),
+  nextReviewIdx: index("flashcards_next_review_idx").on(table.nextReviewAt),
+}));
+
+export const flashcardProgress = pgTable("flashcard_progress", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),
+  deckId: integer("deck_id").references(() => flashcardDecks.id, { onDelete: "cascade" }).notNull(),
+  cardId: integer("card_id").references(() => flashcards.id, { onDelete: "cascade" }).notNull(),
+  rating: integer("rating").notNull(), // 1-4 (again, hard, good, easy)
+  reviewedAt: timestamp("reviewed_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("flashcard_progress_user_id_idx").on(table.userId),
+  deckIdIdx: index("flashcard_progress_deck_id_idx").on(table.deckId),
+  cardIdIdx: index("flashcard_progress_card_id_idx").on(table.cardId),
+}));

@@ -13,7 +13,9 @@ const navSections = [
     items: [
       { name: "Dashboard", href: "/dashboard", icon: "Home" },
       { name: "Create New Exam", href: "/dashboard/new", icon: "PlusCircle" },
+      { name: "Create Flashcards", href: "/dashboard/flashcards/new", icon: "MediaImageList" },
       { name: "My Exams", href: "/dashboard/exams", icon: "Clock" },
+      { name: "My Flashcards", href: "/dashboard/flashcards", icon: "ViewGrid" },
       { name: "Library", href: "/dashboard/library", icon: "Book" },
     ]
   },

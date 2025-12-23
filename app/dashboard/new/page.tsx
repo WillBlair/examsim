@@ -12,9 +12,15 @@ import {
     Files,
     TextAa,
     CheckSquare,
-    ToggleLeft,
-    ToggleRight,
-    CaretDown
+    GraduationCap,
+    Timer,
+    Brain,
+    Lightbulb,
+    ChatCircleText,
+    ListChecks,
+    Trophy,
+    Target,
+    Lightning
 } from "@phosphor-icons/react";
 import { UploadArea } from "@/components/dashboard/UploadArea";
 import { cn } from "@/lib/utils";
@@ -24,14 +30,12 @@ import { ExamClient } from "@/components/dashboard/ExamClient";
 import { getExamQuestions } from "@/app/actions/get-exam-questions";
 import { EnhancedGenerationOverlay } from "@/components/dashboard/EnhancedGenerationOverlay";
 
-// Simplified options for a cleaner UI
 const DIFFICULTY_OPTIONS = ["Easy", "Medium", "Hard"];
 const QUESTION_COUNTS = [5, 10, 15, 20, 30, 50];
 const TIME_LIMITS = [
     { label: "None", value: 0 },
     { label: "15m", value: 15 },
     { label: "30m", value: 30 },
-    { label: "45m", value: 45 },
     { label: "60m", value: 60 },
 ];
 
@@ -44,7 +48,6 @@ export default function NewExamPage() {
     const [status, setStatus] = useState<"idle" | "uploading" | "analyzing" | "generating">("idle");
     const [progress, setProgress] = useState(0);
     const [estimatedTime, setEstimatedTime] = useState(0);
-    // SMOOTH PROGRESS LOGIC
     const [targetProgress, setTargetProgress] = useState(0);
     const [logs, setLogs] = useState<string[]>([]);
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -55,57 +58,41 @@ export default function NewExamPage() {
             setProgress(current => {
                 const diff = targetProgress - current;
                 if (diff <= 0) return current;
-                // Move towards target. 
-                // If difference is large (e.g. 0 -> 30), move fast.
-                // If difference is small (creeping to 95), move steady.
-
-                // Base speed: 0.5% per tick (tick is 50ms) => ~10% per second
                 const step = 0.5;
-
-                // Acceleration for finishing
                 const move = Math.min(diff, step);
                 return current + move;
             });
-        }, 50); // 20fps updates
+        }, 50);
 
         return () => clearInterval(timer);
     }, [targetProgress]);
 
-    // Auto-increment target to simulate a ~10s loading time with "natural" pauses
+    // Auto-increment target simulation
     useEffect(() => {
         if (status === "idle") {
             setTargetProgress(0);
             return;
         }
 
-        // Only simulate if we haven't finished
         if (targetProgress < 95) {
             const simulation = setInterval(() => {
                 setTargetProgress(prev => {
                     if (prev >= 95) return prev;
 
-                    // Natural Loading Algorithm (~6s total)
-                    // 1. Fast start (0-30%)
-                    // 2. Fast middle (30-70%)
-                    // 3. Steady finish (70-95%)
-
                     let increment = 0;
                     const r = Math.random();
 
                     if (prev < 30) {
-                        // Very Fast: 6-9% per tick (250ms) -> ~30% per sec (~1s total)
                         increment = 6 + (r * 3);
                     } else if (prev < 70) {
-                        // Fast: 4-7% per tick -> ~22% per sec (~1.8s total)
                         increment = 4 + (r * 3);
                     } else {
-                        // Steady: 1-3% per tick -> ~8% per sec (~3s tail)
                         increment = 1 + (r * 2);
                     }
 
                     return Math.min(95, prev + increment);
                 });
-            }, 250); // Update 4 times per second
+            }, 250);
 
             return () => clearInterval(simulation);
         }
@@ -124,22 +111,22 @@ export default function NewExamPage() {
     const [files, setFiles] = useState<File[]>([]);
     const [pastedText, setPastedText] = useState("");
 
-    // New Advanced Settings
+    // Advanced Settings
     const [questionTypes, setQuestionTypes] = useState<string[]>(["Multiple Choice"]);
     const [allowHints, setAllowHints] = useState(true);
     const [allowExplanations, setAllowExplanations] = useState(true);
+    
+    // Ref to trigger upload from header click
+    const uploadTriggerRef = useRef<HTMLDivElement>(null);
 
-    // Step 1 validation
     const canProceed = sourceType === "files" ? files.length > 0 : pastedText.trim().length > 0;
 
-    // Cleanup effect
     useEffect(() => {
         return () => {
             if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
         };
     }, []);
 
-    // Helper to add logs
     const addLog = (message: string) => {
         setLogs(prev => [...prev, message]);
     };
@@ -152,25 +139,20 @@ export default function NewExamPage() {
         setStreamingQuestions([]);
         setLogs([]);
 
-        // Initial estimates
         const fileCount = files.length;
-        let baseTime = 10; // Connection overhead
-        baseTime += fileCount * 2; // Processing time per file
-        baseTime += questionCount * 1.5; // Generation time per question
+        let baseTime = 10;
+        baseTime += fileCount * 2;
+        baseTime += questionCount * 1.5;
         setEstimatedTime(baseTime);
 
-        // Start countdown timer
         if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
         countdownIntervalRef.current = setInterval(() => {
             setEstimatedTime(prev => Math.max(0, prev - 1));
         }, 1000);
 
-        // Initial Status
         setStatus(fileCount > 0 ? "uploading" : "analyzing");
-        // setTargetProgress(10); // Handled by effect
         addLog("System initialized. Starting pipeline...");
 
-        // Simulated Log Loop during upload/analysis
         const logInterval = setInterval(() => {
             const msgs = [
                 "Parsing document structure...",
@@ -180,14 +162,12 @@ export default function NewExamPage() {
                 "Structuring knowledge graph...",
                 "Validating content integrity..."
             ];
-            // Randomly pick a log if analyzing
             if (Math.random() > 0.7) {
                 const msg = msgs[Math.floor(Math.random() * msgs.length)];
                 addLog(msg);
             }
         }, 800);
 
-        // Construct FormData
         const formData = new FormData();
         formData.append("topic", topic);
         formData.append("difficulty", difficulty);
@@ -196,7 +176,6 @@ export default function NewExamPage() {
             formData.append("timeLimit", timeLimit.toString());
         }
 
-        // Append advanced optional settings
         formData.append("questionTypes", JSON.stringify(questionTypes));
         formData.append("allowHints", String(allowHints));
         formData.append("allowExplanations", String(allowExplanations));
@@ -211,20 +190,13 @@ export default function NewExamPage() {
 
         try {
             addLog("Transmitting data to AI core...");
-            // setTargetProgress(30); // Handled by effect
             const response = await fetch("/api/exam/generate", {
                 method: "POST",
                 body: formData,
             });
 
-            // Headers received -> Processing Done -> Generating Starts
-            // clearInterval(progressInterval); // Removed old interval
             clearInterval(logInterval);
-
             setStatus("generating");
-            // Don't reset progress, just let it continue from where it was (approx 30%)
-            // We removed setProgress(20) which was causing the jump back.
-            // setProgress(20); 
             addLog("Content analysis complete. Drafting questions...");
 
             if (!response.ok) {
@@ -237,7 +209,6 @@ export default function NewExamPage() {
                 throw new Error(errorMessage);
             }
 
-            // Get Exam ID immediately
             const examIdStr = response.headers.get("X-Exam-Id");
             if (!examIdStr) throw new Error("No exam ID returned");
             const examId = parseInt(examIdStr);
@@ -251,11 +222,6 @@ export default function NewExamPage() {
             let done = false;
             let accumulatedJson = "";
 
-            // We want to dismiss the overlay only when we have actual questions to show (or maybe just the first one)
-            // so the user can see the exam "start".
-            // But we keep the overlay up to explain the "wait" before the first question.
-            let hasHiddenOverlay = false;
-
             while (!done) {
                 const { value, done: readerDone } = await reader.read();
                 done = readerDone;
@@ -266,24 +232,18 @@ export default function NewExamPage() {
                     for (const line of lines) {
                         if (line.startsWith("0:")) {
                             try {
-                                // AI SDK stream format: "0:" + JSON string chunk
                                 const content = JSON.parse(line.substring(2));
                                 accumulatedJson += content;
                             } catch { /* ignore */ }
                         }
                     }
 
-                    // Attempt partial parsing
                     try {
-                        // 1. Try fully valid JSON first (efficient)
                         const parsed = JSON.parse(accumulatedJson);
                         if (parsed.questions && Array.isArray(parsed.questions)) {
                             updateQuestions(parsed.questions);
                         }
                     } catch {
-                        // 2. Fallback: Heuristic extraction of questions array
-                        // We look for "questions": [ ...
-                        // And try to extract complete objects from inside
                         const questionsMatch = accumulatedJson.match(/"questions"\s*:\s*\[([\s\S]*)/);
                         if (questionsMatch) {
                             const arrayContent = questionsMatch[1];
@@ -292,7 +252,6 @@ export default function NewExamPage() {
                             let currentObject = "";
                             let inString = false;
 
-                            // Simple state machine to extract full objects from the array string
                             for (let i = 0; i < arrayContent.length; i++) {
                                 const char = arrayContent[i];
 
@@ -316,7 +275,7 @@ export default function NewExamPage() {
                                             continue;
                                         }
                                     } else if (char === ']' && depth === 0) {
-                                        break; // End of questions array
+                                        break;
                                     }
                                 }
 
@@ -335,21 +294,14 @@ export default function NewExamPage() {
 
             function updateQuestions(currentQuestions: any[]) {
                 const count = currentQuestions.length;
-
-                // Update Progress
-                // We don't really rely on question count for the smooth bar anymore, 
-                // but we can ensure the target floor rises if we are getting close.
-                // Let the auto-creep handle the "feel", just ensure we don't lag behind actual count if it's fast.
-                const streamProgress = 30 + (count / questionCount) * 60; // Map to 30-90 range
+                const streamProgress = 30 + (count / questionCount) * 60;
                 setTargetProgress(prev => Math.max(prev, streamProgress));
 
-                // Add log for new questions
                 const prevCount = streamingQuestions.length;
-                if (count > prevCount && !hasHiddenOverlay) {
+                if (count > prevCount) {
                     addLog(`Generated question ${count}/${questionCount}...`);
                 }
 
-                // If we have questions, update state - but only include questions with valid options
                 if (count > 0) {
                     const validQuestions = currentQuestions
                         .map((q: any, i: number) => ({
@@ -372,14 +324,11 @@ export default function NewExamPage() {
                 }
             }
 
-            // Stream Finished
-            setTargetProgress(100); // Zoom to finish
+            setTargetProgress(100);
             addLog("Generation complete. Finalizing session...");
             if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
             setEstimatedTime(0);
 
-            // Fetch final questions with retry logic
-            // (onFinish callback may still be saving to DB)
             if (examId) {
                 let retries = 0;
                 const maxRetries = 5;
@@ -388,7 +337,6 @@ export default function NewExamPage() {
                     await new Promise(resolve => setTimeout(resolve, 500 + retries * 300));
                     const finalQuestions = await getExamQuestions(examId);
 
-                    // Check if questions have valid options
                     const hasValidOptions = finalQuestions.length > 0 &&
                         finalQuestions.every((q: any) =>
                             q.type === "Fill in the Blank" ||
@@ -407,7 +355,6 @@ export default function NewExamPage() {
                     }
                 }
 
-                // Final fallback - use whatever we got
                 if (retries >= maxRetries) {
                     const finalQuestions = await getExamQuestions(examId);
                     setStreamingQuestions(finalQuestions);
@@ -433,38 +380,13 @@ export default function NewExamPage() {
         }
     }
 
-    // Logic: Unify rendering to prevent flashes.
-    // Overlay is ALWAYS rendered but controlled by 'isOpen'.
-    // We keep overlay OPEN if status is not idle AND (we are still generating OR we haven't hit 100% viz yet)
-
-    // We want to keep overlay up until we have hit 100% AND a small delay has passed.
-    // BUT user wants to answer questions "while generating".
-    // So we should dismiss overlay as soon as we have questions? 
-    // User said: "progress line never hits 100".
-    // Maybe we should keep overlay until 100% IF the user wants to wait? 
-    // BUT the text says "Answer while generating".
-    // Compromise: 
-    // 1. Show overlay during "Uploading" & "Analyzing".
-    // 2. Once "Generating" starts (questions arrive), we CAN dismiss it to let them answer.
-    // 3. BUT to show 100%, we might need a mini-progress bar in the main UI?
-    // 4. OR, user complaining about "restart" implies they saw the overlay disappear and reappear.
-    //    That happened because of the `if (streamingExamId)` block switching the whole tree.
-    //    By fixing the tree, the flash goes away. 
-    //    We can dismiss overlay once `streamingQuestions.length > 0` effectively.
-    //    The "100%" comment might refer to the "Analyzing" bar never finishing before it vanished.
-
-    // Let's ensure smoother transition:
-    // When switching to 'generating', we keep overlay for 500ms to show "Analysis Complete".
-    // Then fade out.
-
     const showOverlay = status !== "idle" && streamingQuestions.length === 0;
 
     return (
         <div className={cn(
-            "max-w-[1600px] mx-auto py-6 px-6 relative",
-            !streamingExamId ? "h-[calc(100vh-4rem)] overflow-hidden" : "h-full min-h-[calc(100vh-4rem)]"
+            "max-w-5xl mx-auto py-6 px-6 relative",
+            !streamingExamId ? "min-h-[calc(100vh-4rem)]" : "h-full min-h-[calc(100vh-4rem)]"
         )}>
-            {/* Unified Overlay Instance - Persists across state changes */}
             <EnhancedGenerationOverlay
                 isOpen={showOverlay}
                 status={status}
@@ -491,141 +413,159 @@ export default function NewExamPage() {
                     />
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_28rem] xl:grid-cols-[1fr_32rem] gap-8 items-start h-full pb-6">
-                    {/* Left Column: Header & Input Source */}
-                    <div className="flex flex-col gap-6 h-full">
-                        {/* Header */}
-                        <div className="bg-white border-2 border-zinc-900 shadow-neo rounded-lg p-6 w-full">
-                            <Link
-                                href="/dashboard"
-                                className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-2 group font-medium"
+                <>
+                    {/* Page Header */}
+                    <div className="mb-6">
+                        <Link
+                            href="/dashboard"
+                            className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-3 group font-medium"
+                        >
+                            <CaretLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                            Back to Dashboard
+                        </Link>
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                                <GraduationCap weight="fill" className="w-6 h-6 text-white" />
+                            </div>
+                            <div 
+                                className="cursor-pointer group"
+                                onClick={() => uploadTriggerRef.current?.click()}
                             >
-                                <CaretLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                                Back to Dashboard
-                            </Link>
-                            <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Create New Exam</h1>
-                            <p className="text-zinc-500 mt-1 font-medium">Transform your study materials into an interactive simulation.</p>
+                                <h1 className="text-2xl font-black tracking-tight text-zinc-900 group-hover:text-emerald-700 transition-colors">Create New Exam</h1>
+                                <p className="text-zinc-500 font-medium text-sm group-hover:text-emerald-600 transition-colors">Transform your study materials into an interactive simulation</p>
+                            </div>
                         </div>
+                    </div>
 
-                        <div className="bg-white rounded-lg border-2 border-zinc-900 p-1 shadow-neo flex flex-col flex-1 h-full">
-                            <div className="flex p-1 bg-zinc-100 rounded-sm mb-6 mx-6 mt-6 border border-zinc-200 shrink-0">
+                    {/* Two Column Layout */}
+                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+                        {/* Left Column: Source Input */}
+                        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+                            <div className="flex border-b border-zinc-200">
                                 <button
                                     onClick={() => setSourceType("files")}
                                     className={cn(
-                                        "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-sm transition-all",
+                                        "flex-1 flex items-center justify-center gap-2.5 py-4 text-sm font-semibold transition-all relative",
                                         sourceType === "files"
-                                            ? "bg-white text-zinc-900 shadow-sm border border-zinc-200"
-                                            : "text-zinc-500 hover:text-zinc-900"
+                                            ? "text-emerald-700 bg-emerald-50"
+                                            : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50"
                                     )}
                                 >
-                                    <Files className="w-4 h-4" />
+                                    <Files weight={sourceType === "files" ? "fill" : "regular"} className="w-5 h-5" />
                                     Upload Files
+                                    {sourceType === "files" && (
+                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500" />
+                                    )}
                                 </button>
                                 <button
                                     onClick={() => setSourceType("text")}
                                     className={cn(
-                                        "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-sm transition-all",
+                                        "flex-1 flex items-center justify-center gap-2.5 py-4 text-sm font-semibold transition-all relative",
                                         sourceType === "text"
-                                            ? "bg-white text-zinc-900 shadow-sm border border-zinc-200"
-                                            : "text-zinc-500 hover:text-zinc-900"
+                                            ? "text-emerald-700 bg-emerald-50"
+                                            : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50"
                                     )}
                                 >
-                                    <TextAa className="w-4 h-4" />
+                                    <TextAa weight={sourceType === "text" ? "fill" : "regular"} className="w-5 h-5" />
                                     Paste Text
+                                    {sourceType === "text" && (
+                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500" />
+                                    )}
                                 </button>
                             </div>
 
-                            <div className="px-6 pb-8 flex-1">
+                            <div className="p-5 h-[320px]">
                                 {sourceType === "files" ? (
-                                    <div className="h-full">
-                                        <UploadArea onFilesChange={setFiles} />
-                                    </div>
+                                    <UploadArea onFilesChange={setFiles} triggerRef={uploadTriggerRef} />
                                 ) : (
                                     <Textarea
                                         value={pastedText}
                                         onChange={(e) => setPastedText(e.target.value)}
                                         placeholder="Paste your notes, syllabus, or lecture transcript here..."
-                                        className="h-full w-full resize-none border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 bg-zinc-50/30 text-base rounded-sm p-4"
+                                        className="h-full w-full resize-none border border-zinc-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 bg-zinc-50/50 text-base rounded-xl p-4 placeholder:text-zinc-400"
                                     />
                                 )}
                             </div>
                         </div>
-                    </div>
 
-                    {/* Right Column: Compact Configuration */}
-                    <div className="flex flex-col h-full bg-white rounded-lg border-2 border-zinc-900 shadow-neo overflow-hidden">
-                        <div className="p-5 flex flex-col h-full overflow-hidden">
-                            <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500 mb-4 shrink-0 flex items-center gap-2">
-                                Exam Settings
-                            </h3>
+                        {/* Right Column: Configuration */}
+                        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden h-fit">
+                            <div className="px-5 py-3 border-b border-zinc-100 bg-zinc-50/50">
+                                <h3 className="font-bold text-zinc-900 flex items-center gap-2 text-sm">
+                                    <Brain weight="fill" className="w-4 h-4 text-emerald-500" />
+                                    Exam Settings
+                                </h3>
+                            </div>
 
-                            <div className="space-y-3.5 flex-1 flex flex-col overflow-y-auto pr-1 pb-1">
-                                {/* Row 1: Topic */}
+                            <div className="p-4 space-y-3">
+                                {/* Topic */}
                                 <div>
-                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Topic</label>
+                                    <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Topic</label>
                                     <Input
                                         value={topic}
                                         onChange={(e) => setTopic(e.target.value)}
                                         placeholder="e.g. Biology 101"
-                                        className="bg-zinc-50 border-2 border-zinc-200 focus:border-zinc-900 focus:ring-0 h-10 rounded-sm text-sm font-medium"
+                                        className="bg-zinc-50 border-zinc-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 h-9 rounded-lg text-sm"
                                     />
                                 </div>
 
-                                {/* Row 2: Difficulty */}
-                                <div>
-                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Difficulty</label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {DIFFICULTY_OPTIONS.map(opt => (
-                                            <button
-                                                key={opt}
-                                                onClick={() => setDifficulty(opt)}
-                                                className={cn(
-                                                    "h-9 px-2 text-xs font-bold rounded-sm border-2 transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-                                                    difficulty === opt
-                                                        ? "bg-zinc-900 text-white border-zinc-900 shadow-neo-sm"
-                                                        : "bg-white text-zinc-700 border-zinc-900 hover:bg-zinc-50 shadow-neo-sm"
-                                                )}
-                                            >
-                                                {opt}
-                                            </button>
-                                        ))}
+                                {/* Difficulty & Time Limit - Side by Side */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Difficulty</label>
+                                        <div className="grid grid-cols-3 gap-1">
+                                            {DIFFICULTY_OPTIONS.map(opt => (
+                                                <button
+                                                    key={opt}
+                                                    onClick={() => setDifficulty(opt)}
+                                                    className={cn(
+                                                        "h-8 text-xs font-bold rounded-lg transition-all border",
+                                                        difficulty === opt
+                                                            ? "bg-zinc-900 text-white border-zinc-900"
+                                                            : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300"
+                                                    )}
+                                                >
+                                                    {opt}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-
-                                {/* Row 3: Time Limit */}
-                                <div>
-                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Time Limit</label>
-                                    <div className="grid grid-cols-5 gap-2">
-                                        {TIME_LIMITS.map(opt => (
+                                    <div>
+                                        <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Time Limit</label>
+                                        <div className="grid grid-cols-4 gap-1">
+                                            {TIME_LIMITS.map(opt => (
                                             <button
                                                 key={opt.value}
                                                 onClick={() => setTimeLimit(opt.value)}
                                                 className={cn(
-                                                    "h-9 px-1 text-xs font-bold rounded-sm border-2 transition-all truncate active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+                                                    "h-8 text-xs font-bold rounded-lg transition-all border",
                                                     timeLimit === opt.value
-                                                        ? "bg-zinc-900 text-white border-zinc-900 shadow-neo-sm"
-                                                        : "bg-white text-zinc-700 border-zinc-900 hover:bg-zinc-50 shadow-neo-sm"
+                                                        ? "bg-zinc-900 text-white border-zinc-900"
+                                                        : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300"
                                                 )}
                                             >
                                                 {opt.label}
                                             </button>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Row 4: Question Count */}
+                                {/* Question Count */}
                                 <div>
-                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Question Count ({questionCount})</label>
-                                    <div className="flex items-center gap-2 bg-zinc-50 p-1.5 rounded-sm border-2 border-zinc-200">
+                                    <label className="block text-xs font-semibold text-zinc-700 mb-1.5">
+                                        Questions
+                                    </label>
+                                    <div className="grid grid-cols-6 gap-1">
                                         {QUESTION_COUNTS.map(count => (
                                             <button
                                                 key={count}
                                                 onClick={() => setQuestionCount(count)}
                                                 className={cn(
-                                                    "flex-1 h-8 text-xs font-bold rounded-sm transition-all border-2",
+                                                    "h-8 text-xs font-bold rounded-lg transition-all border",
                                                     questionCount === count
-                                                        ? "bg-zinc-900 text-white border-zinc-900 shadow-sm"
-                                                        : "bg-transparent text-zinc-500 border-transparent hover:bg-zinc-200/50"
+                                                        ? "bg-zinc-900 text-white border-zinc-900"
+                                                        : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300"
                                                 )}
                                             >
                                                 {count}
@@ -634,13 +574,12 @@ export default function NewExamPage() {
                                     </div>
                                 </div>
 
-                                {/* Row 5: Question Types */}
+                                {/* Question Types */}
                                 <div>
-                                    <label className="block text-xs font-bold text-zinc-700 mb-1.5 uppercase tracking-wide">Question Types</label>
-                                    <div className="grid grid-cols-2 gap-3">
+                                    <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Question Types</label>
+                                    <div className="grid grid-cols-2 gap-2">
                                         {["Multiple Choice", "True/False"].map((type) => {
                                             const isSelected = questionTypes.includes(type);
-
                                             return (
                                                 <button
                                                     key={type}
@@ -652,18 +591,18 @@ export default function NewExamPage() {
                                                         )
                                                     }}
                                                     className={cn(
-                                                        "h-10 px-3 text-xs font-bold rounded-sm border-2 transition-all flex items-center justify-between gap-2 shadow-neo-sm active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+                                                        "h-9 px-2 text-xs font-bold rounded-lg border transition-all flex items-center justify-between gap-1",
                                                         isSelected
                                                             ? "bg-zinc-900 text-white border-zinc-900"
-                                                            : "bg-white text-zinc-700 border-zinc-900 hover:bg-zinc-50"
+                                                            : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300"
                                                     )}
                                                 >
                                                     <span>{type}</span>
                                                     <div className={cn(
-                                                        "w-4 h-4 border-2 flex items-center justify-center transition-all",
-                                                        isSelected ? "border-white" : "border-zinc-900"
+                                                        "w-4 h-4 rounded border flex items-center justify-center transition-all",
+                                                        isSelected ? "border-white bg-white/20" : "border-zinc-300"
                                                     )}>
-                                                        {isSelected && <div className="w-2 h-2 bg-white" />}
+                                                        {isSelected && <CheckSquare weight="fill" className="w-3 h-3 text-white" />}
                                                     </div>
                                                 </button>
                                             )
@@ -671,20 +610,36 @@ export default function NewExamPage() {
                                     </div>
                                 </div>
 
-                                {/* Row 6: Toggles (Compact) */}
-                                <div className="grid grid-cols-2 gap-3 pt-1">
+                                {/* Toggles */}
+                                <div className="grid grid-cols-2 gap-2">
                                     <button
                                         onClick={() => setAllowHints(!allowHints)}
                                         className={cn(
-                                            "group flex items-center justify-between px-3 h-12 rounded-sm border-2 border-zinc-900 shadow-neo-sm transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-                                            allowHints ? "bg-violet-100" : "bg-white"
+                                            "flex items-center justify-between px-3 py-2.5 rounded-lg border transition-all",
+                                            allowHints
+                                                ? "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200"
+                                                : "bg-zinc-50 border-zinc-200 hover:border-zinc-300"
                                         )}
                                     >
-                                        <span className={cn("text-xs font-extrabold uppercase tracking-wider", allowHints ? "text-violet-900" : "text-zinc-600")}>Hints</span>
-                                        <div className="w-10 h-5 border-2 border-zinc-900 bg-white rounded-full relative transition-colors">
+                                        <div className="flex items-center gap-1.5">
+                                            <Lightbulb
+                                                weight={allowHints ? "fill" : "regular"}
+                                                className={cn("w-4 h-4", allowHints ? "text-emerald-600" : "text-zinc-400")}
+                                            />
+                                            <span className={cn(
+                                                "text-xs font-semibold",
+                                                allowHints ? "text-emerald-900" : "text-zinc-600"
+                                            )}>
+                                                Hints
+                                            </span>
+                                        </div>
+                                        <div className={cn(
+                                            "w-9 h-5 rounded-full transition-all duration-200 relative",
+                                            allowHints ? "bg-emerald-500" : "bg-zinc-300"
+                                        )}>
                                             <div className={cn(
-                                                "w-3.5 h-3.5 border-2 border-zinc-900 rounded-full transition-all duration-200 absolute top-1/2 -translate-y-1/2",
-                                                allowHints ? "left-[calc(100%-1.1rem)] bg-violet-600" : "left-0.5 bg-zinc-300"
+                                                "w-3.5 h-3.5 bg-white rounded-full shadow-sm absolute top-[3px] transition-all duration-200",
+                                                allowHints ? "left-[18px]" : "left-[3px]"
                                             )} />
                                         </div>
                                     </button>
@@ -692,34 +647,86 @@ export default function NewExamPage() {
                                     <button
                                         onClick={() => setAllowExplanations(!allowExplanations)}
                                         className={cn(
-                                            "group flex items-center justify-between px-3 h-12 rounded-sm border-2 border-zinc-900 shadow-neo-sm transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-                                            allowExplanations ? "bg-violet-100" : "bg-white"
+                                            "flex items-center justify-between px-3 py-2.5 rounded-lg border transition-all",
+                                            allowExplanations
+                                                ? "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200"
+                                                : "bg-zinc-50 border-zinc-200 hover:border-zinc-300"
                                         )}
                                     >
-                                        <span className={cn("text-xs font-extrabold uppercase tracking-wider", allowExplanations ? "text-violet-900" : "text-zinc-600")}>Explanations</span>
-                                        <div className="w-10 h-5 border-2 border-zinc-900 bg-white rounded-full relative transition-colors">
+                                        <div className="flex items-center gap-1.5">
+                                            <ChatCircleText
+                                                weight={allowExplanations ? "fill" : "regular"}
+                                                className={cn("w-4 h-4", allowExplanations ? "text-emerald-600" : "text-zinc-400")}
+                                            />
+                                            <span className={cn(
+                                                "text-xs font-semibold",
+                                                allowExplanations ? "text-emerald-900" : "text-zinc-600"
+                                            )}>
+                                                Explain
+                                            </span>
+                                        </div>
+                                        <div className={cn(
+                                            "w-9 h-5 rounded-full transition-all duration-200 relative",
+                                            allowExplanations ? "bg-emerald-500" : "bg-zinc-300"
+                                        )}>
                                             <div className={cn(
-                                                "w-3.5 h-3.5 border-2 border-zinc-900 rounded-full transition-all duration-200 absolute top-1/2 -translate-y-1/2",
-                                                allowExplanations ? "left-[calc(100%-1.1rem)] bg-violet-600" : "left-0.5 bg-zinc-300"
+                                                "w-3.5 h-3.5 bg-white rounded-full shadow-sm absolute top-[3px] transition-all duration-200",
+                                                allowExplanations ? "left-[18px]" : "left-[3px]"
                                             )} />
                                         </div>
                                     </button>
                                 </div>
-
-                                <div className="pt-2 mt-auto">
-                                    <Button
-                                        onClick={handleSubmit}
-                                        disabled={!canProceed || isLoading}
-                                        className="w-full h-12 bg-emerald-400 hover:bg-emerald-500 text-zinc-900 rounded-sm font-black text-base border-2 border-zinc-900 shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none"
-                                    >
-                                        <Sparkle weight="fill" className="w-5 h-5 mr-2 text-zinc-900" />
-                                        Start Generation
-                                    </Button>
-                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    {/* Full Width: Generate Button */}
+                    <Button
+                        onClick={handleSubmit}
+                        disabled={!canProceed || isLoading}
+                        className={cn(
+                            "w-full h-12 rounded-xl font-bold text-sm transition-all shadow-lg mt-5",
+                            canProceed && !isLoading
+                                ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/25"
+                                : "bg-zinc-200 text-zinc-500 cursor-not-allowed shadow-none"
+                        )}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Spinner className="w-5 h-5 mr-2 animate-spin" />
+                                Generating...
+                            </>
+                        ) : (
+                            <>
+                                <Sparkle weight="fill" className="w-5 h-5 mr-2" />
+                                Start Generation
+                            </>
+                        )}
+                    </Button>
+
+                    {/* Full Width: Feature Preview Card */}
+                    <div className="mt-5 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 rounded-2xl border border-emerald-200/60 p-4">
+                        <h4 className="font-bold text-emerald-900 mb-3 flex items-center gap-2 text-sm">
+                            <Trophy weight="fill" className="w-4 h-4 text-emerald-600" />
+                            What you&apos;ll get
+                        </h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            {[
+                                { icon: ListChecks, text: "AI-generated questions" },
+                                { icon: Target, text: "Adaptive difficulty" },
+                                { icon: Timer, text: "Timed simulation" },
+                                { icon: Lightning, text: "Instant feedback" }
+                            ].map((feature, i) => (
+                                <div key={i} className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-lg bg-white/80 border border-emerald-200/60 flex items-center justify-center shrink-0">
+                                        <feature.icon weight="fill" className="w-4 h-4 text-emerald-600" />
+                                    </div>
+                                    <span className="text-xs font-medium text-emerald-900">{feature.text}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </>
             )}
         </div>
     );

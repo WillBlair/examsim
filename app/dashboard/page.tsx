@@ -210,7 +210,7 @@ export default async function DashboardPage() {
               </Link>
 
               {/* Generate Flashcards Card */}
-              <Link href="/dashboard/new?mode=flashcards" className="group block h-full">
+              <Link href="/dashboard/flashcards/new" className="group block h-full">
                  <div className="bg-amber-50 rounded-xl p-2.5 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 h-full flex flex-col justify-between relative overflow-hidden">
                    <div className="absolute right-0 top-0 w-32 h-32 bg-amber-200/30 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
 
