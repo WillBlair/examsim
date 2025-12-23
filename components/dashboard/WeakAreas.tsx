@@ -18,42 +18,43 @@ function getSimpleTopic(subtopic: string): string {
 }
 
 export function WeakAreas({ weakAreas }: WeakAreasProps) {
-  const previewAreas = weakAreas.slice(0, 3);
+  // Use all weak areas, not just top 3, now that it's scrollable
+  const previewAreas = weakAreas;
 
   return (
     <div className="animate-fade-in-up h-full">
-      <div className="p-4 rounded-lg bg-white border-2 border-zinc-900 shadow-neo relative overflow-hidden h-full flex flex-col">
+      <div className="p-6 rounded-xl bg-white border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative overflow-hidden h-full flex flex-col group">
         {/* Subtle accent */}
-        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-100/50 to-transparent rounded-full blur-xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-orange-100/50 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
 
         {weakAreas.length === 0 ? (
-          <div className="flex items-center gap-3 py-2 relative z-10">
-            <div className="w-8 h-8 rounded-md bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
-              <CheckCircle weight="fill" className="w-4 h-4 text-emerald-500" />
+          <div className="flex flex-col items-center justify-center h-full text-center relative z-10 gap-3">
+            <div className="w-12 h-12 rounded-xl bg-emerald-100 border-2 border-zinc-900 flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+              <CheckCircle weight="fill" className="w-6 h-6 text-zinc-900" />
             </div>
             <div>
-              <p className="text-xs font-bold text-zinc-900">All Systems Go</p>
-              <p className="text-[10px] text-zinc-500">No weak areas detected.</p>
+              <p className="font-black text-zinc-900">All Systems Go</p>
+              <p className="text-xs font-bold text-zinc-500 mt-1">No weak areas detected yet.</p>
             </div>
           </div>
         ) : (
-          <div className="relative z-10">
+          <div className="relative z-10 flex flex-col h-full min-h-0">
             {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="relative font-black text-zinc-900 text-xl tracking-tight">
-                <span className="relative z-10">Focus Areas</span>
-                <span className="absolute bottom-0.5 left-0 w-full h-2 bg-brand-orange/20 -rotate-1 -z-10 rounded-sm"></span>
-              </h2>
+            <div className="flex items-center justify-between mb-3 pb-3 border-b border-zinc-100 shrink-0">
+               <div>
+                    <h2 className="font-black text-zinc-900 text-lg tracking-tight">Focus Areas</h2>
+                    <p className="text-xs text-zinc-500 font-bold mt-0.5">Topics needing attention</p>
+                </div>
               <Link
                 href="/dashboard/practice"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-zinc-900 text-white text-[11px] font-bold border-2 border-zinc-900 shadow-neo-sm hover:bg-brand-orange hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+                className="group inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border-2 border-zinc-900 shadow-none text-zinc-900 hover:shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-0.5 transition-all duration-200"
               >
-                Review Topics <ArrowRight weight="bold" className="w-3 h-3" />
+                <ArrowRight weight="bold" className="w-4 h-4" />
               </Link>
             </div>
 
             {/* Topic List */}
-            <div className="space-y-1">
+            <div className="flex-1 flex flex-col gap-3 overflow-y-auto min-h-0 pr-2 scrollbar-thin scrollbar-thumb-zinc-200 scrollbar-track-transparent">
               {previewAreas.map((area) => {
                 const isCritical = area.score < 40;
                 const simpleTopic = getSimpleTopic(area.subtopic);
@@ -61,33 +62,47 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
                 return (
                   <div
                     key={area.subtopic}
-                    className="flex items-center gap-3 p-2 -mx-1 rounded-md hover:bg-zinc-100/50 transition-colors group cursor-pointer"
+                    className="flex items-center gap-3 p-3 rounded-lg bg-white border-2 border-zinc-900 shadow-none hover:shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-0.5 transition-all group cursor-pointer"
                   >
-                    {/* Score Badge */}
-                    <div className={cn(
-                      "w-10 h-6 rounded flex items-center justify-center text-[10px] font-black shrink-0 border",
-                      isCritical
-                        ? "bg-red-50 text-red-600 border-red-300"
-                        : "bg-amber-50 text-amber-600 border-amber-300"
-                    )}>
-                      {Math.round(area.score)}%
+                    {/* Score Ring */}
+                    <div className="relative w-10 h-10 flex items-center justify-center shrink-0">
+                         <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                            <path
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke={isCritical ? "#fee2e2" : "#f4f4f5"}
+                                strokeWidth="4"
+                            />
+                            <path
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                fill="none"
+                                stroke={isCritical ? "#ef4444" : "#f59e0b"}
+                                strokeWidth="4"
+                                strokeDasharray={`${area.score}, 100`}
+                            />
+                        </svg>
+                         <span className={cn(
+                             "absolute text-[10px] font-black",
+                             isCritical ? "text-red-600" : "text-amber-600"
+                         )}>
+                             {Math.round(area.score)}%
+                         </span>
                     </div>
 
                     {/* Topic */}
-                    <span className="text-xs font-bold text-zinc-800 truncate flex-1 group-hover:text-zinc-900">
-                      {simpleTopic}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                        <span className="block text-sm font-black text-zinc-900 truncate group-hover:text-brand-orange transition-colors">
+                        {simpleTopic}
+                        </span>
+                        <span className="text-[10px] text-zinc-500 font-bold block mt-0.5">
+                        {area.totalQuestions} questions missed
+                        </span>
+                    </div>
 
-                    {/* Missed Count */}
-                    <span className="text-[10px] text-zinc-500 shrink-0 font-medium">
-                      {area.totalQuestions} missed
-                    </span>
-
-                    {/* Arrow on hover */}
-                    <ArrowRight
-                      weight="bold"
-                      className="w-3 h-3 text-zinc-400 group-hover:text-brand-orange transition-colors shrink-0"
-                    />
+                    {/* Action */}
+                    <div className="w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity -mr-2">
+                        <ArrowRight weight="bold" className="w-4 h-4 text-zinc-900" />
+                    </div>
                   </div>
                 );
               })}

@@ -58,10 +58,10 @@ function SidebarContent() {
       </div>
 
       {/* Search/Command Shortcut (reduced icon weight) */}
-      <div className="px-4 mb-2 relative z-10">
-        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-500 bg-white border-2 border-zinc-200 rounded-sm hover:border-zinc-900 hover:shadow-neo-sm transition-all focus:outline-none focus:ring-0">
-          <span className="flex-1 text-left font-medium">Search</span>
-          <kbd className="px-1.5 py-0.5 text-[10px] font-bold bg-zinc-100 border border-zinc-200 text-zinc-600 rounded-sm">⌘K</kbd>
+      <div className="px-4 mb-4 relative z-10">
+        <button className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-zinc-900 bg-white border-2 border-zinc-900 rounded-lg shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all focus:outline-none">
+          <span className="flex-1 text-left font-bold">Search</span>
+          <kbd className="px-1.5 py-0.5 text-[10px] font-black bg-zinc-100 border border-zinc-200 text-zinc-900 rounded-sm">⌘K</kbd>
         </button>
       </div>
 
@@ -84,17 +84,17 @@ function SidebarContent() {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "group flex items-center gap-3 px-3 py-2 rounded-sm transition-all duration-200 border border-transparent",
+                        "group flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 border-2",
                         isActive
-                          ? "bg-accent-purple/10 text-accent-purple shadow-neo-purple border-accent-purple"
-                          : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 hover:border-zinc-200"
+                          ? "bg-zinc-900 text-white border-zinc-900 shadow-neo-sm"
+                          : "text-zinc-600 border-transparent hover:border-zinc-900 hover:bg-white hover:shadow-neo-sm"
                       )}
                     >
                       <AppIcon
                         name={item.icon}
                         className={cn(
                           "w-[18px] h-[18px] shrink-0 transition-colors",
-                          isActive ? "text-accent-purple" : "text-zinc-400 group-hover:text-zinc-600"
+                          isActive ? "text-brand-orange" : "text-zinc-400 group-hover:text-zinc-900"
                         )}
                       />
                       <span className="text-[13px] font-medium tracking-tight">{item.name}</span>
@@ -123,7 +123,7 @@ function SidebarContent() {
 
 export function Sidebar() {
   return (
-    <aside className="hidden md:flex h-screen w-64 flex-col fixed inset-y-0 left-0 z-[100] shrink-0 border-r-[0.5px] border-zinc-900 shadow-neo-lg bg-white overflow-hidden">
+    <aside className="hidden md:flex h-screen w-64 flex-col fixed inset-y-0 left-0 z-[100] shrink-0 border-r-[3px] border-zinc-900 bg-white overflow-hidden">
         <SidebarContent />
     </aside>
   );

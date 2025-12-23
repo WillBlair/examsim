@@ -53,24 +53,28 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
     };
 
     return (
-        <div className="h-full p-3 rounded-lg bg-white border-2 border-zinc-900 shadow-neo flex flex-col">
+        <div className="h-full p-6 rounded-xl bg-white border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col relative overflow-hidden group">
+            {/* Background Pattern */}
+             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-25 pointer-events-none" />
+
             {/* Header */}
-            <div className="flex items-center justify-between mb-2 shrink-0">
-                <h2 className="relative font-black text-zinc-900 text-xl tracking-tight">
-                    <span className="relative z-10">Performance Trends</span>
-                    <span className="absolute bottom-0.5 left-0 w-full h-2 bg-brand-orange/20 -rotate-1 -z-10 rounded-sm"></span>
-                </h2>
+            <div className="flex items-center justify-between mb-4 pb-4 border-b border-zinc-100 shrink-0 relative z-10">
+                <div>
+                    <h2 className="font-black text-zinc-900 text-lg tracking-tight">Performance Trends</h2>
+                    <p className="text-xs text-zinc-500 font-bold mt-0.5">Your score history over time</p>
+                </div>
                 {hasData && (
-                    <div className="flex items-center gap-1.5">
-                        <span className="text-xl font-black text-zinc-900 tracking-tight leading-none">{avgScore}%</span>
-                        <span className="text-[10px] text-zinc-500 uppercase font-bold">avg</span>
+                    <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-zinc-900 shadow-none transition-all duration-200 hover:shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-0.5">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-sm font-black text-zinc-900 tracking-tight">{avgScore}%</span>
+                        <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">avg</span>
                     </div>
                 )}
             </div>
 
             {/* Chart */}
             {hasData ? (
-                <div className="flex-1 min-h-0">
+                <div className="flex-1 min-h-0 relative z-10 -ml-2">
                     <ChartContainer config={chartConfig} className="h-full w-full">
                         <AreaChart
                             accessibilityLayer
@@ -110,15 +114,15 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                             />
                             <ChartTooltip
                                 trigger="hover"
-                                cursor={{ stroke: '#8b5cf6', strokeWidth: 1, strokeDasharray: '4 4' }}
+                                cursor={{ stroke: '#18181b', strokeWidth: 2, strokeDasharray: '4 4' }}
                                 content={
                                     <ChartTooltipContent
                                         hideLabel
-                                        className="bg-white border-2 border-zinc-900 shadow-neo rounded-md"
+                                        className="bg-white border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] rounded-lg"
                                         formatter={(value, name) => (
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full bg-violet-500" />
-                                                <span className="font-bold text-zinc-900">{value}%</span>
+                                                <span className="font-black text-zinc-900">{value}%</span>
                                             </div>
                                         )}
                                     />

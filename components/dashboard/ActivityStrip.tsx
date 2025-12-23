@@ -1,6 +1,7 @@
 "use client";
 
 import { UserStats } from "@/lib/services/stats";
+import { cn } from "@/lib/utils";
 
 interface ActivityStripProps {
     stats: UserStats;
@@ -8,22 +9,25 @@ interface ActivityStripProps {
 
 export function ActivityStrip({ stats }: ActivityStripProps) {
     return (
-        <div className="bg-white rounded-lg p-6 border-2 border-zinc-900 shadow-neo relative overflow-hidden h-full flex flex-col">
+        <div className="bg-white rounded-xl p-4 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative h-full flex flex-col justify-center group">
             {/* Header */}
-            <div className="flex items-center justify-between mb-5">
-                <h2 className="relative font-black text-zinc-900 text-xl tracking-tight z-0">
-                    <span className="relative z-10">Activity</span>
-                    <span className="absolute bottom-0.5 left-0 w-full h-2 bg-brand-orange/20 -rotate-1 -z-10 rounded-sm"></span>
-                </h2>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-500">
-                    <span>Best streak:</span>
-                    <span className="bg-zinc-100 text-zinc-900 font-black px-2 py-0.5 rounded-md">{stats.bestStreak || stats.streak} days</span>
+            <div className="flex items-center justify-between mb-3 pb-3 border-b border-zinc-100">
+                <div>
+                     <h2 className="font-black text-zinc-900 text-lg tracking-tight">Activity</h2>
+                     <p className="text-xs text-zinc-500 font-bold mt-0.5">Last 21 days of study</p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Best Streak</span>
+                    <div className="flex items-center gap-1.5 bg-white text-zinc-900 border-2 border-zinc-900 px-2.5 py-1 rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="font-black text-xs">{stats.bestStreak || stats.streak} days</span>
+                    </div>
                 </div>
             </div>
 
             {/* Activity Strip - 21 days */}
-            <div>
-                <div style={{ display: 'flex', gap: '3px', width: '100%' }}>
+            <div className="flex-1 flex flex-col justify-center">
+                <div className="flex gap-1.5 w-full h-10">
                     {Array.from({ length: 21 }, (_, idx) => {
                         const i = 20 - idx;
                         const activitySet = new Set(stats.activityDates || []);
@@ -41,50 +45,28 @@ export function ActivityStrip({ stats }: ActivityStripProps) {
                         return (
                             <div
                                 key={idx}
-                                className="group relative"
-                                style={{ flex: 1 }}
+                                className="group/day relative flex-1"
                             >
                                 <div
-                                    style={{
-                                        height: '32px',
-                                        borderRadius: '4px',
-                                        backgroundColor: hasActivity ? '#22c55e' : 'transparent',
-                                        border: isToday
-                                            ? '2px solid #18181b'
-                                            : hasActivity
-                                                ? 'none'
-                                                : '1px solid #d4d4d8',
-                                    }}
+                                    className={cn(
+                                        "w-full h-full rounded-sm transition-all duration-300 border-2",
+                                        hasActivity 
+                                            ? "bg-emerald-500 border-zinc-900" 
+                                            : "bg-white border-zinc-200 hover:border-zinc-400",
+                                        isToday && !hasActivity && "border-2 border-dashed border-zinc-400 bg-zinc-50"
+                                    )}
                                 />
                                 {/* Hover tooltip */}
-                                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                                    <div className="bg-zinc-900 text-white text-[9px] font-medium px-1.5 py-0.5 rounded whitespace-nowrap">
+                                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-3 opacity-0 group-hover/day:opacity-100 transition-opacity pointer-events-none z-10">
+                                    <div className="bg-zinc-900 text-white text-[10px] font-bold px-2 py-1 rounded-md whitespace-nowrap shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
                                         {displayDate}
                                     </div>
+                                    {/* Arrow */}
+                                    <div className="w-2 h-2 bg-zinc-900 rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1.5"></div>
                                 </div>
                             </div>
                         );
                     })}
-                </div>
-                {/* Week markers */}
-                <div className="flex justify-between mt-1.5 text-[9px] font-medium text-zinc-400">
-                    {(() => {
-                        const today = new Date();
-                        const markers = [];
-                        // First 3 markers show dates
-                        for (let w = 0; w < 3; w++) {
-                            const d = new Date(today);
-                            d.setDate(d.getDate() - (20 - w * 7));
-                            markers.push(
-                                <span key={w}>
-                                    {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                </span>
-                            );
-                        }
-                        // Last marker shows "Today"
-                        markers.push(<span key={3} className="text-zinc-600 font-bold">Today</span>);
-                        return markers;
-                    })()}
                 </div>
             </div>
         </div>
