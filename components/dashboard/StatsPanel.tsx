@@ -49,7 +49,7 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${Math.min((stats.examsCreatedLast7Days / 5) * 100, 100)}%` }}
-                                    transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
+                                    transition={{ duration: 0.5, ease: "easeOut", delay: 0 }}
                                     className="h-full bg-emerald-500 rounded-full border border-zinc-900 relative shadow-sm"
                                 >
                                     <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:6px_6px]" />
