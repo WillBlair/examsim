@@ -100,7 +100,7 @@ export default async function DashboardPage() {
     <div className="flex flex-col flex-1 gap-6">
       {/* Header with Date - Updated to Clean Neobrutalist */}
       <div>
-        <div className="bg-indigo-50 border border-indigo-100 shadow-sm rounded-2xl p-5 relative overflow-hidden flex items-center justify-between group">
+        <div className="bg-indigo-100 border border-indigo-200 shadow-sm rounded-2xl p-5 relative overflow-hidden flex items-center justify-between group">
           {/* Subtle Noise Texture */}
           <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03] pointer-events-none mix-blend-multiply" />
           
