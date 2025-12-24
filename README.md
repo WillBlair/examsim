@@ -1,143 +1,118 @@
 # ExamSim
 
-AI-powered exam generation platform that turns course materials into practice exams.
+AI-powered exam generation platform that converts course materials into practice exams and flashcards.
 
-## Features
+## Overview
 
-- 🤖 **AI-Powered Exam Generation** - Upload PDFs, DOCX files, or paste text to generate custom exams
-- 📊 **Performance Analytics** - Track your progress, identify weak areas, and monitor trends
-- ⏱️ **Timer Support** - Practice with time limits, timer persists across page refreshes
-- 🎯 **Multiple Question Types** - Multiple choice, true/false, fill-in-the-blank, select all that apply
-- 📈 **Progress Tracking** - View your exam history, scores, and study streaks
+ExamSim allows users to upload course materials such as PDFs, documents, or raw text. The application uses AI to parse this content and generate practice exams and flashcards, focusing on active recall and timed practice sessions. It includes features for tracking performance, monitoring study progress, and identifying areas for improvement.
+
+## Key Features
+
+### Content Generation
+- **Parsing**: detailed extraction of concepts from uploaded PDFs, Word documents, and text.
+- **Exam Generation**: Supports multiple question types including Multiple Choice, True/False, Fill-in-the-Blank, and Select All.
+- **Flashcards**: Automated creation of flashcard decks from source materials.
+
+### Practice Tools
+- **Exam Simulation**: Timed exam mode to replicate testing conditions.
+- **Practice Mode**: Immediate feedback with detailed explanations for each question.
+- **State Persistence**: Timer and exam state are saved locally to prevent data loss on refresh.
+
+### Analytics
+- **Performance Tracking**: Detailed scoring and historical data visualization.
+- **Topic Analysis**: Identification of strong and weak subtopics based on exam performance.
+- **Activity Tracking**: Monitoring of daily study activity and streaks.
+
+### Technical Features
+- **Database Optimization**: Indexed queries for efficient data retrieval.
+- **Caching**: Implemented caching for user statistics to improve dashboard performance.
+- **Validation**: Strict type safety and validation for file uploads and environment configuration.
 
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: NextAuth.js v5
-- **AI**: Google Gemini 2.5 Flash
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI, Shadcn UI
+- **Language**: TypeScript
+- **Database**: PostgreSQL (via Neon)
+- **ORM**: Drizzle ORM
+- **AI**: Google Gemini 2.5 Flash (via Vercel AI SDK)
+- **Styling**: Tailwind CSS, Shadcn UI
+- **Auth**: NextAuth.js v5
 
 ## Getting Started
 
 ### Prerequisites
-
-- Node.js 18+ 
-- PostgreSQL database (or Neon, Supabase, etc.)
-- Google API key for Gemini
+- Node.js 18+
+- PostgreSQL database
+- Google Gemini API Key
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd examsim
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/WillBlair/examsim.git
+   cd examsim
+   ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-3. Set up environment variables:
-```bash
-cp .env.example .env.local
-```
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Configure `.env.local` with the following:
+   ```env
+   DATABASE_URL=postgresql://user:password@host:port/db
+   NEXTAUTH_SECRET=your_secret_key
+   NEXTAUTH_URL=http://localhost:3000
+   GOOGLE_API_KEY=your_gemini_api_key
+   ```
+   Refer to `lib/env.ts` for all validated variables.
 
-Required environment variables:
-```env
-DATABASE_URL=postgresql://...
-NEXTAUTH_SECRET=your-secret-key
-NEXTAUTH_URL=http://localhost:3000
-GOOGLE_CLIENT_ID=your-google-client-id (optional)
-GOOGLE_CLIENT_SECRET=your-google-client-secret (optional)
-GOOGLE_API_KEY=your-google-api-key (optional)
-```
+4. **Initialize the database**
+   ```bash
+   npm run db:generate
+   npm run db:migrate
+   ```
 
-4. Run database migrations:
-```bash
-npm run db:generate
-npm run db:migrate
-```
-
-5. Start the development server:
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see the app.
+5. **Run the application**
+   ```bash
+   npm run dev
+   ```
+   The application will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Project Structure
 
 ```
-examsim/
-├── app/                    # Next.js app router pages
-│   ├── (auth)/            # Auth routes (login, register)
-│   ├── dashboard/         # Dashboard pages
-│   ├── actions/           # Server actions
-│   └── api/               # API routes
-├── components/            # React components
+├── app/                  # Next.js App Router root
+│   ├── (auth)/           # Authentication routes
+│   ├── dashboard/        # Main user dashboard & features
+│   ├── api/              # API endpoints
+│   └── actions/          # Server Actions
+├── components/           # React components
 │   ├── dashboard/        # Dashboard-specific components
-│   └── ui/               # Reusable UI components
-├── db/                    # Database schema and connection
-├── lib/                   # Utility functions and services
-│   ├── services/         # Business logic services
-│   └── utils/            # Utility functions
-└── types/                 # TypeScript type definitions
+│   └── ui/               # Reusable UI primitives
+├── db/                   # Drizzle schema & migrations
+├── lib/                  # Shared utilities
+│   ├── services/         # Business logic
+│   ├── utils/            # Helper functions
+│   └── env.ts            # Environment validation
+└── public/               # Static assets
 ```
 
-## Key Improvements
+## Recent Improvements
 
-See [IMPROVEMENTS.md](./IMPROVEMENTS.md) for a detailed list of performance, security, and code quality improvements.
+- **Database Indexing**: Added indexes on `userId` columns to improve query performance.
+- **Service Layer**: Separated business logic from UI components.
+- **Error Handling**: Implemented error boundaries for graceful failure handling.
 
-### Highlights:
-- ✅ Database indexes for faster queries
-- ✅ Optimized queries (only fetch user's data)
-- ✅ File upload validation
-- ✅ Environment variable validation
-- ✅ TypeScript type safety improvements
-- ✅ Caching layer for stats
-- ✅ Error boundaries
-- ✅ Timer persistence
-
-## Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run db:generate` - Generate database migrations
-- `npm run db:migrate` - Run database migrations
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import project in Vercel
-3. Add environment variables
-4. Deploy!
-
-### Other Platforms
-
-The app can be deployed to any platform that supports Next.js:
-- Railway
-- Render
-- AWS Amplify
-- DigitalOcean App Platform
-
-Make sure to:
-- Set all required environment variables
-- Run database migrations after deployment
-- Configure database connection pooling if needed
+See [IMPROVEMENTS.md](./IMPROVEMENTS.md) for a detailed changelog.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+Contributions are welcome. Please submit a Pull Request.
 
 ## License
 
