@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { exams, examResults, questions } from "@/db/schema";
-import { eq, inArray, desc, sql, count, avg, sum, and, gte, lte } from "drizzle-orm";
+import { eq, inArray, desc, sql, count, and, gte, lte } from "drizzle-orm";
 import { subDays } from "date-fns";
 
 interface SubtopicStats {
@@ -56,19 +56,10 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
     db
       .select({
         count: count(),
-        averageScore: avg(examResults.score), // Score is raw score (integers usually), check if adjustment needed. 
-        // Note: examResults.score is usually correct answers. We need per-exam percentage.
-        // SQL avg of raw scores isn't percentage if totalQuestions varies.
-        // Let's stick to solving "total completed" here and do avg score carefully or keep approximation?
-        // Actually, let's fetch sum(score) and sum(totalQuestions) to get a weighted average, 
-        // OR simpler: just avg(score/totalQuestions). Drizzle/SQL integer division might be tricky.
-        // Safe approach for specific app logic: Fetch minimal necessary fields for advanced math if SQL is complex,
-        // BUT for simple totals, aggregates are best.
-        // Let's calculate precise weighted average on DB if possible, or fetch just scores.
-        // Let's try: AVG(score::float / total_questions) * 100
-        avgPercentage: sql<number>`AVG(CAST(${examResults.score} AS FLOAT) / ${examResults.totalQuestions}) * 100`,
-        totalStudyMinutes: sum(sql<number>`${examResults.totalQuestions} * 1.5`), // 1.5 mins per question
-        totalQuestionsAnswered: sum(examResults.totalQuestions) // Assuming answered = total questions in completed exam
+        // Use NULLIF to prevent division by zero
+        avgPercentage: sql<number>`COALESCE(AVG(CASE WHEN ${examResults.totalQuestions} > 0 THEN CAST(${examResults.score} AS FLOAT) / ${examResults.totalQuestions} ELSE NULL END) * 100, 0)`,
+        totalStudyMinutes: sql<number>`COALESCE(SUM(${examResults.totalQuestions} * 1.5), 0)`,
+        totalQuestionsAnswered: sql<number>`COALESCE(SUM(${examResults.totalQuestions}), 0)`
       })
       .from(examResults)
       .where(eq(examResults.userId, userId)),
@@ -102,9 +93,9 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
     // 5. Results Last 7 Days (Avg Score, Study Time, Questions)
     db
       .select({
-        avgPercentage: sql<number>`AVG(CAST(${examResults.score} AS FLOAT) / ${examResults.totalQuestions}) * 100`,
-        studyMinutes: sum(sql<number>`${examResults.totalQuestions} * 1.5`),
-        questionsAnswered: sum(examResults.totalQuestions)
+        avgPercentage: sql<number>`COALESCE(AVG(CASE WHEN ${examResults.totalQuestions} > 0 THEN CAST(${examResults.score} AS FLOAT) / ${examResults.totalQuestions} ELSE NULL END) * 100, 0)`,
+        studyMinutes: sql<number>`COALESCE(SUM(${examResults.totalQuestions} * 1.5), 0)`,
+        questionsAnswered: sql<number>`COALESCE(SUM(${examResults.totalQuestions}), 0)`
       })
       .from(examResults)
       .where(
@@ -118,9 +109,9 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
     // 6. Results Previous 7 Days
     db
       .select({
-        avgPercentage: sql<number>`AVG(CAST(${examResults.score} AS FLOAT) / ${examResults.totalQuestions}) * 100`,
-        studyMinutes: sum(sql<number>`${examResults.totalQuestions} * 1.5`),
-        questionsAnswered: sum(examResults.totalQuestions)
+        avgPercentage: sql<number>`COALESCE(AVG(CASE WHEN ${examResults.totalQuestions} > 0 THEN CAST(${examResults.score} AS FLOAT) / ${examResults.totalQuestions} ELSE NULL END) * 100, 0)`,
+        studyMinutes: sql<number>`COALESCE(SUM(${examResults.totalQuestions} * 1.5), 0)`,
+        questionsAnswered: sql<number>`COALESCE(SUM(${examResults.totalQuestions}), 0)`
       })
       .from(examResults)
       .where(

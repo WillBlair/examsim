@@ -204,7 +204,7 @@ export default async function FlashcardDeckPage({ params, searchParams }: Flashc
                         {newCount > 0 && (
                             <Link href={`/dashboard/flashcards/${deckId}?mode=new`}>
                                 <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                                    studyMode === "new" ? "bg-white shadow-sm border border-zinc-200 text-zinc-900" : "text-zinc-500 hover:text-zinc-900"
+                                    modeParam === "new" ? "bg-white shadow-sm border border-zinc-200 text-zinc-900" : "text-zinc-500 hover:text-zinc-900"
                                 }`}>
                                     <Target weight="fill" className="w-3.5 h-3.5" />
                                     New
@@ -215,7 +215,7 @@ export default async function FlashcardDeckPage({ params, searchParams }: Flashc
                         {learningCount > 0 && (
                             <Link href={`/dashboard/flashcards/${deckId}?mode=learning`}>
                                 <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                                    studyMode === "learning" ? "bg-white shadow-sm border border-amber-200 text-amber-900" : "text-amber-600 hover:text-amber-700"
+                                    modeParam === "learning" ? "bg-white shadow-sm border border-amber-200 text-amber-900" : "text-amber-600 hover:text-amber-700"
                                 }`}>
                                     <Books weight="fill" className="w-3.5 h-3.5" />
                                     Learning
@@ -226,7 +226,7 @@ export default async function FlashcardDeckPage({ params, searchParams }: Flashc
                         {dueCount > 0 && (
                             <Link href={`/dashboard/flashcards/${deckId}?mode=due`}>
                                 <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                                    studyMode === "due" ? "bg-white shadow-sm border border-red-200 text-red-900" : "text-red-600 hover:text-red-700"
+                                    modeParam === "due" ? "bg-white shadow-sm border border-red-200 text-red-900" : "text-red-600 hover:text-red-700"
                                 }`}>
                                     <Timer weight="fill" className="w-3.5 h-3.5" />
                                     Due

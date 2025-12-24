@@ -9,13 +9,39 @@ import { motion, AnimatePresence } from "framer-motion";
 interface UploadAreaProps {
   onFilesChange?: (files: File[]) => void;
   triggerRef?: React.RefObject<HTMLDivElement | null>;
+  colorVariant?: 'green' | 'orange';
 }
 
-export function UploadArea({ onFilesChange, triggerRef }: UploadAreaProps) {
+export function UploadArea({ onFilesChange, triggerRef, colorVariant = 'orange' }: UploadAreaProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const nativeInputRef = useRef<HTMLInputElement>(null);
+
+  // Color configurations based on variant
+  const colors = colorVariant === 'green' ? {
+    borderActive: 'border-emerald-400',
+    bgActive: 'bg-emerald-50/50',
+    borderHover: 'hover:border-emerald-400',
+    bgHover: 'hover:bg-emerald-50/30',
+    iconBgActive: 'bg-emerald-100 border-emerald-300',
+    iconBgHover: 'group-hover:bg-emerald-100 group-hover:border-emerald-300',
+    iconColorActive: 'text-emerald-600',
+    iconColorHover: 'group-hover:text-emerald-600',
+    footerHover: 'hover:from-emerald-50/50 hover:to-teal-50/50',
+    textHover: 'group-hover:text-emerald-700',
+  } : {
+    borderActive: 'border-amber-400',
+    bgActive: 'bg-amber-50/50',
+    borderHover: 'hover:border-amber-400',
+    bgHover: 'hover:bg-amber-50/30',
+    iconBgActive: 'bg-amber-100 border-amber-300',
+    iconBgHover: 'group-hover:bg-amber-100 group-hover:border-amber-300',
+    iconColorActive: 'text-amber-600',
+    iconColorHover: 'group-hover:text-amber-600',
+    footerHover: 'hover:from-amber-50/50 hover:to-orange-50/50',
+    textHover: 'group-hover:text-amber-700',
+  };
 
   useEffect(() => {
     if (onFilesChange) {
@@ -121,10 +147,10 @@ export function UploadArea({ onFilesChange, triggerRef }: UploadAreaProps) {
           "relative group cursor-pointer transition-all duration-300 ease-out flex-1 flex flex-col",
           "rounded-xl border-2 border-dashed overflow-hidden h-full",
           isDragging
-            ? "border-amber-400 bg-amber-50/50"
+            ? `${colors.borderActive} ${colors.bgActive}`
             : files.length > 0
               ? "border-zinc-200 bg-zinc-50/30"
-              : "border-zinc-300 hover:border-amber-400 bg-zinc-50/30 hover:bg-amber-50/30"
+              : `border-zinc-300 ${colors.borderHover} bg-zinc-50/30 ${colors.bgHover}`
         )}
       >
         {files.length === 0 ? (
@@ -134,8 +160,8 @@ export function UploadArea({ onFilesChange, triggerRef }: UploadAreaProps) {
               className={cn(
                 "w-20 h-20 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300",
                 isDragging
-                  ? "bg-amber-100 border-2 border-amber-300"
-                  : "bg-zinc-100 border-2 border-zinc-200 group-hover:bg-amber-100 group-hover:border-amber-300"
+                  ? `border-2 ${colors.iconBgActive}`
+                  : `bg-zinc-100 border-2 border-zinc-200 ${colors.iconBgHover}`
               )}
               animate={isDragging ? { scale: 1.1, y: -5 } : { scale: 1, y: 0 }}
             >
@@ -143,7 +169,7 @@ export function UploadArea({ onFilesChange, triggerRef }: UploadAreaProps) {
                 weight={isDragging ? "fill" : "duotone"}
                 className={cn(
                   "w-10 h-10 transition-colors",
-                  isDragging ? "text-amber-600" : "text-zinc-400 group-hover:text-amber-600"
+                  isDragging ? colors.iconColorActive : `text-zinc-400 ${colors.iconColorHover}`
                 )}
               />
             </motion.div>
@@ -226,7 +252,11 @@ export function UploadArea({ onFilesChange, triggerRef }: UploadAreaProps) {
             </div>
 
             {/* Footer Prompt */}
-            <div className="p-4 border-t border-zinc-200 bg-gradient-to-r from-zinc-50 to-slate-50 hover:from-amber-50/50 hover:to-orange-50/50 transition-colors flex items-center justify-center text-sm font-semibold text-zinc-500 group-hover:text-amber-700">
+            <div className={cn(
+              "p-4 border-t border-zinc-200 bg-gradient-to-r from-zinc-50 to-slate-50 transition-colors flex items-center justify-center text-sm font-semibold text-zinc-500",
+              colors.footerHover,
+              colors.textHover
+            )}>
               <UploadSimple className="w-5 h-5 mr-2" />
               Click or drag to add more files
             </div>

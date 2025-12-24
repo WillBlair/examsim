@@ -115,7 +115,7 @@ export default function NewExamPage() {
     const [questionTypes, setQuestionTypes] = useState<string[]>(["Multiple Choice"]);
     const [allowHints, setAllowHints] = useState(true);
     const [allowExplanations, setAllowExplanations] = useState(true);
-    
+
     // Ref to trigger upload from header click
     const uploadTriggerRef = useRef<HTMLDivElement>(null);
 
@@ -384,7 +384,7 @@ export default function NewExamPage() {
 
     return (
         <div className={cn(
-            "max-w-5xl mx-auto py-6 px-6 relative",
+            "w-full mx-auto py-8 px-6 lg:px-10 relative",
             !streamingExamId ? "min-h-[calc(100vh-4rem)]" : "h-full min-h-[calc(100vh-4rem)]"
         )}>
             <EnhancedGenerationOverlay
@@ -415,32 +415,32 @@ export default function NewExamPage() {
             ) : (
                 <>
                     {/* Page Header */}
-                    <div className="mb-6">
+                    <div className="mb-8">
                         <Link
                             href="/dashboard"
-                            className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-3 group font-medium"
+                            className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-4 group font-medium"
                         >
                             <CaretLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                             Back to Dashboard
                         </Link>
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-                                <GraduationCap weight="fill" className="w-6 h-6 text-white" />
+                        <div className="flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                                <GraduationCap weight="fill" className="w-7 h-7 text-white" />
                             </div>
-                            <div 
+                            <div
                                 className="cursor-pointer group"
                                 onClick={() => uploadTriggerRef.current?.click()}
                             >
-                                <h1 className="text-2xl font-black tracking-tight text-zinc-900 group-hover:text-emerald-700 transition-colors">Create New Exam</h1>
-                                <p className="text-zinc-500 font-medium text-sm group-hover:text-emerald-600 transition-colors">Transform your study materials into an interactive simulation</p>
+                                <h1 className="text-3xl font-black tracking-tight text-zinc-900 group-hover:text-emerald-700 transition-colors">Create New Exam</h1>
+                                <p className="text-zinc-500 font-medium group-hover:text-emerald-600 transition-colors">Transform your study materials into an interactive simulation</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Two Column Layout */}
-                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+                    {/* Two Column Layout - Flex with proper sizing */}
+                    <div className="flex flex-col xl:flex-row gap-8">
                         {/* Left Column: Source Input */}
-                        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+                        <div className="flex-1 bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden flex flex-col">
                             <div className="flex border-b border-zinc-200">
                                 <button
                                     onClick={() => setSourceType("files")}
@@ -474,30 +474,30 @@ export default function NewExamPage() {
                                 </button>
                             </div>
 
-                            <div className="p-5 h-[320px]">
+                            <div className="p-5 flex-1 flex flex-col min-h-[280px]">
                                 {sourceType === "files" ? (
-                                    <UploadArea onFilesChange={setFiles} triggerRef={uploadTriggerRef} />
+                                    <UploadArea onFilesChange={setFiles} triggerRef={uploadTriggerRef} colorVariant="green" />
                                 ) : (
                                     <Textarea
                                         value={pastedText}
                                         onChange={(e) => setPastedText(e.target.value)}
                                         placeholder="Paste your notes, syllabus, or lecture transcript here..."
-                                        className="h-full w-full resize-none border border-zinc-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 bg-zinc-50/50 text-base rounded-xl p-4 placeholder:text-zinc-400"
+                                        className="h-full w-full resize-none border border-zinc-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 bg-zinc-50/50 text-base rounded-xl p-5 placeholder:text-zinc-400"
                                     />
                                 )}
                             </div>
                         </div>
 
                         {/* Right Column: Configuration */}
-                        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden h-fit">
+                        <div className="w-full xl:w-[600px] xl:shrink-0 bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden h-fit">
                             <div className="px-5 py-3 border-b border-zinc-100 bg-zinc-50/50">
-                                <h3 className="font-bold text-zinc-900 flex items-center gap-2 text-sm">
-                                    <Brain weight="fill" className="w-4 h-4 text-emerald-500" />
+                                <h3 className="font-bold text-zinc-900 flex items-center gap-2 text-base">
+                                    <Brain weight="fill" className="w-5 h-5 text-emerald-500" />
                                     Exam Settings
                                 </h3>
                             </div>
 
-                            <div className="p-4 space-y-3">
+                            <div className="p-4 space-y-2.5">
                                 {/* Topic */}
                                 <div>
                                     <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Topic</label>
@@ -509,63 +509,63 @@ export default function NewExamPage() {
                                     />
                                 </div>
 
-                                {/* Difficulty & Time Limit - Side by Side */}
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Difficulty</label>
-                                        <div className="grid grid-cols-3 gap-1">
-                                            {DIFFICULTY_OPTIONS.map(opt => (
-                                                <button
-                                                    key={opt}
-                                                    onClick={() => setDifficulty(opt)}
-                                                    className={cn(
-                                                        "h-8 text-xs font-bold rounded-lg transition-all border",
-                                                        difficulty === opt
-                                                            ? "bg-zinc-900 text-white border-zinc-900"
-                                                            : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300"
-                                                    )}
-                                                >
-                                                    {opt}
-                                                </button>
-                                            ))}
-                                        </div>
+                                {/* Difficulty */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Difficulty</label>
+                                    <div className="grid grid-cols-3 gap-1.5">
+                                        {DIFFICULTY_OPTIONS.map(opt => (
+                                            <button
+                                                key={opt}
+                                                onClick={() => setDifficulty(opt)}
+                                                className={cn(
+                                                    "h-8 text-xs font-bold rounded-lg transition-all border-2",
+                                                    difficulty === opt
+                                                        ? "bg-zinc-900 text-white border-zinc-900"
+                                                        : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-100"
+                                                )}
+                                            >
+                                                {opt}
+                                            </button>
+                                        ))}
                                     </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Time Limit</label>
-                                        <div className="grid grid-cols-4 gap-1">
-                                            {TIME_LIMITS.map(opt => (
+                                </div>
+
+                                {/* Time Limit */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Time Limit</label>
+                                    <div className="grid grid-cols-4 gap-1.5">
+                                        {TIME_LIMITS.map(opt => (
                                             <button
                                                 key={opt.value}
                                                 onClick={() => setTimeLimit(opt.value)}
                                                 className={cn(
-                                                    "h-8 text-xs font-bold rounded-lg transition-all border",
+                                                    "h-8 text-xs font-bold rounded-lg transition-all border-2",
                                                     timeLimit === opt.value
                                                         ? "bg-zinc-900 text-white border-zinc-900"
-                                                        : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300"
+                                                        : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-100"
                                                 )}
                                             >
                                                 {opt.label}
                                             </button>
-                                            ))}
-                                        </div>
+                                        ))}
                                     </div>
                                 </div>
 
                                 {/* Question Count */}
                                 <div>
                                     <label className="block text-xs font-semibold text-zinc-700 mb-1.5">
-                                        Questions
+                                        Number of Questions
                                     </label>
-                                    <div className="grid grid-cols-6 gap-1">
+                                    <div className="grid grid-cols-6 gap-1.5">
                                         {QUESTION_COUNTS.map(count => (
                                             <button
                                                 key={count}
                                                 onClick={() => setQuestionCount(count)}
                                                 className={cn(
-                                                    "h-8 text-xs font-bold rounded-lg transition-all border",
+                                                    "h-8 text-xs font-bold rounded-lg transition-all border-2",
                                                     questionCount === count
                                                         ? "bg-zinc-900 text-white border-zinc-900"
-                                                        : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300"
+                                                        : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-100"
                                                 )}
                                             >
                                                 {count}
@@ -577,7 +577,7 @@ export default function NewExamPage() {
                                 {/* Question Types */}
                                 <div>
                                     <label className="block text-xs font-semibold text-zinc-700 mb-1.5">Question Types</label>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-2 gap-1.5">
                                         {["Multiple Choice", "True/False"].map((type) => {
                                             const isSelected = questionTypes.includes(type);
                                             return (
@@ -591,18 +591,18 @@ export default function NewExamPage() {
                                                         )
                                                     }}
                                                     className={cn(
-                                                        "h-9 px-2 text-xs font-bold rounded-lg border transition-all flex items-center justify-between gap-1",
+                                                        "h-8 px-2 text-xs font-bold rounded-lg border-2 transition-all flex items-center justify-between gap-1",
                                                         isSelected
                                                             ? "bg-zinc-900 text-white border-zinc-900"
-                                                            : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300"
+                                                            : "bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-100"
                                                     )}
                                                 >
                                                     <span>{type}</span>
                                                     <div className={cn(
-                                                        "w-4 h-4 rounded border flex items-center justify-center transition-all",
+                                                        "w-3.5 h-3.5 rounded border-2 flex items-center justify-center transition-all shrink-0",
                                                         isSelected ? "border-white bg-white/20" : "border-zinc-300"
                                                     )}>
-                                                        {isSelected && <CheckSquare weight="fill" className="w-3 h-3 text-white" />}
+                                                        {isSelected && <CheckSquare weight="fill" className="w-2.5 h-2.5 text-white" />}
                                                     </div>
                                                 </button>
                                             )
@@ -610,36 +610,41 @@ export default function NewExamPage() {
                                     </div>
                                 </div>
 
-                                {/* Toggles */}
-                                <div className="grid grid-cols-2 gap-2">
+                                {/* Toggles - Compact */}
+                                <div className="grid grid-cols-2 gap-1.5">
                                     <button
                                         onClick={() => setAllowHints(!allowHints)}
                                         className={cn(
-                                            "flex items-center justify-between px-3 py-2.5 rounded-lg border transition-all",
+                                            "flex items-center justify-between px-2.5 py-2 rounded-lg border-2 transition-all",
                                             allowHints
                                                 ? "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200"
                                                 : "bg-zinc-50 border-zinc-200 hover:border-zinc-300"
                                         )}
                                     >
                                         <div className="flex items-center gap-1.5">
-                                            <Lightbulb
-                                                weight={allowHints ? "fill" : "regular"}
-                                                className={cn("w-4 h-4", allowHints ? "text-emerald-600" : "text-zinc-400")}
-                                            />
+                                            <div className={cn(
+                                                "w-6 h-6 rounded flex items-center justify-center shrink-0",
+                                                allowHints ? "bg-emerald-100" : "bg-zinc-200"
+                                            )}>
+                                                <Lightbulb
+                                                    weight={allowHints ? "fill" : "regular"}
+                                                    className={cn("w-3.5 h-3.5", allowHints ? "text-emerald-600" : "text-zinc-400")}
+                                                />
+                                            </div>
                                             <span className={cn(
-                                                "text-xs font-semibold",
+                                                "font-semibold text-xs",
                                                 allowHints ? "text-emerald-900" : "text-zinc-600"
                                             )}>
                                                 Hints
                                             </span>
                                         </div>
                                         <div className={cn(
-                                            "w-9 h-5 rounded-full transition-all duration-200 relative",
+                                            "w-8 h-5 rounded-full transition-all duration-200 relative shrink-0",
                                             allowHints ? "bg-emerald-500" : "bg-zinc-300"
                                         )}>
                                             <div className={cn(
                                                 "w-3.5 h-3.5 bg-white rounded-full shadow-sm absolute top-[3px] transition-all duration-200",
-                                                allowHints ? "left-[18px]" : "left-[3px]"
+                                                allowHints ? "left-[15px]" : "left-[3px]"
                                             )} />
                                         </div>
                                     </button>
@@ -647,31 +652,36 @@ export default function NewExamPage() {
                                     <button
                                         onClick={() => setAllowExplanations(!allowExplanations)}
                                         className={cn(
-                                            "flex items-center justify-between px-3 py-2.5 rounded-lg border transition-all",
+                                            "flex items-center justify-between px-2.5 py-2 rounded-lg border-2 transition-all",
                                             allowExplanations
                                                 ? "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200"
                                                 : "bg-zinc-50 border-zinc-200 hover:border-zinc-300"
                                         )}
                                     >
                                         <div className="flex items-center gap-1.5">
-                                            <ChatCircleText
-                                                weight={allowExplanations ? "fill" : "regular"}
-                                                className={cn("w-4 h-4", allowExplanations ? "text-emerald-600" : "text-zinc-400")}
-                                            />
+                                            <div className={cn(
+                                                "w-6 h-6 rounded flex items-center justify-center shrink-0",
+                                                allowExplanations ? "bg-emerald-100" : "bg-zinc-200"
+                                            )}>
+                                                <ChatCircleText
+                                                    weight={allowExplanations ? "fill" : "regular"}
+                                                    className={cn("w-3.5 h-3.5", allowExplanations ? "text-emerald-600" : "text-zinc-400")}
+                                                />
+                                            </div>
                                             <span className={cn(
-                                                "text-xs font-semibold",
+                                                "font-semibold text-xs",
                                                 allowExplanations ? "text-emerald-900" : "text-zinc-600"
                                             )}>
-                                                Explain
+                                                Explanations
                                             </span>
                                         </div>
                                         <div className={cn(
-                                            "w-9 h-5 rounded-full transition-all duration-200 relative",
+                                            "w-8 h-5 rounded-full transition-all duration-200 relative shrink-0",
                                             allowExplanations ? "bg-emerald-500" : "bg-zinc-300"
                                         )}>
                                             <div className={cn(
                                                 "w-3.5 h-3.5 bg-white rounded-full shadow-sm absolute top-[3px] transition-all duration-200",
-                                                allowExplanations ? "left-[18px]" : "left-[3px]"
+                                                allowExplanations ? "left-[15px]" : "left-[3px]"
                                             )} />
                                         </div>
                                     </button>
@@ -685,7 +695,7 @@ export default function NewExamPage() {
                         onClick={handleSubmit}
                         disabled={!canProceed || isLoading}
                         className={cn(
-                            "w-full h-12 rounded-xl font-bold text-sm transition-all shadow-lg mt-5",
+                            "w-full h-12 rounded-xl font-bold text-base transition-all shadow-lg mt-4",
                             canProceed && !isLoading
                                 ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-emerald-500/25"
                                 : "bg-zinc-200 text-zinc-500 cursor-not-allowed shadow-none"
@@ -705,23 +715,23 @@ export default function NewExamPage() {
                     </Button>
 
                     {/* Full Width: Feature Preview Card */}
-                    <div className="mt-5 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 rounded-2xl border border-emerald-200/60 p-4">
-                        <h4 className="font-bold text-emerald-900 mb-3 flex items-center gap-2 text-sm">
-                            <Trophy weight="fill" className="w-4 h-4 text-emerald-600" />
+                    <div className="mt-6 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 rounded-2xl border border-emerald-200/60 p-6">
+                        <h4 className="font-bold text-emerald-900 mb-5 flex items-center gap-2 text-base">
+                            <Trophy weight="fill" className="w-5 h-5 text-emerald-600" />
                             What you&apos;ll get
                         </h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                             {[
                                 { icon: ListChecks, text: "AI-generated questions" },
                                 { icon: Target, text: "Adaptive difficulty" },
                                 { icon: Timer, text: "Timed simulation" },
                                 { icon: Lightning, text: "Instant feedback" }
                             ].map((feature, i) => (
-                                <div key={i} className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-white/80 border border-emerald-200/60 flex items-center justify-center shrink-0">
-                                        <feature.icon weight="fill" className="w-4 h-4 text-emerald-600" />
+                                <div key={i} className="flex items-center gap-3">
+                                    <div className="w-11 h-11 rounded-xl bg-white/80 border border-emerald-200/60 flex items-center justify-center shrink-0">
+                                        <feature.icon weight="fill" className="w-5 h-5 text-emerald-600" />
                                     </div>
-                                    <span className="text-xs font-medium text-emerald-900">{feature.text}</span>
+                                    <span className="text-sm font-medium text-emerald-900">{feature.text}</span>
                                 </div>
                             ))}
                         </div>

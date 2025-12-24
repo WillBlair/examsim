@@ -100,7 +100,7 @@ export default function NewFlashcardsPage() {
     const [files, setFiles] = useState<File[]>([]);
     const [pastedText, setPastedText] = useState("");
     const [includeHints, setIncludeHints] = useState(true);
-    
+
     // Ref to trigger upload from header click
     const uploadTriggerRef = useRef<HTMLDivElement>(null);
 
@@ -330,7 +330,7 @@ export default function NewFlashcardsPage() {
 
     return (
         <div className={cn(
-            "max-w-5xl mx-auto py-8 px-6 relative",
+            "w-full mx-auto py-8 px-6 relative",
             !streamingDeckId ? "min-h-[calc(100vh-4rem)]" : "h-full min-h-[calc(100vh-4rem)]"
         )}>
             <EnhancedGenerationOverlay
@@ -365,7 +365,7 @@ export default function NewFlashcardsPage() {
                             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/25">
                                 <Cards weight="fill" className="w-7 h-7 text-white" />
                             </div>
-                            <div 
+                            <div
                                 className="cursor-pointer group"
                                 onClick={() => uploadTriggerRef.current?.click()}
                             >
@@ -375,10 +375,10 @@ export default function NewFlashcardsPage() {
                         </div>
                     </div>
 
-                    {/* Two Column Layout */}
-                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
+                    {/* Two Column Layout - Flex with proper sizing */}
+                    <div className="flex flex-col xl:flex-row gap-8">
                         {/* Left Column: Source Input */}
-                        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
+                        <div className="flex-1 bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden flex flex-col">
                             <div className="flex border-b border-zinc-200">
                                 <button
                                     onClick={() => setSourceType("files")}
@@ -412,10 +412,10 @@ export default function NewFlashcardsPage() {
                                 </button>
                             </div>
 
-                                <div className="p-6 h-[360px]">
-                                    {sourceType === "files" ? (
-                                        <UploadArea onFilesChange={setFiles} triggerRef={uploadTriggerRef} />
-                                    ) : (
+                            <div className="p-5 flex-1 flex flex-col min-h-[280px]">
+                                {sourceType === "files" ? (
+                                    <UploadArea onFilesChange={setFiles} triggerRef={uploadTriggerRef} />
+                                ) : (
                                     <Textarea
                                         value={pastedText}
                                         onChange={(e) => setPastedText(e.target.value)}
@@ -433,7 +433,7 @@ Example:
                         </div>
 
                         {/* Right Column: Configuration */}
-                        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden h-fit">
+                        <div className="w-full xl:w-[600px] xl:shrink-0 bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden h-fit">
                             <div className="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
                                 <h3 className="font-bold text-zinc-900 flex items-center gap-2">
                                     <Brain weight="fill" className="w-5 h-5 text-amber-500" />
