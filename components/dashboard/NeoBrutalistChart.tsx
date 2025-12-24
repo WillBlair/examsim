@@ -65,11 +65,11 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
     };
 
     return (
-        <div 
-            className="h-full p-6 rounded-xl bg-sky-50 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col relative overflow-hidden group"
+        <div
+            className="h-full p-6 rounded-md bg-sky-50 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col relative overflow-hidden group"
             onMouseEnter={() => setKey(prev => prev + 1)}
         >
-            
+
             {/* Header */}
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-sky-200/50 shrink-0 relative z-10">
                 <div>

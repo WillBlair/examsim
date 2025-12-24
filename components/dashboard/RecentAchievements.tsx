@@ -30,15 +30,15 @@ export function RecentAchievements({ achievements }: RecentAchievementsProps) {
 
     if (displayAchievements.length === 0) {
         return (
-            <div className="bg-white rounded-xl border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 p-4 h-full flex flex-col justify-center text-center group">
-                 <div className="w-10 h-10 rounded-xl bg-amber-100 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] mx-auto flex items-center justify-center mb-2">
+            <div className="bg-white rounded-md border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 p-4 h-full flex flex-col justify-center text-center group">
+                <div className="w-10 h-10 rounded-md bg-amber-100 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] mx-auto flex items-center justify-center mb-2">
                     <Trophy weight="fill" className="w-5 h-5 text-amber-700" />
-                 </div>
-                 <h2 className="font-black text-zinc-900 text-sm">No Achievements Yet</h2>
-                 <p className="text-[10px] font-bold text-zinc-500 mt-0.5">
+                </div>
+                <h2 className="font-black text-zinc-900 text-sm">No Achievements Yet</h2>
+                <p className="text-[10px] font-bold text-zinc-500 mt-0.5">
                     Complete exams to unlock your first badge!
-                 </p>
-                 <Link
+                </p>
+                <Link
                     href="/dashboard/achievements"
                     className="mt-3 text-[10px] font-black text-brand-orange hover:text-orange-600 transition-colors uppercase tracking-wide"
                 >
@@ -49,11 +49,11 @@ export function RecentAchievements({ achievements }: RecentAchievementsProps) {
     }
 
     return (
-        <div className="bg-violet-50 rounded-xl border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 p-4 h-full flex flex-col group">
+        <div className="bg-violet-50 rounded-md border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 p-4 h-full flex flex-col group">
             <div className="flex items-center justify-between mb-2 pb-2 border-b border-violet-200/50">
-                 <div>
-                     <h2 className="font-black text-zinc-900 text-lg tracking-tight">Achievements</h2>
-                     <p className="text-xs text-violet-900/60 font-bold mt-0.5">Recent unlocks</p>
+                <div>
+                    <h2 className="font-black text-zinc-900 text-lg tracking-tight">Achievements</h2>
+                    <p className="text-xs text-violet-900/60 font-bold mt-0.5">Recent unlocks</p>
                 </div>
                 <Link
                     href="/dashboard/achievements"

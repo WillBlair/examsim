@@ -17,7 +17,7 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
         <div className={cn("flex flex-col gap-3", className)}>
             {/* Weekly Goal Section */}
             <div>
-                <div className="bg-emerald-50 rounded-xl border-2 border-zinc-900 p-2.5 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col justify-between min-h-[90px] relative overflow-hidden group">
+                <div className="bg-emerald-50 rounded-md border-2 border-zinc-900 p-2.5 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col justify-between min-h-[90px] relative overflow-hidden group">
                     <div className="flex items-center justify-between relative z-10 border-b border-emerald-900/5 pb-1.5 mb-1.5">
                         <div className="flex items-center gap-2">
                             <div className="w-7 h-7 rounded-lg bg-emerald-500 border-2 border-zinc-900 flex items-center justify-center text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
@@ -134,7 +134,7 @@ function StatCard({
     const isPositive = trend >= 0;
 
     return (
-        <div className={cn("relative overflow-hidden rounded-xl p-3 shadow-sm transition-all hover:shadow-md hover:-translate-y-1 border border-zinc-200/50", color)}>
+        <div className={cn("relative overflow-hidden rounded-md p-3 shadow-sm transition-all hover:shadow-md hover:-translate-y-1 border border-zinc-200/50", color)}>
             {/* Background Patterns */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply">
                 {pattern === 'circles' && (
@@ -149,14 +149,14 @@ function StatCard({
                     </svg>
                 )}
                 {pattern === 'dots' && (
-                     <div className={cn("absolute inset-0 bg-[radial-gradient(circle,currentColor_2px,transparent_2px)] [background-size:16px_16px]", textColor)} />
+                    <div className={cn("absolute inset-0 bg-[radial-gradient(circle,currentColor_2px,transparent_2px)] [background-size:16px_16px]", textColor)} />
                 )}
                 {pattern === 'waves' && (
-                     <svg className="absolute right-0 bottom-0 h-full w-full opacity-60" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <svg className="absolute right-0 bottom-0 h-full w-full opacity-60" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <circle cx="100" cy="100" r="70" stroke="currentColor" strokeWidth="8" fill="none" className={textColor} />
                         <circle cx="100" cy="100" r="45" stroke="currentColor" strokeWidth="8" fill="none" className={textColor} />
                         <circle cx="100" cy="100" r="20" stroke="currentColor" strokeWidth="8" fill="none" className={textColor} />
-                     </svg>
+                    </svg>
                 )}
             </div>
 
@@ -171,7 +171,7 @@ function StatCard({
                         </div>
                     )}
                 </div>
-                
+
                 <div>
                     <h3 className={cn("text-[10px] font-bold uppercase tracking-wide mb-0.5 opacity-70", textColor)}>{label}</h3>
                     <div className="flex items-baseline gap-1">

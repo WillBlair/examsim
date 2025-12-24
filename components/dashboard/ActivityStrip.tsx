@@ -15,25 +15,25 @@ export function ActivityStrip({ stats }: ActivityStripProps) {
         animate(
             ".day-block-container",
             { scale: [1, 1.2, 1] },
-            { 
-                duration: 0.2, 
+            {
+                duration: 0.2,
                 delay: stagger(0.015),
-                ease: "easeInOut" 
+                ease: "easeInOut"
             }
         );
     };
 
     return (
-        <div 
+        <div
             ref={scope}
-            className="bg-slate-50 rounded-xl p-4 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative h-full flex flex-col justify-center group"
+            className="bg-slate-50 rounded-md p-4 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 relative h-full flex flex-col justify-center group"
             onMouseEnter={handleHover}
         >
             {/* Header */}
             <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-200/50">
                 <div>
-                     <h2 className="font-black text-zinc-900 text-lg tracking-tight">Activity</h2>
-                     <p className="text-xs text-slate-500 font-bold mt-0.5">Last 21 days of study</p>
+                    <h2 className="font-black text-zinc-900 text-lg tracking-tight">Activity</h2>
+                    <p className="text-xs text-slate-500 font-bold mt-0.5">Last 21 days of study</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Best Streak</span>
@@ -72,8 +72,8 @@ export function ActivityStrip({ stats }: ActivityStripProps) {
                                 <div
                                     className={cn(
                                         "w-full h-full rounded-sm transition-colors duration-300 border-2",
-                                        hasActivity 
-                                            ? "bg-emerald-500 border-zinc-900" 
+                                        hasActivity
+                                            ? "bg-emerald-500 border-zinc-900"
                                             : "bg-white border-zinc-200 hover:border-zinc-400",
                                         isToday && !hasActivity && "border-2 border-dashed border-zinc-400 bg-zinc-50"
                                     )}
