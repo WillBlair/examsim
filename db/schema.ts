@@ -66,6 +66,7 @@ export const verificationTokens = pgTable(
 export const exams = pgTable("exams", {
   id: serial("id").primaryKey(),
   userId: text("user_id").references(() => users.id, { onDelete: "cascade" }), // Linked to user
+  guestId: text("guest_id"), // For guest-created exams (try before signup)
   title: text("title").notNull(),
   topic: text("topic").notNull(),
   difficulty: text("difficulty").notNull(), // 'Easy', 'Medium', 'Hard'
@@ -73,6 +74,7 @@ export const exams = pgTable("exams", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   userIdIdx: index("exams_user_id_idx").on(table.userId),
+  guestIdIdx: index("exams_guest_id_idx").on(table.guestId),
   createdAtIdx: index("exams_created_at_idx").on(table.createdAt),
 }));
 

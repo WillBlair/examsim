@@ -28,39 +28,58 @@ interface StreamUpdate {
 export async function POST(req: NextRequest) {
     try {
         const session = await auth();
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const guestId = req.headers.get("X-Guest-Id");
+
+        // Allow either authenticated users OR guests with a guest ID
+        const isAuthenticated = !!session?.user?.id;
+        const isGuest = !isAuthenticated && !!guestId;
+
+        if (!isAuthenticated && !isGuest) {
+            return NextResponse.json({ error: "Unauthorized. Please provide authentication or guest ID." }, { status: 401 });
         }
 
         // Rate Limit Check
-        // Exempt owner account from limits
-        if (session.user.email !== "willblair47@gmail.com") {
-            const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-            const [requestCount] = await db
-                .select({ count: count() })
-                .from(rateLimits)
-                .where(
-                    and(
-                        eq(rateLimits.userId, session.user.id),
-                        eq(rateLimits.action, "generate_exam"),
-                        gte(rateLimits.timestamp, oneHourAgo)
-                    )
-                );
+        if (isAuthenticated) {
+            // Exempt owner account from limits
+            if (session.user.email !== "willblair47@gmail.com") {
+                const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+                const [requestCount] = await db
+                    .select({ count: count() })
+                    .from(rateLimits)
+                    .where(
+                        and(
+                            eq(rateLimits.userId, session.user.id),
+                            eq(rateLimits.action, "generate_exam"),
+                            gte(rateLimits.timestamp, oneHourAgo)
+                        )
+                    );
 
-            // Stricter limit for free users: 1 per hour
-            if (requestCount.count >= 1) {
+                if (requestCount.count >= 1) {
+                    return NextResponse.json(
+                        { error: "Rate limit exceeded. Free tier users can only generate 1 exam per hour. Upgrade for unlimited access." },
+                        { status: 429 }
+                    );
+                }
+            }
+
+            // Record this request for authenticated users
+            await db.insert(rateLimits).values({
+                userId: session.user.id,
+                action: "generate_exam"
+            });
+        } else if (isGuest) {
+            // For guests, check if they've already created an exam with this guest ID
+            const existingGuestExam = await db.query.exams.findFirst({
+                where: eq(exams.guestId, guestId),
+            });
+
+            if (existingGuestExam) {
                 return NextResponse.json(
-                    { error: "Rate limit exceeded. Free tier users can only generate 1 exam per hour. Upgrade for unlimited access." },
+                    { error: "You've already created your free trial exam. Sign up to create more!" },
                     { status: 429 }
                 );
             }
         }
-
-        // Record this request
-        await db.insert(rateLimits).values({
-            userId: session.user.id,
-            action: "generate_exam"
-        });
 
         const formData = await req.formData();
         const topic = formData.get("topic") as string;
@@ -144,7 +163,8 @@ export async function POST(req: NextRequest) {
 
         // Create the exam record immediately so we have an ID
         const [newExam] = await db.insert(exams).values({
-            userId: session.user.id,
+            userId: isAuthenticated ? session!.user.id : null,
+            guestId: isGuest ? guestId : null,
             title: topic ? `${topic} Exam` : "Generated Exam",
             topic: topic || "Uploaded Content",
             difficulty: difficulty,

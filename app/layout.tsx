@@ -3,6 +3,7 @@ import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/goog
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -54,10 +55,12 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${jakarta.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        {children}
-        <Toaster position="top-center" richColors expand={true} />
-        <SpeedInsights />
-        <Analytics />
+        <Providers>
+          {children}
+          <Toaster position="top-center" richColors expand={true} />
+          <SpeedInsights />
+          <Analytics />
+        </Providers>
       </body>
     </html>
   );

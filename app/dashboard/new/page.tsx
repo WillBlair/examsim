@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,6 +30,8 @@ import { toast } from "sonner";
 import { ExamClient } from "@/components/dashboard/ExamClient";
 import { getExamQuestions } from "@/app/actions/get-exam-questions";
 import { EnhancedGenerationOverlay } from "@/components/dashboard/EnhancedGenerationOverlay";
+import { AuthPromptModal } from "@/components/auth/AuthPromptModal";
+import { getGuestId, markGuestExamCreated, hasGuestCreatedExam } from "@/lib/guest-session";
 
 const DIFFICULTY_OPTIONS = ["Easy", "Medium", "Hard"];
 const QUESTION_COUNTS = [5, 10, 15, 20, 30, 50];
@@ -41,8 +44,14 @@ const TIME_LIMITS = [
 
 export default function NewExamPage() {
     const router = useRouter();
+    const { data: session, status: authStatus } = useSession();
+    const isAuthenticated = authStatus === "authenticated";
     const [isLoading, setIsLoading] = useState(false);
     const [sourceType, setSourceType] = useState<"files" | "text">("files");
+
+    // Auth prompt modal for guests
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [hasCreatedExam, setHasCreatedExam] = useState(false);
 
     // UX State
     const [status, setStatus] = useState<"idle" | "uploading" | "analyzing" | "generating">("idle");
@@ -190,8 +199,16 @@ export default function NewExamPage() {
 
         try {
             addLog("Transmitting data to AI core...");
+
+            // Build headers - include guest ID for unauthenticated users
+            const headers: HeadersInit = {};
+            if (!isAuthenticated) {
+                headers["X-Guest-Id"] = getGuestId();
+            }
+
             const response = await fetch("/api/exam/generate", {
                 method: "POST",
+                headers,
                 body: formData,
             });
 
@@ -377,6 +394,12 @@ export default function NewExamPage() {
         } finally {
             setIsGenerating(false);
             setIsLoading(false);
+
+            // For guests, mark exam as created and show auth modal after a delay
+            if (!isAuthenticated && streamingExamId) {
+                markGuestExamCreated();
+                setHasCreatedExam(true);
+            }
         }
     }
 
@@ -410,6 +433,12 @@ export default function NewExamPage() {
                         isGenerating={isGenerating}
                         allowHints={allowHints}
                         allowExplanations={allowExplanations}
+                        onComplete={() => {
+                            // Show auth modal for guests after exam completion
+                            if (!isAuthenticated) {
+                                setShowAuthModal(true);
+                            }
+                        }}
                     />
                 </div>
             ) : (
@@ -738,6 +767,14 @@ export default function NewExamPage() {
                     </div>
                 </>
             )}
+
+            {/* Auth Prompt Modal for guests after creating exam */}
+            <AuthPromptModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                title="Save Your Exam"
+                description="Create an account to save this exam and track your progress."
+            />
         </div>
     );
 }

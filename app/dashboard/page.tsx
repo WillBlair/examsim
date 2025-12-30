@@ -160,7 +160,7 @@ export default async function DashboardPage() {
           <div className="bg-white rounded-3xl border border-zinc-200 shadow-xl shadow-zinc-200/50 w-full max-w-lg p-12 text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-orange via-purple-500 to-blue-500" />
 
-            <div className="w-20 h-20 rounded-3xl bg-zinc-900 text-white flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-zinc-900/20 rotate-3 transition-transform hover:rotate-6 hover:scale-110 duration-300">
+            <div className="w-20 h-20 rounded-3xl bg-zinc-900 text-white flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-zinc-900/20 transition-transform hover:scale-110 duration-300">
               <Plus weight="bold" className="w-10 h-10" />
             </div>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner, CheckCircle } from "@phosphor-icons/react";
 import { useExamState } from "@/hooks/useExamState";
@@ -31,7 +32,8 @@ export function ExamClient({
   initialTimer,
   isGenerating = false,
   allowHints = false,
-  allowExplanations = true
+  allowExplanations = true,
+  onComplete
 }: {
   exam: Exam;
   questions: Question[];
@@ -39,6 +41,7 @@ export function ExamClient({
   isGenerating?: boolean;
   allowHints?: boolean;
   allowExplanations?: boolean;
+  onComplete?: () => void;
 }) {
   const {
     answers,
@@ -54,6 +57,15 @@ export function ExamClient({
     handleSubmit,
     checkAnswer,
   } = useExamState(exam.id, questions);
+
+  // Trigger onComplete callback when exam is submitted
+  useEffect(() => {
+    if (isSubmitted && onComplete) {
+      // Small delay to let results render before showing modal
+      const timer = setTimeout(onComplete, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSubmitted, onComplete]);
 
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-8">

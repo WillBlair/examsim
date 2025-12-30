@@ -15,6 +15,13 @@
       "when": 1766520295058,
       "tag": "0001_cynical_changeling",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766725897312,
+      "tag": "0002_plain_firestar",
+      "breakpoints": true
     }
   ]
 }

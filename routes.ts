@@ -1,7 +1,8 @@
 export const publicRoutes = [
     "/",
     "/about",
-    "/pricing" 
+    "/pricing",
+    "/dashboard/new",  // Allow guests to create their first exam
 ];
 
 export const authRoutes = [
