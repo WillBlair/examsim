@@ -185,9 +185,9 @@ export function OnboardingWizard() {
         setAuthError("");
 
         try {
-            // Use email prefix as username fallback
-            const emailUsername = email.split("@")[0] || "User";
-            const result = await register({ email, password, username: emailUsername });
+            // Use email prefix as name fallback
+            const emailName = email.split("@")[0] || "User";
+            const result = await register({ email, password, name: emailName });
             if (result?.error) {
                 setAuthError(result.error);
                 setIsSubmitting(false);

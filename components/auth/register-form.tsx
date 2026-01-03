@@ -15,8 +15,8 @@ import { register } from "@/app/actions/auth";
 import { ArrowRight } from "@phosphor-icons/react";
 
 const RegisterSchema = z.object({
-  username: z.string().min(3, {
-    message: "Username must be at least 3 characters",
+  name: z.string().min(1, {
+    message: "Name is required",
   }),
   email: z.string().email({
     message: "Email is required",
@@ -36,7 +36,7 @@ export const RegisterForm = () => {
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      username: "",
+      name: "",
       email: "",
       password: "",
     },
@@ -108,16 +108,16 @@ export const RegisterForm = () => {
           <div className="space-y-3">
 
             <div className="grid gap-1.5">
-              <label htmlFor="username" className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 ml-1">Username</label>
+              <label htmlFor="name" className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 ml-1">Name</label>
               <Input
-                {...form.register("username")}
+                {...form.register("name")}
                 disabled={isPending}
-                placeholder="johndoe"
+                placeholder="John Doe"
                 type="text"
                 className="h-10 rounded-lg bg-zinc-50 border-zinc-200 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all text-sm"
               />
-              {form.formState.errors.username && (
-                <p className="text-xs font-medium text-red-500 ml-1">{form.formState.errors.username.message}</p>
+              {form.formState.errors.name && (
+                <p className="text-xs font-medium text-red-500 ml-1">{form.formState.errors.name.message}</p>
               )}
             </div>
 
