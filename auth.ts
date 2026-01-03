@@ -17,9 +17,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Google({
-        clientId: env.GOOGLE_CLIENT_ID || "",
-        clientSecret: env.GOOGLE_CLIENT_SECRET || "",
-        allowDangerousEmailAccountLinking: true,
+      clientId: env.GOOGLE_CLIENT_ID || "",
+      clientSecret: env.GOOGLE_CLIENT_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       async authorize(credentials) {
@@ -29,11 +29,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
-          
+
           const user = await db.query.users.findFirst({
             where: eq(users.email, email),
           });
-          
+
           if (!user || !user.password) return null;
 
           const passwordsMatch = await bcrypt.compare(password, user.password);
@@ -53,7 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
-      
+
       if (token.hasOnboarded !== undefined) {
         (session.user as { hasOnboarded?: boolean }).hasOnboarded = token.hasOnboarded as boolean;
       }
@@ -66,11 +66,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token.name) {
         session.user.name = token.name as string;
       }
-      
+
       if (token.email) {
         session.user.email = token.email as string;
       }
-      
+
       if (token.picture) {
         session.user.image = token.picture as string;
       }
@@ -106,18 +106,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       token.username = existingUser.username;
       token.name = existingUser.name;
       token.email = existingUser.email;
-      
-      // CRITICAL FIX: Do NOT put base64 images in the session cookie!
+
+      // Handle profile image:
+      // 1. If DB has a valid URL image (not base64), use it
+      // 2. If DB has no image, keep the existing token.picture (from Google OAuth)
+      // 3. If DB has a base64 image, don't put in token but keep OAuth picture if present
       if (existingUser.image && !existingUser.image.startsWith("data:image")) {
         token.picture = existingUser.image;
       } else if (existingUser.image && existingUser.image.startsWith("data:image")) {
-         // If the DB has a Base64 image, we MUST NOT put it in the token.
-         // If the token already had a picture (e.g. from Google), we keep it.
-         // BUT if the token's picture IS the Base64 string (from a previous bad login), we must nuke it.
-         if (token.picture?.startsWith("data:image")) {
-            token.picture = null;
-         }
+        // DB has base64 image - keep OAuth picture but nuke if it's also base64
+        if (token.picture?.startsWith("data:image")) {
+          token.picture = null;
+        }
+        // Otherwise keep existing token.picture from OAuth
       }
+      // If existingUser.image is null/undefined, we DON'T touch token.picture
+      // This preserves the Google OAuth picture
 
       return token;
     }

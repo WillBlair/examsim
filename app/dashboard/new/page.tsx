@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -135,6 +135,28 @@ export default function NewExamPage() {
             if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
         };
     }, []);
+
+    // Read onboarding params if coming from /get-started flow
+    const searchParams = useSearchParams();
+    useEffect(() => {
+        const fromOnboarding = searchParams.get("from") === "onboarding";
+        if (fromOnboarding) {
+            const topicParam = searchParams.get("topic");
+            const difficultyParam = searchParams.get("difficulty");
+            const countParam = searchParams.get("count");
+
+            if (topicParam) setTopic(topicParam);
+            if (difficultyParam && DIFFICULTY_OPTIONS.includes(difficultyParam)) {
+                setDifficulty(difficultyParam);
+            }
+            if (countParam) {
+                const count = parseInt(countParam);
+                if (QUESTION_COUNTS.includes(count)) {
+                    setQuestionCount(count);
+                }
+            }
+        }
+    }, [searchParams]);
 
     const addLog = (message: string) => {
         setLogs(prev => [...prev, message]);

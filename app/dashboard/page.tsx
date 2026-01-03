@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowRight, TrendUp, Lightning, Calendar, Scroll, Fire, Cards, Trophy } from "@phosphor-icons/react/dist/ssr";
 import { db } from "@/db";
-import { exams, examResults } from "@/db/schema";
+import { exams, examResults, users } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { StatsPanel } from "@/components/dashboard/StatsPanel";
@@ -23,6 +23,17 @@ export default async function DashboardPage() {
 
   if (!session?.user?.id) {
     return redirect("/login");
+  }
+
+  // Check if user has completed onboarding
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, session.user.id),
+    columns: { hasOnboarded: true },
+  });
+
+  // Redirect to onboarding if not completed
+  if (!user?.hasOnboarded) {
+    return redirect("/get-started");
   }
 
   // Fetch all data in parallel for faster load
@@ -116,7 +127,7 @@ export default async function DashboardPage() {
               </p>
             </div>
             <h1 className="text-3xl font-black text-indigo-950 tracking-tight">
-              Welcome back, {firstName}!
+              {hasExams ? `Welcome back, ${firstName}!` : `Welcome, ${firstName}!`}
             </h1>
             <p className="text-sm text-indigo-900/60 font-medium max-w-lg">
               Ready to continue your prep? You&apos;re doing great.

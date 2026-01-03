@@ -189,6 +189,11 @@ export async function POST(req: NextRequest) {
 
             Use ONLY the following question types:
             ${questionTypes.map(t => `- ${t}`).join("\n")}
+
+            IMPORTANT: For each question, you MUST provide the "options" array:
+            - For Multiple Choice: provide exactly 4 answer options
+            - For True/False: provide exactly ["True", "False"] as options
+            - For Select All That Apply: provide 4-6 answer options
         `;
 
         // Create stream
@@ -198,7 +203,7 @@ export async function POST(req: NextRequest) {
                 questions: z.array(z.object({
                     text: z.string(),
                     type: z.enum(["Multiple Choice", "True/False", "Select All That Apply"]),
-                    options: z.array(z.string()).optional(),
+                    options: z.array(z.string()).min(2), // Required: at least 2 options
                     correctAnswer: z.union([z.string(), z.array(z.string())]),
                     explanation: z.string(),
                     hint: z.string().optional(),

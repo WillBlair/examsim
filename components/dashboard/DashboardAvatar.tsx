@@ -10,8 +10,7 @@ interface DashboardAvatarProps {
 }
 
 export function DashboardAvatar({ sessionImage, name, className }: DashboardAvatarProps) {
-  // If session has an image (Google), use it.
-  // If not, try the API route which serves the DB image.
+  // Priority: sessionImage (from OAuth) > API route (for uploaded images) > fallback
   const [imageSrc, setImageSrc] = useState<string | null>(
     sessionImage || "/api/user/avatar"
   );
@@ -22,28 +21,32 @@ export function DashboardAvatar({ sessionImage, name, className }: DashboardAvat
     if (sessionImage) {
       setImageSrc(sessionImage);
       setHasError(false);
+    } else {
+      // No session image, try API route for uploaded images
+      setImageSrc("/api/user/avatar");
+      setHasError(false);
     }
   }, [sessionImage]);
 
+  // Show fallback avatar (initial) if error loading image
   if (hasError) {
     return (
       <div className={cn(
         "bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center w-full h-full",
         className
       )}>
-        <span className="text-white text-xl font-black">{name.charAt(0)}</span>
+        <span className="text-white text-xl font-black">{name.charAt(0).toUpperCase()}</span>
       </div>
     );
   }
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img 
-      src={imageSrc || ""} 
-      alt="Profile" 
+    <img
+      src={imageSrc || ""}
+      alt="Profile"
       className={cn("w-full h-full object-cover", className)}
       onError={() => {
-        // If the current source fails (e.g. API 404), fallback to initial
         setHasError(true);
       }}
     />

@@ -3,6 +3,7 @@ export const publicRoutes = [
     "/about",
     "/pricing",
     "/dashboard/new",  // Allow guests to create their first exam
+    "/get-started",    // New onboarding flow
 ];
 
 export const authRoutes = [
@@ -13,5 +14,5 @@ export const authRoutes = [
 
 export const apiAuthPrefix = "/api/auth";
 
-export const DEFAULT_LOGIN_REDIRECT = "/dashboard/new";
+export const DEFAULT_LOGIN_REDIRECT = "/dashboard";
 

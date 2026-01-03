@@ -5,9 +5,29 @@ import { notFound, redirect } from "next/navigation";
 import { ExamClient } from "@/components/dashboard/ExamClient";
 import { auth } from "@/auth";
 
-export default async function ExamPage({ 
-  params, 
-}: { 
+// Helper to safely parse JSONB options field
+function parseOptions(options: unknown): string[] {
+  // If already an array, return it
+  if (Array.isArray(options)) {
+    return options.filter(opt => typeof opt === 'string' && opt.trim().length > 0);
+  }
+  // If string, try to parse as JSON
+  if (typeof options === 'string') {
+    try {
+      const parsed = JSON.parse(options);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(opt => typeof opt === 'string' && opt.trim().length > 0);
+      }
+    } catch {
+      // Not valid JSON, return empty array
+    }
+  }
+  return [];
+}
+
+export default async function ExamPage({
+  params,
+}: {
   params: Promise<{ examId: string }>;
 }) {
   const { examId } = await params;
@@ -19,19 +39,18 @@ export default async function ExamPage({
 
   const exam = await db.select().from(exams).where(eq(exams.id, id)).then(res => res[0]);
   if (!exam) return notFound();
-  
+
   if (exam.userId !== session.user.id) {
     return notFound();
   }
 
   const examQuestions = await db.select().from(questions).where(eq(questions.examId, id));
 
-  // Transform questions to match the client component interface if necessary
-  // The schema already matches well, but let's ensure type safety
+  // Transform questions to match the client component interface
   const formattedQuestions = examQuestions.map(q => ({
     id: q.id,
     questionText: q.questionText,
-    options: q.options as string[],
+    options: parseOptions(q.options),
     correctAnswer: q.correctAnswer,
     explanation: q.explanation,
     type: q.type

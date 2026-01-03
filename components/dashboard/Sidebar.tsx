@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { logout } from "@/app/actions/auth";
+import { signOut } from "next-auth/react";
 import { AppIcon } from "@/components/ui/icon";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -52,9 +53,13 @@ function SidebarContent() {
       {/* Logo */}
       <div className="h-[72px] flex items-center px-5 relative z-10 border-b border-zinc-200/80">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-md flex items-center justify-center group-hover:from-emerald-400 group-hover:to-teal-500 transition-all duration-300 shadow-lg shadow-emerald-500/25 border-2 border-zinc-900">
-            <AppIcon name="Cube" className="w-5 h-5 text-white" />
-          </div>
+          <Image
+            src="/images/examsimlogogreen-compressed.webp"
+            alt="ExamSim Logo"
+            width={40}
+            height={40}
+            className="w-10 h-10 object-contain"
+          />
           <div className="flex flex-col">
             <span className="text-xl font-black text-zinc-900 tracking-tight leading-none">ExamSim</span>
             <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Study Smarter</span>
@@ -117,7 +122,7 @@ function SidebarContent() {
       {/* Footer */}
       <div className="p-3 border-t border-zinc-200/80 relative z-10">
         <button
-          onClick={() => logout()}
+          onClick={() => signOut({ callbackUrl: "/" })}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-zinc-500 hover:text-red-600 hover:bg-red-50 transition-all group border-2 border-transparent hover:border-red-200"
         >
           <div className="w-8 h-8 rounded-md bg-zinc-100 group-hover:bg-red-100 flex items-center justify-center transition-colors">
@@ -142,9 +147,13 @@ export function MobileHeader() {
   return (
     <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 bg-white sticky top-0 z-50">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-brand-orange border border-zinc-900 rounded-sm flex items-center justify-center shadow-neo-sm">
-          <AppIcon name="Cube" className="w-4 h-4 text-white" />
-        </div>
+        <Image
+          src="/images/examsimlogogreen-compressed.webp"
+          alt="ExamSim Logo"
+          width={32}
+          height={32}
+          className="w-8 h-8 object-contain"
+        />
         <span className="text-lg font-bold text-zinc-900 tracking-tight">ExamSim</span>
       </div>
       <Sheet>

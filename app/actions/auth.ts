@@ -25,8 +25,8 @@ const RegisterSchema = z.object({
   password: z.string().min(6, {
     message: "Minimum 6 characters required",
   }),
-  name: z.string().min(1, {
-    message: "Name is required",
+  username: z.string().min(3, {
+    message: "Username must be at least 3 characters",
   }),
 });
 
@@ -65,7 +65,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     return { error: "Invalid fields!" };
   }
 
-  const { email, password, name } = validatedFields.data;
+  const { email, password, username } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const existingUser = await db.query.users.findFirst({
@@ -77,28 +77,15 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
   }
 
   await db.insert(users).values({
-    name,
+    name: username, // Use username as the display name initially
+    username,
     email,
     password: hashedPassword,
   });
 
-  try {
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: DEFAULT_LOGIN_REDIRECT,
-    });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return { error: "Something went wrong logging in after registration." };
-        default:
-          return { error: "Something went wrong!" };
-      }
-    }
-    throw error;
-  }
+  // Note: We don't automatically sign in here anymore.
+  // The caller (OnboardingWizard) handles sign-in separately with redirect: false
+  // to allow continuing the onboarding flow.
 
   return { success: "User created!" };
 };

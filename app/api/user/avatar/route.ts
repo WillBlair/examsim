@@ -20,7 +20,12 @@ export async function GET(req: NextRequest) {
   });
 
   if (!user?.image) {
-    return new NextResponse("Not found", { status: 404 });
+    return new NextResponse("Not found", {
+      status: 404,
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+      }
+    });
   }
 
   // If it's an external URL (e.g. Google), redirect to it
