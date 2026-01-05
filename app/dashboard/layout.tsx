@@ -13,7 +13,7 @@ export default async function DashboardLayout({
   // Guest layout - simplified without sidebar
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col bg-zinc-50">
+      <div className="min-h-screen flex flex-col bg-zinc-50 font-sans">
         {/* Simple header for guests */}
         <header className="h-16 border-b border-zinc-200 bg-white/80 backdrop-blur-sm flex items-center justify-between px-6 sticky top-0 z-50">
           <Link href="/" className="flex items-center gap-2 group">
@@ -57,7 +57,7 @@ export default async function DashboardLayout({
 
   // Authenticated layout with sidebar
   return (
-    <div className="min-h-screen flex flex-col md:block bg-[#FDFBF9]">
+    <div className="min-h-screen flex flex-col md:block bg-[#FDFBF9] font-sans">
       <SidebarWrapper />
 
       <div className="flex-1 flex flex-col md:ml-64 h-screen overflow-hidden">
