@@ -10,74 +10,71 @@ interface StatsPanelProps {
     className?: string;
 }
 
-// ... imports remain the same ...
-
 export function StatsPanel({ stats, className }: StatsPanelProps) {
-    return (
-        <div className={cn("bg-gradient-to-br from-violet-600 to-indigo-600 rounded-[32px] p-6 shadow-xl shadow-indigo-500/20 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/30 hover:-translate-y-1.5 h-full min-h-[260px] flex flex-col justify-between relative overflow-hidden group", className)}>
+    const progress = Math.min((stats.examsCreatedLast7Days / 5) * 100, 100);
 
-            {/* Decorative Background Elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/30 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
+    return (
+        <div className={cn("bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 rounded-[32px] p-6 h-full min-h-[260px] flex flex-col justify-between overflow-hidden relative transition-all duration-300 hover:-translate-y-1.5 shadow-xl shadow-indigo-500/20 hover:shadow-2xl hover:shadow-indigo-500/30 group", className)}>
+
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-72 h-72 bg-white/8 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3" />
+            <div className="absolute bottom-0 left-0 w-56 h-56 bg-fuchsia-500/25 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/3" />
+
+            {/* Dot pattern overlay */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.07)_1px,transparent_0)] [background-size:16px_16px] pointer-events-none" />
+
 
             {/* Header / Weekly Goal */}
             <div className="relative z-10">
-                <div className="flex items-end justify-between mb-4">
+                <div className="flex items-start justify-between mb-5">
                     <div>
-                        <h3 className="text-[10px] font-bold text-indigo-100 uppercase tracking-widest mb-1 px-2.5 py-1 rounded-full bg-white/10 border border-white/10 w-fit backdrop-blur-md">Weekly Goal</h3>
-                        <div className="flex items-baseline gap-2 mt-2">
-                            <span className="text-4xl font-black text-white tracking-tighter leading-none drop-shadow-sm">{Math.min(stats.examsCreatedLast7Days, 5)}</span>
-                            <span className="text-lg font-bold text-indigo-200">/ 5</span>
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm mb-3">
+                            <span className="text-[11px] font-bold text-white/90 uppercase tracking-[0.15em]">Weekly Goal</span>
+                        </div>
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-4xl font-black text-white tracking-tighter leading-none">
+                                {Math.min(stats.examsCreatedLast7Days, 5)}
+                            </span>
+                            <span className="text-xl font-bold text-white/40 ml-1">/ 5</span>
                         </div>
                     </div>
                     {stats.examsCreatedLast7Days >= 5 && (
-                        <div className="px-3 py-1.5 rounded-full bg-white text-[10px] font-bold uppercase text-indigo-600 tracking-wide shadow-sm mb-1">
+                        <div className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-[11px] font-black uppercase text-amber-900 tracking-wide shadow-lg shadow-amber-400/40 animate-pulse">
                             Goal Met!
                         </div>
                     )}
                 </div>
 
-                <div className="h-3 w-full bg-black/20 rounded-full overflow-hidden p-0.5 backdrop-blur-sm">
+                {/* Progress bar */}
+                <div className="h-2.5 w-full bg-black/20 rounded-full overflow-hidden">
                     <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: `${Math.min((stats.examsCreatedLast7Days / 5) * 100, 100)}%` }}
-                        transition={{ duration: 0.5, ease: "easeOut", delay: 0 }}
-                        className="h-full bg-white rounded-full relative shadow-sm"
-                    >
-                        <div className="absolute inset-0 bg-white opacity-50" />
-                    </motion.div>
+                        animate={{ width: `${progress}%` }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        className="h-full bg-white rounded-full"
+                    />
                 </div>
             </div>
 
-            {/* Stats Grid - Glassmorphic & Integrated */}
-            <div className="grid grid-cols-4 relative z-10 mt-6 pt-6 border-t border-white/10 divide-x divide-white/10">
-                <MiniStat
-                    label="Exams"
-                    value={stats.examsCreatedLast7Days}
-                    textColor="text-white"
-                    labelColor="text-indigo-200"
-                />
-                <MiniStat
-                    label="Score"
-                    value={Math.round(stats.avgScoreLast7Days || 0)}
-                    suffix="%"
-                    textColor="text-white"
-                    labelColor="text-indigo-200"
-                />
-                <MiniStat
-                    label="Questions"
-                    value={stats.questionsLast7Days}
-                    textColor="text-white"
-                    labelColor="text-indigo-200"
-                />
-                <MiniStat
-                    label="Hours"
-                    value={Math.round(stats.studyTimeLast7Days * 10) / 10}
-                    textColor="text-white"
-                    labelColor="text-indigo-200"
-                />
+            {/* Stats Grid */}
+            <div className="grid grid-cols-4 gap-2 relative z-10 mt-auto pt-5">
+                {[
+                    { label: "Exams", value: stats.examsCreatedLast7Days },
+                    { label: "Score", value: Math.round(stats.avgScoreLast7Days || 0), suffix: "%" },
+                    { label: "Questions", value: stats.questionsLast7Days },
+                    { label: "Hours", value: Math.round(stats.studyTimeLast7Days * 10) / 10 },
+                ].map((stat) => (
+                    <div key={stat.label} className="flex flex-col items-center justify-center text-center p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+                        <div className="flex items-baseline justify-center gap-0.5 mb-0.5">
+                            <span className="text-xl font-black text-white tracking-tight">{stat.value}</span>
+                            {stat.suffix && <span className="text-xs font-bold text-white/60">{stat.suffix}</span>}
+                        </div>
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-white/50">{stat.label}</span>
+                    </div>
+                ))}
             </div>
         </div>
+
     );
 }
 

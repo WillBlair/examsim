@@ -114,7 +114,7 @@ export const RegisterForm = () => {
                 disabled={isPending}
                 placeholder="John Doe"
                 type="text"
-                className="h-10 rounded-lg bg-zinc-50 border-zinc-200 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all text-sm"
+                className="h-12 rounded-xl border-zinc-200 bg-zinc-50/50 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all duration-200 font-medium"
               />
               {form.formState.errors.name && (
                 <p className="text-xs font-medium text-red-500 ml-1">{form.formState.errors.name.message}</p>
@@ -129,7 +129,7 @@ export const RegisterForm = () => {
                 placeholder="john.doe@example.com"
                 type="email"
                 onFocus={handleEmailFocus}
-                className="h-10 rounded-lg bg-zinc-50 border-zinc-200 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all text-sm"
+                className="h-12 rounded-xl border-zinc-200 bg-zinc-50/50 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all duration-200 font-medium"
               />
               {form.formState.errors.email && (
                 <p className="text-xs font-medium text-red-500 ml-1">{form.formState.errors.email.message}</p>
@@ -145,7 +145,7 @@ export const RegisterForm = () => {
                     disabled={isPending}
                     placeholder="******"
                     type="password"
-                    className="h-10 rounded-lg bg-zinc-50 border-zinc-200 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all text-sm"
+                    className="h-12 rounded-xl border-zinc-200 bg-zinc-50/50 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all duration-200 font-medium"
                   />
                   {form.formState.errors.password && (
                     <p className="text-xs font-medium text-red-500 ml-1">{form.formState.errors.password.message}</p>

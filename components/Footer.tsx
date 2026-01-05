@@ -1,6 +1,5 @@
 
 
-import Link from "next/link";
 import Image from "next/image";
 
 export function Footer() {
@@ -17,10 +16,14 @@ export function Footer() {
                   <span className="font-bold text-lg tracking-tight text-zinc-900 font-display">ExamSim</span>
                </div>
 
+               {/* Copyright */}
+               <p className="text-sm text-zinc-400">
+                  © {new Date().getFullYear()} ExamSim. All rights reserved.
+               </p>
+
+
 
             </div>
-
-
          </div>
       </footer>
    );

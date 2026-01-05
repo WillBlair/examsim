@@ -25,7 +25,7 @@ const LoginSchema = z.object({
 export const LoginForm = () => {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
-  
+
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -43,7 +43,7 @@ export const LoginForm = () => {
 
   // Show password fields when user starts typing email
   if (emailValue && emailValue.length > 0 && !showPassword) {
-      setShowPassword(true);
+    setShowPassword(true);
   }
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
@@ -74,58 +74,58 @@ export const LoginForm = () => {
     >
       <div className="space-y-4">
         <div className="flex flex-col gap-4">
-           <Social />
-           <div className="relative py-0">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-zinc-100" />
-                </div>
-                <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
-                    <span className="bg-white px-3 text-zinc-400">
-                    Or
-                    </span>
-                </div>
+          <Social />
+          <div className="relative py-0">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-zinc-100" />
             </div>
+            <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
+              <span className="bg-white px-3 text-zinc-400">
+                Or
+              </span>
+            </div>
+          </div>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-3">
             <div className="grid gap-1.5">
-               <label htmlFor="email" className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 ml-1">Email</label>
-               <Input
-                  {...form.register("email")}
-                  disabled={isPending}
-                  placeholder="john.doe@example.com"
-                  type="email"
-                  className="h-10 rounded-lg bg-zinc-50 border-zinc-200 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all text-sm"
-                />
-               {form.formState.errors.email && (
-                  <p className="text-xs font-medium text-red-500 ml-1">{form.formState.errors.email.message}</p>
-               )}
+              <label htmlFor="email" className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 ml-1">Email</label>
+              <Input
+                {...form.register("email")}
+                disabled={isPending}
+                placeholder="john.doe@example.com"
+                type="email"
+                className="h-12 rounded-xl border-zinc-200 bg-zinc-50/50 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all duration-200 font-medium"
+              />
+              {form.formState.errors.email && (
+                <p className="text-xs font-medium text-red-500 ml-1">{form.formState.errors.email.message}</p>
+              )}
             </div>
-            
+
             {showPassword && (
-                <div className="grid gap-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <label htmlFor="password" className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 ml-1">Password</label>
-                    <Input
-                        {...form.register("password")}
-                        disabled={isPending}
-                        placeholder="******"
-                        type="password"
-                        className="h-10 rounded-lg bg-zinc-50 border-zinc-200 focus:bg-white focus:ring-2 focus:ring-black/5 focus:border-black/10 transition-all text-sm"
-                        />
-                    {form.formState.errors.password && (
-                        <p className="text-xs font-medium text-red-500 ml-1">{form.formState.errors.password.message}</p>
-                    )}
-                </div>
+              <div className="grid gap-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                <label htmlFor="password" className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 ml-1">Password</label>
+                <Input
+                  {...form.register("password")}
+                  disabled={isPending}
+                  placeholder="******"
+                  type="password"
+                  className="h-12 rounded-xl border-zinc-200 bg-zinc-50/50 focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all duration-200 font-medium"
+                />
+                {form.formState.errors.password && (
+                  <p className="text-xs font-medium text-red-500 ml-1">{form.formState.errors.password.message}</p>
+                )}
+              </div>
             )}
           </div>
-          
+
           {error && (
-             <div className="bg-red-50 border border-red-100 p-3 rounded-lg flex items-center gap-x-2 text-sm text-red-600 font-medium">
-                <p>{error}</p>
-             </div>
+            <div className="bg-red-50 border border-red-100 p-3 rounded-lg flex items-center gap-x-2 text-sm text-red-600 font-medium">
+              <p>{error}</p>
+            </div>
           )}
-          
+
           <Button
             disabled={isPending}
             type="submit"

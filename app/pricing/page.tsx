@@ -74,7 +74,7 @@ export default async function PricingPage() {
     const isAuthenticated = !!session?.user;
 
     return (
-        <main className="min-h-screen bg-white relative">
+        <main className="min-h-screen bg-white relative font-sans">
             {/* Floating back link for authenticated users */}
             {isAuthenticated && (
                 <Link
