@@ -54,7 +54,7 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
         ? Math.round(chartData.reduce((acc, item) => acc + item.score, 0) / chartData.length)
         : 0;
 
-    // Colors
+    // Colors - Updated to match vibrant theme (Violet/Indigo)
     const chartColor = "#8b5cf6"; // violet-500
 
     // Calculate appropriate X-axis interval based on data length
@@ -66,21 +66,20 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
 
     return (
         <div
-            className="h-full p-6 rounded-md bg-sky-50 border-2 border-zinc-900 shadow-none transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-1 flex flex-col relative overflow-hidden group"
+            className="h-full p-6 rounded-[32px] bg-white border border-indigo-50 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 flex flex-col relative overflow-hidden group"
             onMouseEnter={() => setKey(prev => prev + 1)}
         >
-
             {/* Header */}
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-sky-200/50 shrink-0 relative z-10">
+            <div className="flex items-center justify-between mb-2 pb-2 border-b border-zinc-100 shrink-0 relative z-10">
                 <div>
-                    <h2 className="font-black text-zinc-900 text-lg tracking-tight">Performance Trends</h2>
-                    <p className="text-xs text-sky-900/60 font-bold mt-0.5">Your score history over time</p>
+                    <h2 className="font-black text-indigo-950 text-xl tracking-tight">Performance</h2>
+                    <p className="text-xs text-zinc-500 font-bold mt-0.5 uppercase tracking-wide">Score History</p>
                 </div>
                 {hasData && (
-                    <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-zinc-900 shadow-none transition-all duration-200 hover:shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:-translate-y-0.5">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-sm font-black text-zinc-900 tracking-tight">{avgScore}%</span>
-                        <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">avg</span>
+                    <div className="flex items-center justify-center gap-2 bg-violet-50 px-3 h-8 w-[125px] rounded-full border border-violet-100">
+                        <div className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+                        <span className="text-sm font-black text-violet-700 tracking-tight">{avgScore}%</span>
+                        <span className="text-[10px] text-violet-400 font-bold uppercase tracking-wider">avg</span>
                     </div>
                 )}
             </div>
@@ -100,11 +99,11 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                                 horizontal={true}
                                 vertical={false}
                                 strokeDasharray="3 3"
-                                stroke="#e4e4e7"
+                                stroke="#f4f4f5"
                             />
                             {/* Reference lines for key percentage markers */}
                             <ReferenceLine y={25} stroke="#f4f4f5" strokeDasharray="3 3" />
-                            <ReferenceLine y={50} stroke="#e4e4e7" strokeDasharray="3 3" />
+                            <ReferenceLine y={50} stroke="#f4f4f5" strokeDasharray="3 3" />
                             <ReferenceLine y={75} stroke="#f4f4f5" strokeDasharray="3 3" />
 
                             <XAxis
@@ -112,7 +111,7 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
-                                tick={{ fontSize: 10, fill: '#71717a', fontWeight: 500 }}
+                                tick={{ fontSize: 10, fill: '#a1a1aa', fontWeight: 700 }}
                                 interval={getXAxisInterval()}
                                 tickFormatter={(value) => chartData[value]?.date || ''}
                             />
@@ -124,20 +123,20 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                                 domain={[0, 100]}
                                 ticks={[0, 25, 50, 75, 100]}
                                 tickFormatter={(value) => `${value}%`}
-                                tick={{ fontSize: 9, fill: '#a1a1aa' }}
+                                tick={{ fontSize: 9, fill: '#d4d4d8', fontWeight: 600 }}
                             />
                             {!isAnimating && (
                                 <ChartTooltip
                                     trigger="hover"
-                                    cursor={{ stroke: '#18181b', strokeWidth: 2, strokeDasharray: '4 4' }}
+                                    cursor={{ stroke: '#8b5cf6', strokeWidth: 1, strokeDasharray: '4 4' }}
                                     content={
                                         <ChartTooltipContent
                                             hideLabel
-                                            className="bg-white border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] rounded-lg"
+                                            className="bg-white/90 backdrop-blur-sm border border-violet-100 shadow-xl rounded-xl"
                                             formatter={(value, name) => (
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-full bg-violet-500" />
-                                                    <span className="font-black text-zinc-900">{value}%</span>
+                                                    <div className="w-2 h-2 rounded-full bg-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.5)]" />
+                                                    <span className="font-bold text-zinc-900">{value}%</span>
                                                 </div>
                                             )}
                                         />
@@ -146,8 +145,8 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                             )}
                             <defs>
                                 <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor={chartColor} stopOpacity={0.25} />
-                                    <stop offset="95%" stopColor={chartColor} stopOpacity={0.02} />
+                                    <stop offset="5%" stopColor={chartColor} stopOpacity={0.3} />
+                                    <stop offset="95%" stopColor={chartColor} stopOpacity={0.0} />
                                 </linearGradient>
                             </defs>
                             <Area
@@ -155,21 +154,21 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                                 type="monotone"
                                 fill="url(#scoreGradient)"
                                 stroke={chartColor}
-                                strokeWidth={2.5}
+                                strokeWidth={3}
                                 isAnimationActive={true}
                                 animationDuration={500}
                                 animationEasing="ease-out"
                                 dot={{
-                                    fill: chartColor,
-                                    stroke: '#fff',
+                                    fill: "white",
+                                    stroke: chartColor,
                                     strokeWidth: 2,
-                                    r: 6
+                                    r: 4
                                 }}
                                 activeDot={!isAnimating ? {
                                     fill: chartColor,
                                     stroke: '#fff',
                                     strokeWidth: 3,
-                                    r: 8,
+                                    r: 6,
                                     className: "drop-shadow-md cursor-pointer"
                                 } : false}
                             />
@@ -178,7 +177,7 @@ export function NeoBrutalistChart({ data }: NeoBrutalistChartProps) {
                 </div>
             ) : (
                 <div className="flex-1 flex items-center justify-center text-center">
-                    <p className="text-xs text-zinc-400">Complete an exam to see trends</p>
+                    <p className="text-xs text-zinc-400 font-bold">Complete an exam to see trends</p>
                 </div>
             )}
         </div>

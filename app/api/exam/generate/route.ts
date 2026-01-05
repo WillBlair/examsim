@@ -38,35 +38,31 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized. Please provide authentication or guest ID." }, { status: 401 });
         }
 
-        // Rate Limit Check
+        // Rate Limit Check - use subscription-based limits
         if (isAuthenticated) {
             // Exempt owner account from limits
             if (session.user.email !== "willblair47@gmail.com") {
-                const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-                const [requestCount] = await db
-                    .select({ count: count() })
-                    .from(rateLimits)
-                    .where(
-                        and(
-                            eq(rateLimits.userId, session.user.id),
-                            eq(rateLimits.action, "generate_exam"),
-                            gte(rateLimits.timestamp, oneHourAgo)
-                        )
-                    );
+                const { getUserSubscription } = await import("@/lib/subscription");
+                const subscription = await getUserSubscription(session.user.id);
 
-                if (requestCount.count >= 1) {
+                if (!subscription.canGenerateExam) {
+                    const message = subscription.tier === "free"
+                        ? subscription.isEmailVerified
+                            ? "You've used all 2 exams this month. Upgrade to Student for unlimited exams!"
+                            : "Verify your email for 2 exams/month, or upgrade to Student for unlimited!"
+                        : "Rate limit exceeded. Please try again later.";
+
                     return NextResponse.json(
-                        { error: "Rate limit exceeded. Free tier users can only generate 1 exam per hour. Upgrade for unlimited access." },
+                        {
+                            error: message,
+                            tier: subscription.tier,
+                            examsUsed: subscription.examsThisMonth,
+                            upgradeRequired: subscription.tier === "free"
+                        },
                         { status: 429 }
                     );
                 }
             }
-
-            // Record this request for authenticated users
-            await db.insert(rateLimits).values({
-                userId: session.user.id,
-                action: "generate_exam"
-            });
         } else if (isGuest) {
             // For guests, check if they've already created an exam with this guest ID
             const existingGuestExam = await db.query.exams.findFirst({
@@ -84,8 +80,23 @@ export async function POST(req: NextRequest) {
         const formData = await req.formData();
         const topic = formData.get("topic") as string;
         const difficulty = formData.get("difficulty") as string || "Medium";
-        const questionCount = parseInt(formData.get("count") as string || "5");
+        let questionCount = parseInt(formData.get("count") as string || "5");
         const timeLimit = formData.get("timeLimit") ? parseInt(formData.get("timeLimit") as string) : null;
+
+        // Enforce question count limits based on subscription tier
+        if (isAuthenticated && session.user.email !== "willblair47@gmail.com") {
+            const { getUserSubscription } = await import("@/lib/subscription");
+            const subscription = await getUserSubscription(session.user.id);
+
+            if (questionCount > subscription.questionsLimit) {
+                questionCount = subscription.questionsLimit;
+            }
+        } else if (isGuest) {
+            // Guests are limited to 10 questions
+            if (questionCount > 10) {
+                questionCount = 10;
+            }
+        }
 
         // Parse new settings
         const allowHints = formData.get("allowHints") === "true";

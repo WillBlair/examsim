@@ -15,6 +15,16 @@ export const users = pgTable("user", {
   grade: text("grade"),
   subjects: jsonb("subjects"), // Storing array of subjects
   hasOnboarded: boolean("has_onboarded").default(false),
+  // Subscription fields
+  subscriptionTier: text("subscription_tier").default("free"), // 'free', 'student', 'pro'
+  subscriptionStatus: text("subscription_status").default("active"), // 'active', 'canceled', 'past_due', 'trialing'
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscriptionPeriodEnd: timestamp("subscription_period_end", { mode: "date" }),
+  // Abuse prevention
+  ipAddresses: jsonb("ip_addresses"), // Array of known IPs
+  deviceFingerprints: jsonb("device_fingerprints"), // Array of device hashes
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const accounts = pgTable(
@@ -163,3 +173,17 @@ export const flashcardProgress = pgTable("flashcard_progress", {
   deckIdIdx: index("flashcard_progress_deck_id_idx").on(table.deckId),
   cardIdIdx: index("flashcard_progress_card_id_idx").on(table.cardId),
 }));
+
+// Subscription events for audit trail
+export const subscriptionEvents = pgTable("subscription_events", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),
+  eventType: text("event_type").notNull(), // 'checkout.session.completed', 'customer.subscription.updated', etc.
+  stripeEventId: text("stripe_event_id").notNull(),
+  data: jsonb("data"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("subscription_events_user_id_idx").on(table.userId),
+  stripeEventIdx: index("subscription_events_stripe_event_idx").on(table.stripeEventId),
+}));
+

@@ -8,6 +8,14 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().min(1).optional(),
   GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
   GOOGLE_API_KEY: z.string().min(1).optional(),
+  // Stripe
+  STRIPE_SECRET_KEY: z.string().min(1).default("sk_test_placeholder"),
+  STRIPE_PUBLISHABLE_KEY: z.string().min(1).default("pk_test_placeholder"),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1).default("whsec_placeholder"),
+  STRIPE_STUDENT_MONTHLY_PRICE_ID: z.string().min(1).default("price_placeholder"),
+  STRIPE_STUDENT_YEARLY_PRICE_ID: z.string().min(1).default("price_placeholder"),
+  STRIPE_PRO_MONTHLY_PRICE_ID: z.string().min(1).default("price_placeholder"),
+  STRIPE_PRO_YEARLY_PRICE_ID: z.string().min(1).default("price_placeholder"),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -27,6 +35,13 @@ function getEnv(): Env {
       GOOGLE_CLIENT_ID: undefined,
       GOOGLE_CLIENT_SECRET: undefined,
       GOOGLE_API_KEY: undefined,
+      STRIPE_SECRET_KEY: "sk_test_placeholder",
+      STRIPE_PUBLISHABLE_KEY: "pk_test_placeholder",
+      STRIPE_WEBHOOK_SECRET: "whsec_placeholder",
+      STRIPE_STUDENT_MONTHLY_PRICE_ID: "price_placeholder",
+      STRIPE_STUDENT_YEARLY_PRICE_ID: "price_placeholder",
+      STRIPE_PRO_MONTHLY_PRICE_ID: "price_placeholder",
+      STRIPE_PRO_YEARLY_PRICE_ID: "price_placeholder",
     } as Env;
   }
 

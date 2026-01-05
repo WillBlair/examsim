@@ -1,4 +1,4 @@
-import { Sidebar, MobileHeader } from "@/components/dashboard/Sidebar";
+import { SidebarWrapper, MobileHeaderWrapper } from "@/components/dashboard/SidebarWrapper";
 import { auth } from "@/auth";
 import Link from "next/link";
 
@@ -13,7 +13,7 @@ export default async function DashboardLayout({
   // Guest layout - simplified without sidebar
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col bg-zinc-50 bg-[linear-gradient(to_right,#80808015_1px,transparent_1px),linear-gradient(to_bottom,#80808015_1px,transparent_1px)] bg-[size:16px_16px]">
+      <div className="min-h-screen flex flex-col bg-zinc-50">
         {/* Simple header for guests */}
         <header className="h-16 border-b border-zinc-200 bg-white/80 backdrop-blur-sm flex items-center justify-between px-6 sticky top-0 z-50">
           <Link href="/" className="flex items-center gap-2 group">
@@ -57,18 +57,18 @@ export default async function DashboardLayout({
 
   // Authenticated layout with sidebar
   return (
-    <div className="min-h-screen flex flex-col md:block bg-zinc-50 bg-[linear-gradient(to_right,#80808015_1px,transparent_1px),linear-gradient(to_bottom,#80808015_1px,transparent_1px)] bg-[size:16px_16px]">
-      <Sidebar />
+    <div className="min-h-screen flex flex-col md:block bg-[#FDFBF9]">
+      <SidebarWrapper />
 
       <div className="flex-1 flex flex-col md:ml-64 h-screen overflow-hidden">
-        <MobileHeader />
+        <MobileHeaderWrapper />
         <main className="flex-1 flex flex-col overflow-y-auto custom-scrollbar">
           <div className="relative flex-1 flex flex-col">
-            {/* Ambient glow */}
-            <div className="fixed top-0 right-1/4 w-[500px] h-[500px] bg-accent-purple/5 blur-[150px] rounded-full pointer-events-none" />
+            {/* Ambient glow - Warmer */}
+            <div className="fixed top-0 right-1/4 w-[500px] h-[500px] bg-orange-100/40 blur-[150px] rounded-full pointer-events-none" />
 
             {/* Content */}
-            <div className="relative z-10 px-4 py-6 md:px-8 flex-1 flex flex-col">
+            <div className="relative z-10 px-4 py-8 md:px-10 flex-1 flex flex-col">
               {children}
             </div>
           </div>

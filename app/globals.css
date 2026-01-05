@@ -197,6 +197,29 @@
       0 2px 4px -2px rgb(0 0 0 / 0.05);
   }
 
+  .shadow-premium {
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.03),
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 12px 24px -6px rgba(0, 0, 0, 0.06);
+  }
+
+  .shadow-premium-hover {
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.03),
+      0 8px 16px -4px rgba(0, 0, 0, 0.06),
+      0 20px 40px -8px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Glows */
+  .shadow-glow-emerald {
+    box-shadow: 0 0 20px -4px rgba(16, 185, 129, 0.3);
+  }
+
+  .shadow-glow-amber {
+    box-shadow: 0 0 20px -4px rgba(245, 158, 11, 0.3);
+  }
+
   /* Premium Pattern */
   .pattern-dots {
     background-image: radial-gradient(hsl(var(--foreground) / 0.1) 1px, transparent 1px);
@@ -247,6 +270,7 @@
       opacity: 0;
       transform: translateY(20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -286,5 +310,40 @@
 
   .border-3 {
     border-width: 3px;
+  }
+
+  /* Animated Gradient for Upgrade CTA */
+  @keyframes gradient-x {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 3s ease infinite;
+  }
+
+  /* Pulse glow for Pro badge */
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+
+    50% {
+      box-shadow: 0 0 35px rgba(16, 185, 129, 0.6);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
   }
 }
