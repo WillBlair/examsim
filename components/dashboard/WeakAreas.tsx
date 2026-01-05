@@ -6,9 +6,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 interface WeakArea {
-  topic: string;
-  accuracy: number;
-  questionsMissed: number;
+  subtopic: string;
+  score: number;
+  totalQuestions: number;
 }
 
 interface WeakAreasProps {
@@ -55,17 +55,17 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
                 <div
                   key={i}
                   className="group/item flex items-center justify-between p-3.5 rounded-xl bg-white border-2 border-rose-200 shadow-[0_2px_8px_-2px_rgba(244,63,94,0.05)] transition-all duration-300 hover:border-rose-300 hover:bg-rose-50/30 hover:shadow-md cursor-pointer"
-                  onClick={() => router.push(`/dashboard/new?topic=${encodeURIComponent(area.topic)}`)}
+                  onClick={() => router.push(`/dashboard/new?topic=${encodeURIComponent(area.subtopic)}`)}
                 >
                   <div className="flex flex-col gap-1.5 min-w-0">
                     <span className="font-bold text-zinc-900 truncate text-sm group-hover/item:text-rose-700 transition-colors">
-                      {area.topic}
+                      {area.subtopic}
                     </span>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1.5 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100/50 group-hover/item:border-rose-200 transition-colors">
                         <div className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
                         <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wide">
-                          {area.questionsMissed} Missed
+                          {Math.round(area.totalQuestions * (1 - area.score / 100))} Missed
                         </span>
                       </div>
                     </div>
@@ -73,7 +73,7 @@ export function WeakAreas({ weakAreas }: WeakAreasProps) {
 
                   <div className="flex flex-col items-end gap-1">
                     <span className="text-xs font-black text-rose-900/40 group-hover/item:text-rose-500 transition-colors">
-                      {isNaN(area.accuracy) ? '0' : Math.round(area.accuracy)}%
+                      {isNaN(area.score) ? '0' : Math.round(area.score)}%
                     </span>
                   </div>
                 </div>
