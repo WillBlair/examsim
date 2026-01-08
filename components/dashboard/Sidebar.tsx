@@ -30,7 +30,6 @@ const navSections = [
   {
     title: "Insights",
     items: [
-      { name: "Analytics", href: "/dashboard/analytics", icon: "GraphUp" },
       { name: "Achievements", href: "/dashboard/achievements", icon: "Trophy" },
     ]
   },
