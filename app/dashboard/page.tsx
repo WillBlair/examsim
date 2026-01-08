@@ -138,7 +138,7 @@ export default async function DashboardPage() {
           <div className="relative z-10 hidden md:flex items-center gap-5">
             {/* Streak Badge - Redesigned */}
             {hasExams && (
-              <div className="relative flex items-center gap-3 px-4 h-16 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md overflow-hidden group/streak transition-all duration-300 hover:bg-white/20 hover:-translate-y-1">
+              <div className="relative flex items-center gap-3 px-4 h-16 rounded-2xl bg-white/10 border border-white/30 backdrop-blur-md overflow-hidden group/streak transition-all duration-300 hover:bg-white/20 hover:-translate-y-1">
                 <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center shadow-lg">
                   <Fire weight="fill" className="w-5 h-5 text-white" />
                 </div>
@@ -206,7 +206,7 @@ export default async function DashboardPage() {
                       Create a custom test from your notes.
                     </p>
 
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white text-emerald-600 rounded-xl font-bold text-sm shadow-sm group-hover:bg-emerald-50 transition-colors">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white text-emerald-600 rounded-xl font-bold text-sm border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-none">
                       Start Session <ArrowRight weight="bold" className="w-4 h-4" />
                     </div>
                   </div>
@@ -234,7 +234,7 @@ export default async function DashboardPage() {
                       Interactive decks from your study material.
                     </p>
 
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white text-orange-600 rounded-xl font-bold text-sm shadow-sm group-hover:bg-orange-50 transition-colors">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white text-orange-600 rounded-xl font-bold text-sm border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-none">
                       Create Deck <ArrowRight weight="bold" className="w-4 h-4" />
                     </div>
                   </div>

@@ -14,7 +14,7 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
     const progress = Math.min((stats.examsCreatedLast7Days / 5) * 100, 100);
 
     return (
-        <div className={cn("bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 rounded-[32px] p-6 h-full min-h-[260px] flex flex-col justify-between overflow-hidden relative transition-all duration-300 hover:-translate-y-1.5 shadow-xl shadow-indigo-500/20 hover:shadow-2xl hover:shadow-indigo-500/30 group", className)}>
+        <div className={cn("bg-[#7C3BED] rounded-[32px] p-6 h-full min-h-[260px] flex flex-col justify-between overflow-hidden relative transition-all duration-300 hover:-translate-y-1.5 shadow-xl shadow-indigo-500/20 hover:shadow-2xl hover:shadow-indigo-500/30 group", className)}>
 
             {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-72 h-72 bg-white/8 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3" />
@@ -64,7 +64,7 @@ export function StatsPanel({ stats, className }: StatsPanelProps) {
                     { label: "Questions", value: stats.questionsLast7Days },
                     { label: "Hours", value: Math.round(stats.studyTimeLast7Days * 10) / 10 },
                 ].map((stat) => (
-                    <div key={stat.label} className="flex flex-col items-center justify-center text-center p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
+                    <div key={stat.label} className="flex flex-col items-center justify-center text-center p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/30">
                         <div className="flex items-baseline justify-center gap-0.5 mb-0.5">
                             <span className="text-xl font-black text-white tracking-tight">{stat.value}</span>
                             {stat.suffix && <span className="text-xs font-bold text-white/60">{stat.suffix}</span>}
