@@ -42,6 +42,74 @@ const TIME_LIMITS = [
     { label: "60m", value: 60 },
 ];
 
+/**
+ * Calculate estimated generation time based on multiple factors
+ */
+function calculateEstimatedTime(params: {
+    files: File[];
+    pastedText: string;
+    questionCount: number;
+    difficulty: string;
+    questionTypes: string[];
+    allowHints: boolean;
+    allowExplanations: boolean;
+}): number {
+    let estimate = 0;
+
+    // Base overhead (API latency, connection, etc.)
+    const BASE_OVERHEAD = 5;
+    estimate += BASE_OVERHEAD;
+
+    // File processing time
+    // Larger files take longer to parse (PDF parsing, text extraction)
+    const totalFileSize = params.files.reduce((sum, f) => sum + f.size, 0);
+    const fileSizeMB = totalFileSize / (1024 * 1024);
+
+    // ~2 seconds per MB of content (accounts for parsing overhead)
+    const FILE_SECONDS_PER_MB = 2;
+    estimate += fileSizeMB * FILE_SECONDS_PER_MB;
+
+    // Pasted text processing (much faster than files)
+    const textLengthKB = params.pastedText.length / 1024;
+    const TEXT_SECONDS_PER_10KB = 0.5;
+    estimate += (textLengthKB / 10) * TEXT_SECONDS_PER_10KB;
+
+    // Question generation time (the main factor)
+    // Base time per question varies by type
+    const baseTimePerQuestion: Record<string, number> = {
+        "Multiple Choice": 1.8,      // Needs 4 options + explanation
+        "True/False": 0.8,           // Simpler, just 2 options
+        "Select All That Apply": 2.2 // Similar to MC but more complex
+    };
+
+    // Average based on selected types
+    const avgTimePerQ = params.questionTypes.reduce((sum, type) => {
+        return sum + (baseTimePerQuestion[type] || 1.5);
+    }, 0) / params.questionTypes.length;
+
+    estimate += params.questionCount * avgTimePerQ;
+
+    // Difficulty multiplier
+    // Harder questions require more complex reasoning
+    const difficultyMultipliers: Record<string, number> = {
+        "Easy": 0.85,
+        "Medium": 1.0,
+        "Hard": 1.2
+    };
+    estimate *= difficultyMultipliers[params.difficulty] || 1.0;
+
+    // Extra features add generation time
+    if (params.allowHints) {
+        estimate += params.questionCount * 0.3; // ~0.3s per hint
+    }
+    if (params.allowExplanations) {
+        estimate += params.questionCount * 0.4; // ~0.4s per explanation
+    }
+
+    // Round to nearest whole second
+    return Math.round(estimate);
+}
+
 export default function NewExamPage() {
     const router = useRouter();
     const { data: session, status: authStatus } = useSession();
@@ -171,10 +239,16 @@ export default function NewExamPage() {
         setLogs([]);
 
         const fileCount = files.length;
-        let baseTime = 10;
-        baseTime += fileCount * 2;
-        baseTime += questionCount * 1.5;
-        setEstimatedTime(baseTime);
+        const estimate = calculateEstimatedTime({
+            files,
+            pastedText: sourceType === "text" ? pastedText : "",
+            questionCount,
+            difficulty,
+            questionTypes,
+            allowHints,
+            allowExplanations
+        });
+        setEstimatedTime(estimate);
 
         if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
         countdownIntervalRef.current = setInterval(() => {
