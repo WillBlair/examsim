@@ -48,8 +48,15 @@ export async function startExamFromTemplate(templateId: number) {
 
     try {
         // A. Create Exam Instance
+        // Determine icon URL based on template
+        const iconUrl = template.title === "NCLEX-RN Practice Exam"
+            ? "/images/nursingicon(1).jpg"
+            : null;
+
         const [newExam] = await db.insert(exams).values({
             userId,
+            templateId, // Link to the template
+            iconUrl,     // Store the icon URL
             title: template.title,
             topic: template.topic,
             difficulty: template.difficulty,
