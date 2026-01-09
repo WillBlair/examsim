@@ -214,9 +214,27 @@ export function useExamState(examId: number, questions: Question[]) {
         await submitExam();
     };
 
+    const [visibleAnswers, setVisibleAnswers] = useState<Record<number, boolean>>({});
+
+    // ... (keep existing effects)
+
+    const clearAnswer = (questionId: number) => {
+        if (isSubmitted) return;
+        setAnswers(prev => {
+            const newAnswers = { ...prev };
+            delete newAnswers[questionId];
+            return newAnswers;
+        });
+    };
+
+    const toggleShowAnswer = (questionId: number) => {
+        setVisibleAnswers(prev => ({ ...prev, [questionId]: !prev[questionId] }));
+    };
+
     return {
         answers,
         visibleHints,
+        visibleAnswers,
         isSubmitted,
         isSubmitting,
         score,
@@ -225,6 +243,8 @@ export function useExamState(examId: number, questions: Question[]) {
         handleOptionSelect,
         handleTextChange,
         toggleHint,
+        toggleShowAnswer,
+        clearAnswer,
         handleSubmit,
         checkAnswer,
     };

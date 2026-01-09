@@ -46,6 +46,7 @@ export function ExamClient({
   const {
     answers,
     visibleHints,
+    visibleAnswers,
     isSubmitted,
     isSubmitting,
     score,
@@ -54,22 +55,17 @@ export function ExamClient({
     handleOptionSelect,
     handleTextChange,
     toggleHint,
+    toggleShowAnswer,
+    clearAnswer,
     handleSubmit,
     checkAnswer,
   } = useExamState(exam.id, questions);
 
-  // Trigger onComplete callback when exam is submitted
-  useEffect(() => {
-    if (isSubmitted && onComplete) {
-      // Small delay to let results render before showing modal
-      const timer = setTimeout(onComplete, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isSubmitted, onComplete]);
+  // ... existing useEffect ...
 
   return (
     <div className="max-w-3xl mx-auto py-8 space-y-8">
-      {/* Header */}
+      {/* ... existing header ... */}
       <ExamProgress
         exam={exam}
         questionsCount={questions.length}
@@ -85,7 +81,7 @@ export function ExamClient({
         />
       </ExamProgress>
 
-      {/* Results Banner */}
+      {/* ... existing results banner ... */}
       {isSubmitted && (
         <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 border-2 border-green-200 p-6 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-4">
           <h2 className="text-2xl font-bold mb-2 text-zinc-900">Exam Results</h2>
@@ -120,9 +116,12 @@ export function ExamClient({
               allowHints={allowHints}
               allowExplanations={allowExplanations}
               visibleHint={visibleHints[q.id] || false}
+              visibleAnswer={visibleAnswers[q.id] || false}
               onOptionSelect={(option, type) => handleOptionSelect(q.id, option, type)}
               onTextChange={(text) => handleTextChange(q.id, text)}
               onToggleHint={() => toggleHint(q.id)}
+              onToggleShowAnswer={() => toggleShowAnswer(q.id)}
+              onClearAnswer={() => clearAnswer(q.id)}
             />
           );
         })}

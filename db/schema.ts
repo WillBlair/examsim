@@ -187,3 +187,30 @@ export const subscriptionEvents = pgTable("subscription_events", {
   stripeEventIdx: index("subscription_events_stripe_event_idx").on(table.stripeEventId),
 }));
 
+
+// Template System for Exam Library
+export const examTemplates = pgTable("exam_templates", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  topic: text("topic").notNull(), // e.g., "Medical"
+  subtopic: text("subtopic").notNull(), // e.g., "Nursing"
+  difficulty: text("difficulty").notNull(),
+  timeLimit: integer("time_limit"), // in minutes
+  questionCount: integer("question_count").notNull(),
+  isPremium: boolean("is_premium").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const templateQuestions = pgTable("template_questions", {
+  id: serial("id").primaryKey(),
+  templateId: integer("template_id").references(() => examTemplates.id, { onDelete: "cascade" }).notNull(),
+  questionText: text("question_text").notNull(),
+  options: jsonb("options").notNull(), // Array of strings
+  correctAnswer: text("correct_answer").notNull(),
+  explanation: text("explanation"),
+  hint: text("hint"),
+  type: text("type").notNull().default("Multiple Choice"),
+}, (table) => ({
+  templateIdIdx: index("template_questions_template_id_idx").on(table.templateId),
+}));
