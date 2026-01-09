@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { examTemplates, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { startExamFromTemplate } from "@/app/actions/library";
+import Image from "next/image";
 
 export default async function LibraryPage() {
   const session = await auth();
@@ -44,14 +45,50 @@ export default async function LibraryPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template) => {
           // Assign different accent colors based on category
-          const categoryColors: Record<string, { bg: string; text: string; gradient: string }> = {
-            "Law": { bg: "bg-accent-purple/10", text: "text-accent-purple", gradient: "from-accent-purple/5" },
-            "Medical": { bg: "bg-emerald-500/10", text: "text-emerald-500", gradient: "from-emerald-500/5" },
-            "College Prep": { bg: "bg-blue-500/10", text: "text-blue-500", gradient: "from-blue-500/5" },
-            "Tech": { bg: "bg-violet-500/10", text: "text-violet-500", gradient: "from-violet-500/5" },
-            "Business": { bg: "bg-amber-500/10", text: "text-amber-500", gradient: "from-amber-500/5" },
+          const categoryColors: Record<string, { bg: string; text: string; gradient: string; button: string; shadow: string }> = {
+            "Law": {
+              bg: "bg-accent-purple/10",
+              text: "text-accent-purple",
+              gradient: "from-accent-purple/5",
+              button: "bg-accent-purple hover:bg-accent-purple/90",
+              shadow: "shadow-accent-purple/20"
+            },
+            "Medical": {
+              bg: "bg-emerald-500/10",
+              text: "text-emerald-500",
+              gradient: "from-emerald-500/5",
+              button: "bg-emerald-500 hover:bg-emerald-600",
+              shadow: "shadow-emerald-500/20"
+            },
+            "College Prep": {
+              bg: "bg-blue-500/10",
+              text: "text-blue-500",
+              gradient: "from-blue-500/5",
+              button: "bg-blue-500 hover:bg-blue-600",
+              shadow: "shadow-blue-500/20"
+            },
+            "Tech": {
+              bg: "bg-violet-500/10",
+              text: "text-violet-500",
+              gradient: "from-violet-500/5",
+              button: "bg-violet-500 hover:bg-violet-600",
+              shadow: "shadow-violet-500/20"
+            },
+            "Business": {
+              bg: "bg-amber-500/10",
+              text: "text-amber-500",
+              gradient: "from-amber-500/5",
+              button: "bg-amber-500 hover:bg-amber-600",
+              shadow: "shadow-amber-500/20"
+            },
           };
-          const colors = categoryColors[template.topic] || { bg: "bg-zinc-100", text: "text-zinc-500", gradient: "from-zinc-100" };
+          const colors = categoryColors[template.topic] || {
+            bg: "bg-zinc-100",
+            text: "text-zinc-500",
+            gradient: "from-zinc-100",
+            button: "bg-zinc-900 hover:bg-zinc-800",
+            shadow: "shadow-zinc-900/20"
+          };
 
           const isLocked = (!!template.isPremium) && !isPro;
 
@@ -74,9 +111,20 @@ export default async function LibraryPage() {
               )}
 
               <div className="mb-4 relative z-10 flex-1">
-                <div className={`w-10 h-10 rounded-lg ${colors.bg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <Sparkle weight="fill" className={`w-5 h-5 ${colors.text}`} />
-                </div>
+                {template.title === "NCLEX-RN Practice Exam" ? (
+                  <div className="w-10 h-10 rounded-lg overflow-hidden mb-4 group-hover:scale-110 transition-transform relative">
+                    <Image
+                      src="/images/nursingicon(1).jpg"
+                      alt="Nursing Icon"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className={`w-10 h-10 rounded-lg ${colors.bg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <Sparkle weight="fill" className={`w-5 h-5 ${colors.text}`} />
+                  </div>
+                )}
                 <h3 className="text-base font-bold text-zinc-900 mb-1 group-hover:text-accent-purple transition-colors">{template.title}</h3>
                 <p className="text-sm text-zinc-500 line-clamp-2">{template.description}</p>
               </div>
@@ -98,7 +146,7 @@ export default async function LibraryPage() {
                   disabled={isLocked}
                   className={`w-full font-bold shadow-lg transition-all active:scale-[0.98] ${isLocked
                     ? "bg-zinc-100 text-zinc-400 shadow-none cursor-not-allowed hover:bg-zinc-100"
-                    : "bg-zinc-900 text-white hover:bg-zinc-800 shadow-zinc-900/20"
+                    : `${colors.button} text-white ${colors.shadow}`
                     }`}
                 >
                   {isLocked ? "Upgrade to Unlock" : "Start Exam"}

@@ -329,8 +329,8 @@ export function FlashcardStudy({
                                 <div
                                     className={cn(
                                         "absolute inset-0 rounded-3xl grid place-items-center p-6 md:p-10 shadow-neo border-2 overflow-hidden transition-colors",
-                                        "bg-amber-50 border-zinc-900",
-                                        "hover:bg-amber-100/50"
+                                        "bg-gradient-to-br from-orange-100 to-orange-200 border-zinc-900",
+                                        "hover:from-orange-100 hover:to-orange-200"
                                     )}
                                     style={{
                                         backfaceVisibility: "hidden",
@@ -356,7 +356,7 @@ export function FlashcardStudy({
 
                                 {/* Back Side */}
                                 <div
-                                    className="absolute inset-0 rounded-3xl grid place-items-center p-6 md:p-10 shadow-neo bg-amber-50 border-2 border-zinc-900 overflow-hidden"
+                                    className="absolute inset-0 rounded-3xl grid place-items-center p-6 md:p-10 shadow-neo bg-gradient-to-br from-orange-100 to-orange-200 border-2 border-zinc-900 overflow-hidden"
                                     style={{
                                         backfaceVisibility: "hidden",
                                         WebkitBackfaceVisibility: "hidden",
