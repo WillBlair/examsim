@@ -146,7 +146,7 @@ export default async function LibraryPage() {
                   disabled={isLocked}
                   className={`w-full font-bold shadow-lg transition-all active:scale-[0.98] ${isLocked
                     ? "bg-zinc-100 text-zinc-400 shadow-none cursor-not-allowed hover:bg-zinc-100"
-                    : `${colors.button} text-white ${colors.shadow}`
+                    : "bg-zinc-900 hover:bg-zinc-800 text-white shadow-zinc-900/20"
                     }`}
                 >
                   {isLocked ? "Upgrade to Unlock" : "Start Exam"}
