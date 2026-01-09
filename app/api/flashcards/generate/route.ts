@@ -140,13 +140,15 @@ export async function POST(req: NextRequest) {
 
             Create flashcards that:
             - Have clear, concise questions or terms on the front
-            - Have detailed, comprehensive answers on the back
+            - Have SHORT, CONCISE answers on the back (max 2-3 sentences)
+            - MUST fit comfortably on a standard 3x5 index card without scrolling
             - Cover the most important concepts and information
             - Progress from fundamental concepts to more advanced topics
             - Include key definitions, facts, processes, and relationships
             ${includeHints ? "- Include a helpful hint for each card that guides toward the answer without giving it away" : ""}
 
             Make the cards useful for studying and memorization. Each card should test a single concept.
+            Avoid long paragraphs. Prioritize brevity and clarity.
         `;
 
         // Create stream

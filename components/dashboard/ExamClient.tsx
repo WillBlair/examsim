@@ -33,6 +33,7 @@ export function ExamClient({
   isGenerating = false,
   allowHints = false,
   allowExplanations = true,
+  backHref,
   onComplete
 }: {
   exam: Exam;
@@ -41,6 +42,7 @@ export function ExamClient({
   isGenerating?: boolean;
   allowHints?: boolean;
   allowExplanations?: boolean;
+  backHref?: string;
   onComplete?: () => void;
 }) {
   const {
@@ -73,6 +75,7 @@ export function ExamClient({
         isSubmitted={isSubmitted}
         isSaving={isSaving}
         lastSaved={lastSaved}
+        backHref={backHref}
       >
         <ExamTimer
           examId={exam.id}

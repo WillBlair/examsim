@@ -56,6 +56,6 @@ export default async function ExamPage({
     type: q.type
   }));
 
-  return <ExamClient exam={exam} questions={formattedQuestions} initialTimer={exam.timeLimit || undefined} />;
+  return <ExamClient exam={exam} questions={formattedQuestions} initialTimer={exam.timeLimit || undefined} backHref="/dashboard/library" />;
 }
 

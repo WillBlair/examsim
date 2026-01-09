@@ -20,6 +20,7 @@ interface ExamProgressProps {
     isSubmitted: boolean;
     isSaving: boolean;
     lastSaved: Date | null;
+    backHref?: string;
     children?: React.ReactNode; // For timer slot
 }
 
@@ -30,11 +31,14 @@ export function ExamProgress({
     isSubmitted,
     isSaving,
     lastSaved,
+    backHref = "/dashboard/library",
     children,
 }: ExamProgressProps) {
+    const backLink = isSubmitted ? "/dashboard" : backHref;
+
     return (
         <div className="flex items-center gap-4 bg-white p-4 rounded-lg border-2 border-zinc-200 shadow-sm">
-            <Link href="/dashboard/library">
+            <Link href={backLink}>
                 <Button variant="ghost" size="icon" className="hover:bg-zinc-50 rounded-sm">
                     <ArrowLeft className="w-5 h-5" />
                 </Button>

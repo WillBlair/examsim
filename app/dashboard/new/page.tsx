@@ -529,6 +529,7 @@ export default function NewExamPage() {
                         isGenerating={isGenerating}
                         allowHints={allowHints}
                         allowExplanations={allowExplanations}
+                        backHref="/dashboard/new"
                         onComplete={() => {
                             // Show auth modal for guests after exam completion
                             if (!isAuthenticated) {

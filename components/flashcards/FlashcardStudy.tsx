@@ -45,12 +45,12 @@ interface FlashcardStudyProps {
     onComplete?: () => void;
 }
 
-export function FlashcardStudy({ 
-    deckId, 
-    deckTitle, 
+export function FlashcardStudy({
+    deckId,
+    deckTitle,
     cards: initialCards,
     studyMode = "all",
-    onComplete 
+    onComplete
 }: FlashcardStudyProps) {
     const [cards, setCards] = useState<Flashcard[]>(initialCards);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -139,10 +139,10 @@ export function FlashcardStudy({
 
         startTransition(async () => {
             const result = await updateCardMastery(currentCard.id, "got_it");
-            
+
             if (result.success) {
                 setSessionStats(prev => ({ ...prev, gotIt: prev.gotIt + 1 }));
-                
+
                 if (result.masteryStatus === "mastered") {
                     setMasteredCards(prev => new Set([...prev, currentCard.id]));
                     setLearningCards(prev => {
@@ -166,16 +166,16 @@ export function FlashcardStudy({
 
         startTransition(async () => {
             const result = await updateCardMastery(currentCard.id, "still_learning");
-            
+
             if (result.success) {
                 setSessionStats(prev => ({ ...prev, stillLearning: prev.stillLearning + 1 }));
-                
+
                 setMasteredCards(prev => {
                     const newSet = new Set(prev);
                     newSet.delete(currentCard.id);
                     return newSet;
                 });
-                
+
                 if (result.masteryStatus === "learning") {
                     setLearningCards(prev => new Set([...prev, currentCard.id]));
                 } else {
@@ -239,64 +239,50 @@ export function FlashcardStudy({
     const modeLabel = getModeLabel();
 
     return (
-        <div className="min-h-[calc(100vh-8rem)] flex flex-col bg-gradient-to-b from-zinc-50 to-white">
+        <div className="h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] flex flex-col bg-zinc-50/50">
             {/* Header */}
-            <div className="px-4 py-4 shrink-0">
+            <div className="px-4 py-4 shrink-0 bg-white/50 backdrop-blur-xl border-b border-zinc-200/50">
                 <div className="max-w-4xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link
                             href="/dashboard/flashcards"
-                            className="p-2.5 hover:bg-zinc-100 rounded-xl transition-colors"
+                            className="p-2 hover:bg-zinc-100 rounded-xl transition-colors"
                         >
                             <CaretLeft className="w-5 h-5 text-zinc-500" />
                         </Link>
                         <div>
                             <div className="flex items-center gap-2.5">
-                                <h1 className="text-lg font-bold text-zinc-900">{deckTitle}</h1>
+                                <h1 className="text-base md:text-lg font-bold text-zinc-900 truncate max-w-[200px] md:max-w-md">{deckTitle}</h1>
                                 {modeLabel && (
-                                    <span className="px-2.5 py-1 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 text-xs font-bold rounded-full border border-amber-200/60">
+                                    <span className="px-2.5 py-1 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 text-xs font-bold rounded-full border border-amber-200/60 whitespace-nowrap">
                                         {modeLabel}
                                     </span>
                                 )}
                             </div>
                             <div className="flex items-center gap-4 mt-1">
-                                <span className="text-sm text-zinc-500 font-medium">
+                                <span className="text-xs md:text-sm text-zinc-500 font-medium">
                                     Card {currentIndex + 1} of {cards.length}
                                 </span>
-                                <div className="flex items-center gap-3">
-                                    <span className="flex items-center gap-1.5 text-emerald-600">
-                                        <Star weight="fill" className="w-4 h-4" />
-                                        <span className="text-sm font-bold">{totalMastered}</span>
-                                    </span>
-                                    <span className="flex items-center gap-1.5 text-amber-600">
-                                        <Books weight="fill" className="w-4 h-4" />
-                                        <span className="text-sm font-bold">{totalLearning}</span>
-                                    </span>
-                                    <span className="flex items-center gap-1.5 text-zinc-400">
-                                        <Target weight="fill" className="w-4 h-4" />
-                                        <span className="text-sm font-bold">{totalNew}</span>
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-1">
                         {isPending && (
-                            <div className="p-2.5">
+                            <div className="p-2">
                                 <Spinner className="w-5 h-5 text-amber-500 animate-spin" />
                             </div>
                         )}
                         <button
                             onClick={handleShuffle}
-                            className="p-2.5 hover:bg-zinc-100 rounded-xl transition-colors group"
+                            className="p-2 hover:bg-zinc-100 rounded-xl transition-colors group"
                             title="Shuffle"
                         >
                             <Shuffle className="w-5 h-5 text-zinc-400 group-hover:text-zinc-700" />
                         </button>
                         <button
                             onClick={handleRestart}
-                            className="p-2.5 hover:bg-zinc-100 rounded-xl transition-colors group"
+                            className="p-2 hover:bg-zinc-100 rounded-xl transition-colors group"
                             title="Restart"
                         >
                             <ArrowsClockwise className="w-5 h-5 text-zinc-400 group-hover:text-zinc-700" />
@@ -306,259 +292,194 @@ export function FlashcardStudy({
             </div>
 
             {/* Progress Bar */}
-            <div className="px-4 pb-6 shrink-0">
-                <div className="max-w-4xl mx-auto">
-                    <div className="h-2 bg-zinc-200 rounded-full overflow-hidden">
-                        <motion.div
-                            className="h-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500"
-                            animate={{ width: `${progress}%` }}
-                            transition={{ duration: 0.3 }}
-                        />
-                    </div>
-                </div>
+            <div className="h-1 bg-zinc-100 shrink-0 relative z-10">
+                <motion.div
+                    className="h-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500"
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.3 }}
+                />
             </div>
 
-            {/* Card Area */}
-            <div className="flex-1 flex items-center justify-center px-4 py-4">
-                <div className="w-full max-w-2xl">
-                    {/* Card status indicator */}
-                    <div className="flex justify-center mb-4">
-                        <AnimatePresence mode="wait">
-                            {cardStatus === "mastered" && (
-                                <motion.span
-                                    key="mastered"
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200"
-                                >
-                                    <Star weight="fill" className="w-3.5 h-3.5" />
-                                    Mastered
-                                </motion.span>
-                            )}
-                            {cardStatus === "learning" && (
-                                <motion.span
-                                    key="learning"
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 text-xs font-bold rounded-full border border-amber-200"
-                                >
-                                    <Books weight="fill" className="w-3.5 h-3.5" />
-                                    Learning
-                                </motion.span>
-                            )}
-                            {cardStatus === "new" && (
-                                <motion.span
-                                    key="new"
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 text-zinc-600 text-xs font-bold rounded-full border border-zinc-200"
-                                >
-                                    <Target weight="fill" className="w-3.5 h-3.5" />
-                                    New
-                                </motion.span>
-                            )}
-                        </AnimatePresence>
-                    </div>
+            {/* Main Content Area - Full Height relative */}
+            <div className="flex-1 relative w-full bg-zinc-50/50 flex flex-col items-center justify-center p-4">
 
-                    {/* Flashcard */}
-                    <div
-                        className="relative cursor-pointer perspective-1000 aspect-[5/3]"
-                        onClick={handleFlip}
-                    >
-                        <motion.div
-                            className="relative w-full h-full"
-                            style={{ transformStyle: "preserve-3d" }}
-                            animate={{ rotateY: isFlipped ? 180 : 0 }}
-                            transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                {/* Card Container - Centered */}
+                <div className="w-full max-w-3xl flex flex-col items-center justify-center h-full gap-6 pb-32"> {/* Increased padding for larger dock */}
+
+                    {/* Card Counter - Moved to Top */}
+                    <div className="flex justify-center shrink-0">
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100/50 rounded-full border border-zinc-200/50">
+                            <span className="text-xs font-bold text-zinc-900">{currentIndex + 1}</span>
+                            <span className="text-zinc-400 text-xs">/</span>
+                            <span className="text-xs font-medium text-zinc-500">{cards.length}</span>
+                        </div>
+                    </div>  {/* Flashcard Container - Fixed Aspect Ratio 3:2 and slightly smaller max-width */}
+                    <div className="w-full max-w-xl relative perspective-1000 aspect-[3/2]">
+                        <div
+                            className="relative w-full h-full cursor-pointer"
+                            onClick={handleFlip}
                         >
-                            {/* Front Side */}
-                            <div
-                                className="absolute inset-0 rounded-3xl grid place-items-center p-8 md:p-12 shadow-xl"
-                                style={{ 
-                                    backfaceVisibility: "hidden",
-                                    WebkitBackfaceVisibility: "hidden",
-                                    transform: "rotateY(0deg)",
-                                    background: "linear-gradient(145deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%)",
-                                    border: "1px solid rgba(251, 191, 36, 0.3)",
-                                }}
-                            >
-                                {/* Decorative elements */}
-                                <div className="absolute top-4 right-4 w-20 h-20 bg-amber-300/20 rounded-full blur-2xl" />
-                                <div className="absolute bottom-4 left-4 w-16 h-16 bg-orange-300/20 rounded-full blur-2xl" />
-                                
-                                <div className="text-center relative z-10">
-                                    <p className="text-xl sm:text-2xl md:text-3xl font-bold text-amber-950 leading-relaxed">
-                                        {currentCard?.front}
-                                    </p>
-                                </div>
-                                
-                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs font-medium text-amber-600/70">
-                                    Click to flip
-                                </div>
-                            </div>
-
-                            {/* Back Side */}
-                            <div
-                                className="absolute inset-0 rounded-3xl grid place-items-center p-8 md:p-12 shadow-xl"
-                                style={{
-                                    backfaceVisibility: "hidden",
-                                    WebkitBackfaceVisibility: "hidden",
-                                    transform: "rotateY(180deg)",
-                                    background: "linear-gradient(145deg, #ecfdf5 0%, #d1fae5 50%, #a7f3d0 100%)",
-                                    border: "1px solid rgba(16, 185, 129, 0.2)",
-                                }}
-                            >
-                                {/* Decorative elements */}
-                                <div className="absolute top-4 left-4 w-20 h-20 bg-emerald-300/20 rounded-full blur-2xl" />
-                                <div className="absolute bottom-4 right-4 w-16 h-16 bg-teal-300/20 rounded-full blur-2xl" />
-                                
-                                <div className="text-center relative z-10">
-                                    <p className="text-lg sm:text-xl md:text-2xl font-medium text-emerald-950 leading-relaxed">
-                                        {currentCard?.back}
-                                    </p>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Bottom Controls */}
-            <div className="shrink-0 py-6 space-y-4">
-                {/* Hint (only on front, if available) */}
-                {currentCard?.hint && !isFlipped && (
-                    <div className="flex justify-center">
-                        {!showHint ? (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowHint(true);
-                                }}
-                                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-xl transition-colors border border-amber-200/60"
-                            >
-                                <Eye weight="bold" className="w-4 h-4" />
-                                Show Hint
-                            </button>
-                        ) : (
                             <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl px-5 py-3 max-w-xl text-center"
+                                className="relative w-full h-full"
+                                style={{ transformStyle: "preserve-3d" }}
+                                animate={{ rotateY: isFlipped ? 180 : 0 }}
+                                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                             >
-                                <p className="text-amber-800 text-sm font-medium flex items-center justify-center gap-2">
-                                    <Lightning weight="fill" className="w-4 h-4 text-amber-600 shrink-0" />
-                                    {currentCard.hint}
-                                </p>
-                            </motion.div>
-                        )}
-                    </div>
-                )}
-
-                {/* Rating Buttons (only on back) */}
-                <AnimatePresence>
-                    {isFlipped && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 20 }}
-                            className="flex justify-center gap-4"
-                        >
-                            <button
-                                onClick={(e) => { e.stopPropagation(); markAsUnknown(); }}
-                                disabled={isPending}
-                                className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-red-200 rounded-xl text-red-600 font-bold hover:bg-red-50 hover:border-red-300 transition-all disabled:opacity-50 shadow-sm hover:shadow-md"
-                            >
-                                <X weight="bold" className="w-5 h-5" />
-                                Still Learning
-                            </button>
-                            <button
-                                onClick={(e) => { e.stopPropagation(); markAsKnown(); }}
-                                disabled={isPending}
-                                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl text-white font-bold hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/30"
-                            >
-                                <CheckCircle weight="fill" className="w-5 h-5" />
-                                Got It!
-                            </button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Navigation */}
-                <div className="flex items-center justify-center gap-6">
-                    <button
-                        onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-                        disabled={currentIndex === 0}
-                        className={cn(
-                            "p-3.5 rounded-xl transition-all",
-                            currentIndex === 0
-                                ? "text-zinc-300 cursor-not-allowed"
-                                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-                        )}
-                    >
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-
-                    {/* Card indicator dots */}
-                    <div className="flex items-center gap-1.5">
-                        {cards.length <= 20 ? (
-                            cards.map((card, i) => (
-                                <button
-                                    key={card.id}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setCurrentIndex(i);
-                                        setIsFlipped(false);
-                                        setShowHint(false);
-                                    }}
+                                {/* Front Side */}
+                                <div
                                     className={cn(
-                                        "h-2 rounded-full transition-all",
-                                        i === currentIndex
-                                            ? "bg-gradient-to-r from-amber-400 to-orange-400 w-8"
-                                            : masteredCards.has(card.id)
-                                                ? "bg-emerald-400 w-2"
-                                                : learningCards.has(card.id)
-                                                    ? "bg-amber-400 w-2"
-                                                    : "bg-zinc-300 hover:bg-zinc-400 w-2"
+                                        "absolute inset-0 rounded-3xl grid place-items-center p-6 md:p-10 shadow-neo border-2 overflow-hidden transition-colors",
+                                        "bg-amber-50 border-zinc-900",
+                                        "hover:bg-amber-100/50"
                                     )}
-                                />
-                            ))
-                        ) : (
-                            <span className="text-sm font-bold text-zinc-500 bg-zinc-100 px-3 py-1 rounded-full">
-                                {currentIndex + 1} / {cards.length}
-                            </span>
-                        )}
-                    </div>
+                                    style={{
+                                        backfaceVisibility: "hidden",
+                                        WebkitBackfaceVisibility: "hidden",
+                                        transform: "rotateY(0deg)",
+                                    }}
+                                >
+                                    {/* Scrollable Content Area */}
+                                    <div className="w-full h-full overflow-y-auto scrollbar-none">
+                                        <div className="min-h-full w-full flex items-center justify-center p-6">
+                                            <div className="max-w-2xl text-center">
+                                                <p className="text-xl md:text-3xl font-bold text-zinc-900 leading-snug font-serif">
+                                                    {currentCard?.front}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                    <button
-                        onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                        disabled={currentIndex === cards.length - 1}
-                        className={cn(
-                            "p-3.5 rounded-xl transition-all",
-                            currentIndex === cards.length - 1
-                                ? "text-zinc-300 cursor-not-allowed"
-                                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-                        )}
-                    >
-                        <ArrowRight className="w-6 h-6" />
-                    </button>
+                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs font-bold text-zinc-400 flex items-center gap-1.5 uppercase tracking-wider opacity-60 pointer-events-none">
+                                        Tap to flip <ArrowClockwise className="w-3.5 h-3.5" />
+                                    </div>
+                                </div>
+
+                                {/* Back Side */}
+                                <div
+                                    className="absolute inset-0 rounded-3xl grid place-items-center p-6 md:p-10 shadow-neo bg-amber-50 border-2 border-zinc-900 overflow-hidden"
+                                    style={{
+                                        backfaceVisibility: "hidden",
+                                        WebkitBackfaceVisibility: "hidden",
+                                        transform: "rotateY(180deg)",
+                                    }}
+                                >
+                                    {/* Scrollable Content Area */}
+                                    <div className="w-full h-full overflow-y-auto scrollbar-none">
+                                        <div className="min-h-full w-full flex items-center justify-center p-6">
+                                            <div className="max-w-2xl text-left">
+                                                <p className="text-base md:text-xl font-medium text-zinc-900 leading-relaxed font-serif">
+                                                    {currentCard?.back}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Keyboard hints */}
-                <div className="flex justify-center">
-                    <div className="flex items-center gap-2 text-xs text-zinc-400">
-                        <kbd className="px-2 py-1 bg-zinc-100 rounded-md text-zinc-500 font-mono text-[10px] border border-zinc-200">Space</kbd>
-                        <span>flip</span>
-                        <span className="mx-1">·</span>
-                        <kbd className="px-2 py-1 bg-zinc-100 rounded-md text-zinc-500 font-mono text-[10px] border border-zinc-200">←</kbd>
-                        <kbd className="px-2 py-1 bg-zinc-100 rounded-md text-zinc-500 font-mono text-[10px] border border-zinc-200">→</kbd>
-                        <span>navigate</span>
-                        <span className="mx-1">·</span>
-                        <kbd className="px-2 py-1 bg-zinc-100 rounded-md text-zinc-500 font-mono text-[10px] border border-zinc-200">1</kbd>
-                        <kbd className="px-2 py-1 bg-zinc-100 rounded-md text-zinc-500 font-mono text-[10px] border border-zinc-200">2</kbd>
-                        <span>rate</span>
+                {/* Floating Bottom Controls - Absolute */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 md:pb-12 z-20 pointer-events-none">
+                    <div className="max-w-3xl mx-auto flex flex-col gap-3">
+
+
+
+                        {/* Main Navigation - Floating */}
+                        <div className="flex items-center justify-between gap-3 pointer-events-auto">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                                disabled={currentIndex === 0}
+                                className={cn(
+                                    "flex items-center px-5 py-4 rounded-2xl font-bold transition-all border text-sm sm:text-base shadow-xl",
+                                    currentIndex === 0
+                                        ? "bg-zinc-100 text-zinc-300 border-zinc-200 cursor-not-allowed"
+                                        : "bg-white border-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 hover:scale-105 active:scale-95"
+                                )}
+                            >
+                                <ArrowLeft className="w-5 h-5 mr-2" />
+                                <span>Previous</span>
+                            </button>
+
+                            <div className="flex-1 flex justify-center z-30 min-h-[56px] min-w-[280px] items-center">
+                                <AnimatePresence mode="wait">
+                                    {!isFlipped ? (
+                                        currentCard?.hint ? (
+                                            !showHint ? (
+                                                <motion.button
+                                                    key="hint-btn"
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.9 }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setShowHint(true);
+                                                    }}
+                                                    className="flex items-center gap-2 px-5 py-3.5 text-sm font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-2xl transition-all border border-amber-200 shadow-sm"
+                                                >
+                                                    <Eye weight="bold" className="w-5 h-5" />
+                                                    Show Hint
+                                                </motion.button>
+                                            ) : (
+                                                <motion.div
+                                                    key="hint-content"
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.9 }}
+                                                    className="bg-amber-100 border border-amber-200 rounded-2xl px-5 py-3.5 flex items-center gap-2 max-w-full shadow-sm cursor-help"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    title={currentCard.hint}
+                                                >
+                                                    <Lightning weight="fill" className="w-5 h-5 text-amber-500 shrink-0" />
+                                                    <span className="text-amber-900 text-sm font-medium">{currentCard.hint}</span>
+                                                </motion.div>
+                                            )
+                                        ) : (
+                                            <div className="w-8" /> /* Spacer if no hint */
+                                        )
+                                    ) : (
+                                        <motion.div
+                                            key="rating-actions"
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            className="flex gap-3"
+                                        >
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); markAsUnknown(); }}
+                                                disabled={isPending}
+                                                className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 bg-white border border-red-200 text-red-600 font-bold rounded-2xl hover:bg-red-50 transition-all text-xs sm:text-sm shadow-sm hover:scale-105 active:scale-95"
+                                            >
+                                                <X weight="bold" className="w-5 h-5" />
+                                                <span className="hidden sm:inline">Still Learning</span>
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); markAsKnown(); }}
+                                                disabled={isPending}
+                                                className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 bg-emerald-500 border border-emerald-600 text-white font-bold rounded-2xl hover:bg-emerald-400 transition-all shadow-sm text-xs sm:text-sm hover:scale-105 active:scale-95"
+                                            >
+                                                <CheckCircle weight="fill" className="w-5 h-5" />
+                                                <span className="hidden sm:inline">Got It!</span>
+                                            </button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            <button
+                                onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                                disabled={currentIndex === cards.length - 1}
+                                className={cn(
+                                    "flex items-center px-6 py-4 rounded-2xl font-bold transition-all border text-sm sm:text-base shadow-xl",
+                                    currentIndex === cards.length - 1
+                                        ? "bg-zinc-100 text-zinc-300 border-zinc-200 cursor-not-allowed"
+                                        : "bg-zinc-900 text-white border-zinc-900 hover:bg-zinc-800 hover:scale-105 active:scale-95"
+                                )}
+                            >
+                                <span className="mr-2">Next</span>
+                                <ArrowRight className="w-5 h-5" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -581,7 +502,7 @@ export function FlashcardStudy({
                         >
                             {/* Decorative gradient */}
                             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-400 via-orange-400 to-red-400" />
-                            
+
                             {/* Decorative circles */}
                             <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-100 rounded-full opacity-50" />
                             <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-orange-100 rounded-full opacity-50" />
@@ -628,7 +549,7 @@ export function FlashcardStudy({
                                         </div>
                                     </div>
                                     <div className="h-3 bg-zinc-200 rounded-full overflow-hidden">
-                                        <div 
+                                        <div
                                             className="h-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-all"
                                             style={{ width: `${(totalMastered / cards.length) * 100}%` }}
                                         />
@@ -642,14 +563,14 @@ export function FlashcardStudy({
                                     <Button
                                         onClick={handleRestart}
                                         variant="outline"
-                                        className="flex-1 h-12 rounded-xl font-bold"
+                                        className="flex-1 h-12 rounded-xl font-bold border-2"
                                     >
                                         <ArrowsClockwise className="w-5 h-5 mr-2" />
                                         Study Again
                                     </Button>
                                     <Link href="/dashboard/flashcards" className="flex-1">
-                                        <Button 
-                                            className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-bold"
+                                        <Button
+                                            className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
                                             onClick={onComplete}
                                         >
                                             Done

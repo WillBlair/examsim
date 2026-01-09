@@ -68,7 +68,7 @@ export default async function FlashcardDeckPage({ params, searchParams }: Flashc
     } else if (studyMode === "due") {
         filteredCards = allCards.filter(card => {
             return (card.nextReviewAt && card.nextReviewAt <= now) ||
-                   (!card.nextReviewAt && card.repetitions && card.repetitions > 0);
+                (!card.nextReviewAt && card.repetitions && card.repetitions > 0);
         });
     } else if (studyMode === "new") {
         filteredCards = allCards.filter(card => {
@@ -141,7 +141,7 @@ export default async function FlashcardDeckPage({ params, searchParams }: Flashc
                             </div>
                             <h2 className="text-2xl font-black text-zinc-900 mb-3">Great Progress!</h2>
                             <p className="text-zinc-500 mb-6 text-lg">
-                                You don&apos;t have any cards in the &quot;Still Learning&quot; category. 
+                                You don&apos;t have any cards in the &quot;Still Learning&quot; category.
                                 Keep studying to see cards here!
                             </p>
                         </>
@@ -164,7 +164,7 @@ export default async function FlashcardDeckPage({ params, searchParams }: Flashc
                             </div>
                             <h2 className="text-2xl font-black text-zinc-900 mb-3">All Cards Studied!</h2>
                             <p className="text-zinc-500 mb-6 text-lg">
-                                You&apos;ve studied all cards in this deck at least once. 
+                                You&apos;ve studied all cards in this deck at least once.
                                 Keep reviewing to master them!
                             </p>
                         </>
@@ -189,60 +189,7 @@ export default async function FlashcardDeckPage({ params, searchParams }: Flashc
 
     return (
         <div className="w-full h-full">
-            {/* Mode Selector - only show when viewing all */}
-            {studyMode === "all" && (learningCount > 0 || dueCount > 0 || newCount > 0) && (
-                <div className="max-w-4xl mx-auto px-4 pt-4 pb-0">
-                    <div className="flex flex-wrap items-center gap-2 bg-zinc-50 rounded-lg p-2 border border-zinc-200">
-                        <Link href={`/dashboard/flashcards/${deckId}`}>
-                            <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                                studyMode === "all" ? "bg-white shadow-sm border border-zinc-200 text-zinc-900" : "text-zinc-500 hover:text-zinc-900"
-                            }`}>
-                                All
-                                <span className="text-xs font-bold px-1.5 py-0.5 bg-zinc-100 rounded">{allCards.length}</span>
-                            </button>
-                        </Link>
-                        {newCount > 0 && (
-                            <Link href={`/dashboard/flashcards/${deckId}?mode=new`}>
-                                <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                                    modeParam === "new" ? "bg-white shadow-sm border border-zinc-200 text-zinc-900" : "text-zinc-500 hover:text-zinc-900"
-                                }`}>
-                                    <Target weight="fill" className="w-3.5 h-3.5" />
-                                    New
-                                    <span className="text-xs font-bold px-1.5 py-0.5 bg-zinc-100 rounded">{newCount}</span>
-                                </button>
-                            </Link>
-                        )}
-                        {learningCount > 0 && (
-                            <Link href={`/dashboard/flashcards/${deckId}?mode=learning`}>
-                                <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                                    modeParam === "learning" ? "bg-white shadow-sm border border-amber-200 text-amber-900" : "text-amber-600 hover:text-amber-700"
-                                }`}>
-                                    <Books weight="fill" className="w-3.5 h-3.5" />
-                                    Learning
-                                    <span className="text-xs font-bold px-1.5 py-0.5 bg-amber-100 rounded text-amber-700">{learningCount}</span>
-                                </button>
-                            </Link>
-                        )}
-                        {dueCount > 0 && (
-                            <Link href={`/dashboard/flashcards/${deckId}?mode=due`}>
-                                <button className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                                    modeParam === "due" ? "bg-white shadow-sm border border-red-200 text-red-900" : "text-red-600 hover:text-red-700"
-                                }`}>
-                                    <Timer weight="fill" className="w-3.5 h-3.5" />
-                                    Due
-                                    <span className="text-xs font-bold px-1.5 py-0.5 bg-red-100 rounded text-red-700">{dueCount}</span>
-                                </button>
-                            </Link>
-                        )}
-                        {masteredCount > 0 && (
-                            <div className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-sm text-emerald-600">
-                                <Star weight="fill" className="w-3.5 h-3.5" />
-                                <span className="font-medium">{masteredCount} mastered</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
+
 
             <FlashcardStudy
                 deckId={deck.id}
