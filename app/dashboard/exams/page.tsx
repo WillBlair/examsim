@@ -254,7 +254,6 @@ export default async function ExamsPage() {
     // Calculate overall stats (count unique exams, not individual attempts)
     const totalExams = displayExams.length;
     const completedExams = displayExams.filter(e => e.latestResult !== null).length;
-    const pendingExams = totalExams - completedExams;
 
     const completedScores = displayExams
         .filter(e => e.bestScore !== null)
@@ -322,57 +321,76 @@ export default async function ExamsPage() {
                 <>
                     {/* Overall Stats Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-emerald-500 rounded-2xl p-3 shadow-lg shadow-emerald-500/20">
-                            <div className="flex items-center gap-2 mb-1.5">
-                                <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                    <CheckCircle weight="fill" className="w-4 h-4 text-white" />
+                        <div className="relative bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl p-3 shadow-lg shadow-emerald-500/20 overflow-hidden">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_60%)]" />
+                            <div className="relative flex items-center gap-2.5 mb-1.5">
+                                <div className="w-9 h-9 rounded-lg bg-white/25 flex items-center justify-center border border-white/20 shadow-inner">
+                                    <CheckCircle weight="fill" className="w-4 h-4 text-white drop-shadow-sm" />
                                 </div>
                                 <div>
-                                    <div className="text-xl font-black text-white leading-none">{completedExams}</div>
-                                    <div className="text-[10px] font-medium text-emerald-100 uppercase tracking-wider mt-0.5">Completed</div>
+                                    <div className="text-xl font-black text-white leading-none drop-shadow-sm">{completedExams}</div>
+                                    <div className="text-[10px] font-semibold text-white/80 uppercase tracking-wider mt-0.5">Completed</div>
                                 </div>
                             </div>
-                            <div className="h-1 bg-black/20 rounded-full overflow-hidden">
+                            <div className="relative h-1.5 bg-black/20 rounded-full overflow-hidden">
                                 <div
-                                    className="h-full bg-white transition-all"
+                                    className="h-full bg-white rounded-full transition-all shadow-sm"
                                     style={{ width: `${totalExams > 0 ? (completedExams / totalExams) * 100 : 0}%` }}
                                 />
                             </div>
                         </div>
 
-                        <div className="bg-amber-500 rounded-2xl p-3 shadow-lg shadow-amber-500/20">
-                            <div className="flex items-center gap-2">
-                                <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                    <Target weight="fill" className="w-4 h-4 text-white" />
+                        <div className="relative bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl p-3 shadow-lg shadow-amber-500/20 overflow-hidden">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_60%)]" />
+                            <div className="relative flex items-center gap-2.5 mb-1.5">
+                                <div className="w-9 h-9 rounded-lg bg-white/25 flex items-center justify-center border border-white/20 shadow-inner">
+                                    <Exam weight="fill" className="w-4 h-4 text-white drop-shadow-sm" />
                                 </div>
                                 <div>
-                                    <div className="text-xl font-black text-white leading-none">{pendingExams}</div>
-                                    <div className="text-[10px] font-medium text-amber-100 uppercase tracking-wider mt-0.5">Pending</div>
+                                    <div className="text-xl font-black text-white leading-none drop-shadow-sm">{totalExams}</div>
+                                    <div className="text-[10px] font-semibold text-white/80 uppercase tracking-wider mt-0.5">Total Exams</div>
                                 </div>
+                            </div>
+                            <div className="relative h-1.5 bg-black/20 rounded-full overflow-hidden">
+                                <div className="h-full w-full bg-white rounded-full" />
                             </div>
                         </div>
 
-                        <div className="bg-blue-500 rounded-2xl p-3 shadow-lg shadow-blue-500/20">
-                            <div className="flex items-center gap-2">
-                                <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                    <ChartLine weight="fill" className="w-4 h-4 text-white" />
+                        <div className="relative bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl p-3 shadow-lg shadow-blue-500/20 overflow-hidden">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_60%)]" />
+                            <div className="relative flex items-center gap-2.5 mb-1.5">
+                                <div className="w-9 h-9 rounded-lg bg-white/25 flex items-center justify-center border border-white/20 shadow-inner">
+                                    <ChartLine weight="fill" className="w-4 h-4 text-white drop-shadow-sm" />
                                 </div>
                                 <div>
-                                    <div className="text-xl font-black text-white leading-none">{averageScore}%</div>
-                                    <div className="text-[10px] font-medium text-blue-100 uppercase tracking-wider mt-0.5">Avg Score</div>
+                                    <div className="text-xl font-black text-white leading-none drop-shadow-sm">{averageScore}%</div>
+                                    <div className="text-[10px] font-semibold text-white/80 uppercase tracking-wider mt-0.5">Avg Score</div>
                                 </div>
+                            </div>
+                            <div className="relative h-1.5 bg-black/20 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-white rounded-full transition-all shadow-sm"
+                                    style={{ width: `${averageScore}%` }}
+                                />
                             </div>
                         </div>
 
-                        <div className="bg-violet-500 rounded-2xl p-3 shadow-lg shadow-violet-500/20">
-                            <div className="flex items-center gap-2">
-                                <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                    <Trophy weight="fill" className="w-4 h-4 text-white" />
+                        <div className="relative bg-gradient-to-br from-violet-400 to-purple-600 rounded-2xl p-3 shadow-lg shadow-violet-500/20 overflow-hidden">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_60%)]" />
+                            <div className="relative flex items-center gap-2.5 mb-1.5">
+                                <div className="w-9 h-9 rounded-lg bg-white/25 flex items-center justify-center border border-white/20 shadow-inner">
+                                    <Trophy weight="fill" className="w-4 h-4 text-white drop-shadow-sm" />
                                 </div>
                                 <div>
-                                    <div className="text-xl font-black text-white leading-none">{bestOverallScore}%</div>
-                                    <div className="text-[10px] font-medium text-violet-100 uppercase tracking-wider mt-0.5">Best Score</div>
+                                    <div className="text-xl font-black text-white leading-none drop-shadow-sm">{bestOverallScore}%</div>
+                                    <div className="text-[10px] font-semibold text-white/80 uppercase tracking-wider mt-0.5">Best Score</div>
                                 </div>
+                            </div>
+                            <div className="relative h-1.5 bg-black/20 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-white rounded-full transition-all shadow-sm"
+                                    style={{ width: `${bestOverallScore}%` }}
+                                />
                             </div>
                         </div>
                     </div>
